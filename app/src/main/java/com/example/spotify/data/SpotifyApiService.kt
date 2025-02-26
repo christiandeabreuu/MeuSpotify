@@ -1,0 +1,23 @@
+package com.example.spotify.data
+
+interface SpotifyApiService {
+//
+//    // Endpoint para obter os artistas mais ouvidos
+//    @GET("v1/me/top/artists")
+//    fun getTopArtists(
+//        @Header("Authorization") token: String, // Token de acesso
+//        @Query("time_range") timeRange: String = "medium_term", // Período de tempo (short_term, medium_term, long_term)
+//        @Query("limit") limit: Int = 10, // Número de artistas a serem retornados
+//        @Query("offset") offset: Int = 0 // Paginação
+//    ): Call<TopArtistsResponse>
+//
+//    // Endpoint para obter as playlists do usuário
+//    @GET("v1/me/playlists")
+//    fun getUserPlaylists(
+//        @Header("Authorization") token: String,
+//        @Query("limit") limit: Int = 10,
+//        @Query("offset") offset: Int = 0
+//    ): Call<PlaylistsResponse>
+//
+//    // Adicione outros endpoints conforme necessário
+}
