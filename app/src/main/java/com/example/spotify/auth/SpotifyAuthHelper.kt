@@ -1,47 +1,74 @@
 package com.example.spotify.auth
 
-import android.app.Activity
 import android.content.Context
-import android.content.Intent
-import com.example.spotify.SpotifyApiService
-import com.example.spotify.UserProfile
-import com.spotify.sdk.android.auth.AuthorizationRequest
-import com.spotify.sdk.android.auth.AuthorizationResponse
-import retrofit2.Call
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.IOException
 
-
-class SpotifyAuthHelper(private val context: Context) : SpotifyApiService {
+class SpotifyAuthHelper(private val context: Context) {
 
     private val CLIENT_ID = "9cde7198eaf54c06860b6d0257dcd893"
-    private val REDIRECT_URI = "meuapp://callback"
-    private val REQUEST_CODE = 1337
-    private val CLIENT_SECRET = "d601127a963c4791a61e9145bedd7fe6" //guardar
+    private val CLIENT_SECRET = "d601127a963c4791a61e9145bedd7fe6"
 
-    override fun authenticate(onSuccess: (String) -> Unit, onError: (String) -> Unit) {
-        // Simulação de uma chamada de autenticação
-        val isSuccess = true // Apenas para exemplo
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getAccessToken(onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+        val client = OkHttpClient()
 
-        if (isSuccess) {
-            val accessToken = "dummy_access_token"
-            onSuccess(accessToken)
-        } else {
-            val error = "Authentication failed"
-            onError(error)
-        }
+        // Corpo da requisição
+        val requestBody = FormBody.Builder()
+            .add("grant_type", "client_credentials")
+            .build()
+
+        // Codificar CLIENT_ID e CLIENT_SECRET em Base64
+        val credentials = "$CLIENT_ID:$CLIENT_SECRET"
+        val authHeader = "Basic " + java.util.Base64.getEncoder().encodeToString(credentials.toByteArray())
+
+        // Requisição para obter o token
+        val request = Request.Builder()
+            .url("https://accounts.spotify.com/api/token")
+            .post(requestBody)
+            .header("Authorization", authHeader)
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .build()
+
+        Log.d("SpotifyAuthHelper", "Fazendo requisição para obter token de acesso...")
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e("SpotifyAuthHelper", "Falha na requisição: ${e.message}")
+                onError("Falha na requisição: ${e.message}")
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    val responseBody = response.body?.string()
+                    Log.d("SpotifyAuthHelper", "Resposta da API: $responseBody")
+                    val accessToken = responseBody?.let { parseAccessToken(it) }
+                    if (accessToken != null) {
+                        Log.d("SpotifyAuthHelper", "Token de acesso obtido: $accessToken")
+                        onSuccess(accessToken)
+                    } else {
+                        Log.e("SpotifyAuthHelper", "Token de acesso não encontrado na resposta")
+                        onError("Token de acesso não encontrado na resposta")
+                    }
+                } else {
+                    Log.e("SpotifyAuthHelper", "Erro ao obter token: ${response.code}")
+                    onError("Erro ao obter token: ${response.code}")
+                }
+            }
+        })
     }
 
-    override fun getUserProfile(accessToken: String): Call<UserProfile> {
-        TODO("Not yet implemented")
-    }
-
-    override fun handleResponse(requestCode: Int, resultCode: Int, data: Intent?, onSuccess: (String) -> Unit, onError: (String) -> Unit) {
-        if (resultCode == Activity.RESULT_OK) {
-            val accessToken = "dummy_access_token" // Exemplo de token
-            onSuccess(accessToken)
-        } else {
-            val error = "Authentication failed"
-            onError(error)
+    private fun parseAccessToken(responseBody: String): String? {
+        return try {
+            val jsonObject = org.json.JSONObject(responseBody)
+            jsonObject.getString("access_token")
+        } catch (e: Exception) {
+            Log.e("SpotifyAuthHelper", "Erro ao analisar JSON", e)
+            null
         }
     }
 }
-

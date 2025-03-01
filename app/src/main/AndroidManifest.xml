@@ -14,37 +14,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Spotify"
         tools:targetApi="31">
+
+        <!-- Activity principal (LoginActivity) -->
         <activity
-            android:name=".ui.MainActivity"
-            android:exported="false" />
-        <!-- Activity principal -->
-        <activity
-            android:name=".ui.InitialActivity"
+            android:name=".ui.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- Activity de login personalizada -->
-        <activity
-            android:name=".ui.LoginActivity"
-            android:exported="false" /> <!-- Activity de login do Spotify -->
-        <activity
-            android:name="com.spotify.sdk.android.authentication.LoginActivity"
-            android:exported="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:host="callback"
-                    android:scheme="meuapp" />
-            </intent-filter>
         </activity>
-    </application>
 
+        <!-- Outras activities -->
+        <activity
+            android:name=".ui.MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.InitialActivity"
+            android:exported="false" />
+    </application>
 </manifest>
+
