@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.example.spotify.Constants.REDIRECT_URI
 import com.example.spotify.R
 import com.example.spotify.auth.SpotifyAuthHelper
 
@@ -21,28 +21,30 @@ class LoginActivity : AppCompatActivity() {
 
         spotifyAuthHelper = SpotifyAuthHelper(this)
 
-        // Iniciar autenticação
-        Log.d("LoginActivity", "Iniciando autenticação...")
-        spotifyAuthHelper.getAccessToken(
-            onSuccess = { accessToken ->
-                Log.d("LoginActivity", "Token de acesso obtido com sucesso: $accessToken")
-                // Salvando token
-                val sharedPrefs = getSharedPreferences("SPOTIFY", Context.MODE_PRIVATE)
-                with(sharedPrefs.edit()) {
-                    putString("ACCESS_TOKEN", accessToken)
-                    apply()
-                }
-
-                // Navegação para MainActivity
-                val intent = Intent(this, MainActivity::class.java)
-                intent.putExtra("ACCESS_TOKEN", accessToken)
-                startActivity(intent)
-                finish()
-            },
-            onError = { error ->
-                Log.e("LoginActivity", "Erro de autenticação: $error")
-                Toast.makeText(this, "Erro de autenticação: $error", Toast.LENGTH_SHORT).show()
+        val uri = intent.data
+        if (uri != null && uri.toString().startsWith(REDIRECT_URI)) {
+            val code = uri.getQueryParameter("code")
+            if (code != null) {
+                spotifyAuthHelper.getAccessToken(code, onSuccess = { accessToken, refreshToken ->
+                    val sharedPrefs = getSharedPreferences("SPOTIFY", Context.MODE_PRIVATE)
+                    with(sharedPrefs.edit()) {
+                        putString("ACCESS_TOKEN", accessToken)
+                        putString("REFRESH_TOKEN", refreshToken)
+                        apply()
+                    }
+                    val intent = Intent(this, MainActivity::class.java)
+                    intent.putExtra("ACCESS_TOKEN", accessToken)
+                    startActivity(intent)
+                    finish()
+                }, onError = { error ->
+                    Toast.makeText(this, "Erro de autenticação: $error", Toast.LENGTH_SHORT).show()
+                })
+            } else {
+                Toast.makeText(this, "Erro: código de autorização não encontrado", Toast.LENGTH_SHORT).show()
             }
-        )
+        } else {
+            spotifyAuthHelper.redirectToLogin()
+        }
     }
 }
+

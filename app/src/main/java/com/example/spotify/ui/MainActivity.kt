@@ -1,50 +1,72 @@
 package com.example.spotify.ui
 
+
+import android.content.Context
 import android.os.Bundle
+import android.util.Base64
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.spotify.R
 import com.example.spotify.RetrofitInstance
-import com.example.spotify.UserProfile
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var accessToken: String
+    private lateinit var refreshToken: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        accessToken = intent.getStringExtra("ACCESS_TOKEN")!!
+        // Recupera o token de acesso
+        accessToken = intent.getStringExtra("ACCESS_TOKEN") ?: run {
+            Log.e("MainActivity", "Token de acesso não encontrado")
+            Toast.makeText(this, "Erro: token de acesso não encontrado", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
+        // Faz as chamadas à API
+        getTopArtists()
         getUserProfile()
     }
 
     private fun getUserProfile() {
-        val api = RetrofitInstance.api
-        val call = api.getUserProfile("Bearer $accessToken")
+        lifecycleScope.launch {
+            val result = runCatching { RetrofitInstance.api.getUserProfile("Bearer $accessToken") }
+            result.onSuccess { userProfile ->
+                Toast.makeText(this@MainActivity, "Bem-vindo, ${userProfile.displayName}", Toast.LENGTH_LONG).show()
+            }.onFailure { e ->
+                Toast.makeText(this@MainActivity, "Erro ao buscar perfil: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
+    }
 
-        call.enqueue(object : retrofit2.Callback<UserProfile> {
-            override fun onResponse(call: Call<UserProfile>, response: retrofit2.Response<UserProfile>) {
-                if (response.isSuccessful) {
-                    val userProfile = response.body()
-                    // Faça algo com os dados do perfil do usuário
-                    Toast.makeText(this@MainActivity, "Bem-vindo, ${userProfile?.displayName}", Toast.LENGTH_LONG).show()
+    private fun getTopArtists() {
+        lifecycleScope.launch {
+            val result = runCatching { RetrofitInstance.api.getTopArtists("Bearer $accessToken") }
+            result.onSuccess { topArtists ->
+                if (topArtists.isSuccessful && topArtists.body() != null) {
+                    Log.d("TopArtist", "Resposta da API: ${topArtists.body()}")
+                    topArtists.body()!!.items.forEach { artist ->
+                        Log.d("TopArtist", "Artista: ${artist.name}")
+                    }
                 } else {
-                    Toast.makeText(this@MainActivity, "Falha ao obter perfil", Toast.LENGTH_LONG).show()
+                    Log.d("TopArtist", "Nenhum artista encontrado.")
+                    Log.d("TopArtist", "Código de status: ${topArtists.code()}")
+                    Log.d("TopArtist", "Mensagem de erro: ${topArtists.message()}")
+                    Log.d("TopArtist", "Corpo do erro: ${topArtists.errorBody()?.string()}")
                 }
+            }.onFailure { e ->
+                Log.e("TopArtist", "Erro ao buscar top artists: ${e.message}")
+                Toast.makeText(this@MainActivity, "Erro ao buscar top artists: ${e.message}", Toast.LENGTH_LONG).show()
             }
-
-            override fun onFailure(call: Call<UserProfile>, t: Throwable) {
-                Toast.makeText(this@MainActivity, "Erro: ${t.message}", Toast.LENGTH_LONG).show()
-            }
-        })
+        }
     }
 }
+
 
 
