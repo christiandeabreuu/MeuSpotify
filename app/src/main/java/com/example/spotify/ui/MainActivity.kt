@@ -2,14 +2,17 @@ package com.example.spotify.ui
 
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.spotify.R
 import com.example.spotify.RetrofitInstance
+import com.example.spotify.auth.SpotifyAuthHelper
 import kotlinx.coroutines.launch
 
 
@@ -17,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var accessToken: String
     private lateinit var refreshToken: String
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -29,9 +33,61 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Faz as chamadas à API
-        getTopArtists()
-        getUserProfile()
+        // Verifica a validade do token antes de fazer chamadas à API
+        checkTokenValidity()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun checkTokenValidity() {
+        val sharedPrefs = getSharedPreferences("SPOTIFY", Context.MODE_PRIVATE)
+        val tokenTimestamp = sharedPrefs.getLong("TOKEN_TIMESTAMP", 0)
+
+        if (isTokenExpired(tokenTimestamp)) {
+            // Token expirado, tenta renovar
+            val refreshToken = sharedPrefs.getString("REFRESH_TOKEN", null)
+            if (refreshToken != null) {
+                refreshAccessToken(refreshToken)
+            } else {
+                Toast.makeText(this, "Erro: refresh token não encontrado", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        } else {
+            // Token válido, faz as chamadas à API
+            getUserProfile()
+            getTopArtists()
+        }
+    }
+
+    private fun isTokenExpired(tokenTimestamp: Long): Boolean {
+        val currentTime = System.currentTimeMillis()
+        return (currentTime - tokenTimestamp) >= 3600 * 1000 // 1 hora em milissegundos
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun refreshAccessToken(refreshToken: String) {
+        val spotifyAuthHelper = SpotifyAuthHelper(this)
+        spotifyAuthHelper.refreshAccessToken(refreshToken, onSuccess = { newAccessToken, newRefreshToken ->
+            val sharedPrefs = getSharedPreferences("SPOTIFY", Context.MODE_PRIVATE)
+            with(sharedPrefs.edit()) {
+                putString("ACCESS_TOKEN", newAccessToken)
+                putLong("TOKEN_TIMESTAMP", System.currentTimeMillis())
+
+                // Se um novo refreshToken for retornado, salve-o
+                if (newRefreshToken.isNotEmpty()) {
+                    putString("REFRESH_TOKEN", newRefreshToken)
+                }
+
+                apply()
+            }
+            accessToken = newAccessToken
+
+            // Após renovar o token, faz as chamadas à API
+            getUserProfile()
+            getTopArtists()
+        }, onError = { error ->
+            Toast.makeText(this, "Erro ao renovar token: $error", Toast.LENGTH_SHORT).show()
+            finish()
+        })
     }
 
     private fun getUserProfile() {
@@ -67,6 +123,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-
 

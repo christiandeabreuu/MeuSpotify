@@ -30,6 +30,7 @@ class LoginActivity : AppCompatActivity() {
                     with(sharedPrefs.edit()) {
                         putString("ACCESS_TOKEN", accessToken)
                         putString("REFRESH_TOKEN", refreshToken)
+                        putLong("TOKEN_TIMESTAMP", System.currentTimeMillis()) // Salva o horário atual
                         apply()
                     }
                     val intent = Intent(this, MainActivity::class.java)

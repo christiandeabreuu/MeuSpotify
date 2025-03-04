@@ -37,6 +37,10 @@ android {
     buildFeatures {
         viewBinding = true
     }
+
+
+
+
 }
 
 dependencies {
@@ -85,6 +89,7 @@ dependencies {
 
     // Retrofit
     implementation(libs.retrofit)
+
     implementation(libs.retrofit.converter.gson)
 
     // Dependências para requisições HTTP
@@ -92,4 +97,8 @@ dependencies {
 
     // Dependência para autenticação OAuth
     implementation(libs.spotify.auth)
+//    implementation(libs.browser)
+
+//    implementation 'com.spotify.android:spotify-auth:1.2.3' // Verifique a versão mais recente na documentação
+//    implementation 'com.spotify.android:spotify-player:2.4.0' //  implementar
 }

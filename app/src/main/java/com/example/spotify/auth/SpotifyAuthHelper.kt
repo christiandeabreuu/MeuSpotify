@@ -66,11 +66,20 @@ class SpotifyAuthHelper(private val context: Context) {
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     val responseBody = response.body?.string()
-                    Log.d("SpotifyAuthHelper", "Resposta da API: $responseBody")
-                    val jsonObject = org.json.JSONObject(responseBody)
-                    val accessToken = jsonObject.getString("access_token")
-                    val refreshToken = jsonObject.getString("refresh_token")
-                    onSuccess(accessToken, refreshToken)
+                    if (responseBody != null) {
+                        try {
+                            val jsonObject = org.json.JSONObject(responseBody)
+                            val accessToken = jsonObject.getString("access_token")
+                            val refreshToken = jsonObject.getString("refresh_token")
+                            onSuccess(accessToken, refreshToken)
+                        } catch (e: Exception) {
+                            Log.e("SpotifyAuthHelper", "Erro ao processar resposta: ${e.message}")
+                            onError("Erro ao processar resposta: ${e.message}")
+                        }
+                    } else {
+                        Log.e("SpotifyAuthHelper", "Resposta vazia")
+                        onError("Resposta vazia")
+                    }
                 } else {
                     Log.e("SpotifyAuthHelper", "Erro ao obter token: ${response.code}")
                     onError("Erro ao obter token: ${response.code}")
@@ -82,9 +91,9 @@ class SpotifyAuthHelper(private val context: Context) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshAccessToken(
         refreshToken: String,
-        onSuccess: (String) -> Unit,
+        onSuccess: (String, String) -> Unit, // Agora retorna accessToken e refreshToken
         onError: (String) -> Unit
-    ) {
+    ){
         val client = OkHttpClient()
 
         // Corpo da requisição
@@ -112,10 +121,24 @@ class SpotifyAuthHelper(private val context: Context) {
             override fun onResponse(call: Call, response: Response) {
                 if (response.isSuccessful) {
                     val responseBody = response.body?.string()
-                    Log.d("SpotifyAuthHelper", "Resposta da API: $responseBody")
-                    val jsonObject = org.json.JSONObject(responseBody)
-                    val accessToken = jsonObject.getString("access_token")
-                    onSuccess(accessToken)
+                    if (responseBody != null) {
+                        try {
+                            val jsonObject = org.json.JSONObject(responseBody)
+                            val accessToken = jsonObject.getString("access_token")
+                            val refreshToken = jsonObject.optString("refresh_token") // Pode ser nulo
+                            if (refreshToken.isNotEmpty()) {
+                                onSuccess(accessToken, refreshToken) // Retorna ambos
+                            } else {
+                                onSuccess(accessToken, "") // Retorna apenas o access token
+                            }
+                        } catch (e: Exception) {
+                            Log.e("SpotifyAuthHelper", "Erro ao processar resposta: ${e.message}")
+                            onError("Erro ao processar resposta: ${e.message}")
+                        }
+                    } else {
+                        Log.e("SpotifyAuthHelper", "Resposta vazia")
+                        onError("Resposta vazia")
+                    }
                 } else {
                     Log.e("SpotifyAuthHelper", "Erro ao obter token: ${response.code}")
                     onError("Erro ao obter token: ${response.code}")

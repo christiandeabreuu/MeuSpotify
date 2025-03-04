@@ -25,23 +25,27 @@ class InitialActivity : AppCompatActivity(R.layout.activity_initial) {
 
     private fun enterButton() {
         binding.startButton.setOnClickListener {
-            //            // Verificar se o token de acesso está salvo
             val sharedPrefs = getSharedPreferences("SPOTIFY", Context.MODE_PRIVATE)
             val accessToken = sharedPrefs.getString("ACCESS_TOKEN", null)
+            val tokenTimestamp = sharedPrefs.getLong("TOKEN_TIMESTAMP", 0)
 
-            if (accessToken != null) {
-                // Token existe, ir para MainActivity
+            if (accessToken != null && !isTokenExpired(tokenTimestamp)) {
+                // Token existe e não expirou, ir para MainActivity
                 val intent = Intent(this, MainActivity::class.java)
                 intent.putExtra("ACCESS_TOKEN", accessToken)
                 startActivity(intent)
                 finish()
             } else {
-                // Sem token, ir para LoginActivity
+                // Token expirado ou não existe, ir para LoginActivity
                 val spotifyAuthHelper = SpotifyAuthHelper(this)
                 spotifyAuthHelper.redirectToLogin()
-
             }
         }
+    }
+
+    private fun isTokenExpired(tokenTimestamp: Long): Boolean {
+        val currentTime = System.currentTimeMillis()
+        return (currentTime - tokenTimestamp) >= 3600 * 1000 // 1 hora em milissegundos
     }
 }
 
