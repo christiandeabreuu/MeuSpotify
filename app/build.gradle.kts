@@ -92,4 +92,5 @@ dependencies {
 
     // Dependência para autenticação OAuth
     implementation(libs.spotify.auth)
+    implementation(libs.browser)
 }
