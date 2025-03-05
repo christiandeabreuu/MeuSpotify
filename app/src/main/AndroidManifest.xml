@@ -21,17 +21,16 @@
         <activity
             android:name=".ui.LoginActivity"
             android:exported="true">
-            <intent-filter>
+            <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                <action android:name="android.intent.action.VIEW" />
 
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
-                    android:scheme="meuapp"
-                    android:host="callback" />
+                    android:host="callback"
+                    android:scheme="meuapp" />
             </intent-filter>
         </activity>
 
@@ -44,3 +43,11 @@
             android:exported="false" />
     </application>
 </manifest>
+
+<!--<action android:name="android.intent.action.VIEW" />-->
+<!--<category android:name="android.intent.category.DEFAULT" />-->
+<!--<category android:name="android.intent.category.BROWSABLE" />-->
+
+<!--<data-->
+<!--android:scheme="meuapp"-->
+<!--android:host="callback" />-->
