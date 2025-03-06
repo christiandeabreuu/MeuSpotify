@@ -14,6 +14,4 @@ data class Artist(
 
 data class ImageArtist(
     @SerializedName("url") val url: String
-//    val height: Int,
-//    val width: Int
 )

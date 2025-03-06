@@ -86,12 +86,10 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_LONG
             ).show()
         } catch (e: HttpException) {
-            // Captura erros HTTP (como 401, 404, etc.)
             when (e.code()) {
                 401 -> {
-                    // Token expirado, renove o token
                     refreshToken()
-                    getUserProfile() // Tenta novamente com o novo token
+                    getUserProfile()
                 }
 
                 else -> {
@@ -103,11 +101,9 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         } catch (e: IOException) {
-            // Captura erros de rede (como timeout, conexão perdida, etc.)
             Toast.makeText(this@MainActivity, "Erro de rede: ${e.message}", Toast.LENGTH_LONG)
                 .show()
         } catch (e: Exception) {
-            // Captura outros erros inesperados
             Toast.makeText(this@MainActivity, "Erro inesperado: ${e.message}", Toast.LENGTH_LONG)
                 .show()
         }
@@ -121,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             refreshToken = tokens.refreshToken
         } catch (e: Exception) {
             Log.e("MainActivity", "Erro ao renovar token: ${e.message}")
-            navigateToLogin() // Redireciona para a tela de login
+            navigateToLogin()
         }
     }
 
@@ -141,14 +137,13 @@ class MainActivity : AppCompatActivity() {
             val response = call.awaitResponse()
             if (response.isSuccessful) {
                 val topArtists = response.body()?.items
-                topArtists?.forEach { artist ->
-                    println("Artista: ${artist.name}, Popularidade: ${artist.popularity}")
+                topArtists?.let {
+                    artistAdapter = ArtistAdapter(it)
+                    recyclerView.adapter = artistAdapter
                 }
             } else {
                 if (response.code() == 401) {
-                    // O token expirou, renovar o token
                     refreshToken()
-                    // Tentar novamente obter os top artists com o novo token
                     getTopArtists()
                 } else {
                     println("Erro ao obter os artistas mais ouvidos: ${response.errorBody()?.string()}")
@@ -160,8 +155,8 @@ class MainActivity : AppCompatActivity() {
             println("Erro HTTP: ${e.message}")
         }
     }
-
 }
+
 
 
 

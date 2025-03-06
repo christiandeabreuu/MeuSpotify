@@ -22,7 +22,7 @@ class ArtistAdapter(private val artistList: List<Artist>) : RecyclerView.Adapter
         holder.artistName.text = artist.name
 
         // Utilizando Coil para carregar a imagem
-        holder.artistImage.load(artist.images) {
+        holder.artistImage.load(artist.images.firstOrNull()?.url) {
             placeholder(R.drawable.ic_launcher_background)
             error(R.drawable.ic_launcher_foreground)
         }
@@ -34,6 +34,7 @@ class ArtistAdapter(private val artistList: List<Artist>) : RecyclerView.Adapter
 
     inner class ArtistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val artistName: TextView = itemView.findViewById(R.id.tvArtist)
-        val artistImage: ImageView = itemView.findViewById(R.id.imageArtist) // Certifique-se de que o layout tenha uma ImageView com esse ID
+        val artistImage: ImageView = itemView.findViewById(R.id.imageArtist)
     }
 }
+
