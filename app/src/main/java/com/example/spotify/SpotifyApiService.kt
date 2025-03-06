@@ -11,6 +11,7 @@ interface SpotifyApiService {
     @GET("me")
     suspend fun getUserProfile(@Header("Authorization") authorization: String): UserProfile
 
+
 }
 
 //-------------------------------------------

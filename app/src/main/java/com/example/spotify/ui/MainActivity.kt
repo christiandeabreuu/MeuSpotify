@@ -64,32 +64,42 @@ class MainActivity : AppCompatActivity() {
     private suspend fun getUserProfile() {
         val api = RetrofitInstance.api
         try {
+            Log.d("MainActivity", "Tentando obter o perfil do usuário com o token: $accessToken")
             val userProfile = api.getUserProfile("Bearer $accessToken")
+            Log.d("MainActivity", "Requisição bem-sucedida, perfil obtido: ${userProfile.displayName}")
             Toast.makeText(this@MainActivity, "Bem-vindo, ${userProfile.displayName}", Toast.LENGTH_LONG).show()
         } catch (e: HttpException) {
-            // Captura erros HTTP (como 401, 404, etc.)
+            Log.e("MainActivity", "Erro HTTP ao obter perfil: ${e.message}")
             when (e.code()) {
                 401 -> {
-                    // Token expirado, renove o token
+                    Log.e("MainActivity", "Token expirado, tentando renovar...")
                     refreshToken()
                     getUserProfile() // Tenta novamente com o novo token
                 }
+                403 -> {
+                    Log.e("MainActivity", "Acesso proibido (403). Verifique o token e os escopos.")
+                    Toast.makeText(this@MainActivity, "Acesso proibido. Verifique o token e os escopos.", Toast.LENGTH_LONG).show()
+                }
                 else -> {
+                    Log.e("MainActivity", "Falha ao obter perfil: ${e.message}")
                     Toast.makeText(this@MainActivity, "Falha ao obter perfil: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         } catch (e: IOException) {
-            // Captura erros de rede (como timeout, conexão perdida, etc.)
+            Log.e("MainActivity", "Erro de rede ao obter perfil: ${e.message}")
             Toast.makeText(this@MainActivity, "Erro de rede: ${e.message}", Toast.LENGTH_LONG).show()
         } catch (e: Exception) {
-            // Captura outros erros inesperados
+            Log.e("MainActivity", "Erro inesperado ao obter perfil: ${e.message}")
             Toast.makeText(this@MainActivity, "Erro inesperado: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
+
     private suspend fun refreshToken() {
         try {
+            Log.d("MainActivity", "Tentando renovar o token com refreshToken: $refreshToken")
             val tokens = spotifyAuthHelper.refreshAccessToken(refreshToken)
+            Log.d("MainActivity", "Token renovado com sucesso: ${tokens.accessToken}")
             saveAccessToken(tokens.accessToken, tokens.refreshToken)
             accessToken = tokens.accessToken
             refreshToken = tokens.refreshToken
@@ -107,6 +117,7 @@ class MainActivity : AppCompatActivity() {
         editor.apply()
     }
 }
+
 
 
 

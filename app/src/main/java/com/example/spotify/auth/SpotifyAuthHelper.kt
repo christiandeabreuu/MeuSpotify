@@ -1,6 +1,9 @@
 package com.example.spotify.auth
 
 import android.content.Context
+import com.example.spotify.Constants
+import com.spotify.sdk.android.auth.AccountsQueryParameters.CLIENT_ID
+import com.spotify.sdk.android.auth.AccountsQueryParameters.REDIRECT_URI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
@@ -19,13 +22,13 @@ class SpotifyAuthHelper(private val context: Context) {
         .build()
 
     // Função para obter o access token usando o authorization code
-    suspend fun getAccessToken(authorizationCode: String): Tokens {
+    suspend fun getAccessToken(authorizationCode: String, codeVerifier: String): Tokens {
         val requestBody = FormBody.Builder()
             .add("grant_type", "authorization_code")
             .add("code", authorizationCode)
-            .add("redirect_uri", "meuapp://callback")
-            .add("client_id", "9cde7198eaf54c06860b6d0257dcd893")
-            .add("client_secret", "d601127a963c4791a61e9145bedd7fe6")
+            .add("redirect_uri", Constants.REDIRECT_URI)
+            .add("client_id", Constants.CLIENT_ID)
+            .add("code_verifier", codeVerifier) // Usa o code_verifier
             .build()
 
         val request = Request.Builder()
