@@ -5,32 +5,20 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.CircleCropTransformation
-import com.example.spotify.AccessTokenResponse
 import com.example.spotify.R
 import com.example.spotify.RetrofitInstance
-import com.example.spotify.RetrofitInstance.api
 import com.example.spotify.SpotifyApiService
-import com.example.spotify.SpotifyTokenService
-import com.example.spotify.TopArtistsResponse
-import com.example.spotify.UserProfile
 import com.example.spotify.auth.SpotifyAuthHelper
-import com.example.spotify.databinding.ActivityLoginBinding
 import com.example.spotify.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
 import retrofit2.HttpException
-import retrofit2.Response
-import retrofit2.Retrofit
 import retrofit2.awaitResponse
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
 

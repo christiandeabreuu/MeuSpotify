@@ -13,7 +13,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="34dp"
         android:text="Top Artistas"
         android:textColor="@color/white"
         android:textSize="18sp"
@@ -23,9 +23,9 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/profileImageView"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginTop="24dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="34dp"
         android:layout_marginEnd="24dp"
         android:background="@drawable/circle_background"
         android:scaleType="centerCrop"
@@ -33,7 +33,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- RecyclerView para a lista de artistas -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/artistasRecyclerView"
         android:layout_width="0dp"

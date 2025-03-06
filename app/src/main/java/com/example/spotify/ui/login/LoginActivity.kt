@@ -6,12 +6,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.Observer
+import com.example.spotify.AccessTokenResponse
 import com.example.spotify.auth.SpotifyAuthHelper
 import com.example.spotify.databinding.ActivityLoginBinding
-import kotlinx.coroutines.launch
-
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
@@ -21,8 +21,11 @@ class LoginActivity : AppCompatActivity() {
         private const val CLIENT_ID = "9cde7198eaf54c06860b6d0257dcd893"
         private const val REDIRECT_URI = "meuapp://callback"
         private const val AUTH_URL =
-            "https://accounts.spotify.com/authorize" + "?client_id=$CLIENT_ID" + "&response_type=code" + "&redirect_uri=$REDIRECT_URI" + "&scope=user-read-private%20user-read-email" // Escopos necessários
+            "https://accounts.spotify.com/authorize?client_id=$CLIENT_ID&response_type=code&redirect_uri=$REDIRECT_URI&scope=user-read-private%20user-read-email" // Escopos necessários
     }
+
+    // Inicializa a ViewModel usando a ViewModelFactory
+    private val loginViewModel: LoginViewModel by viewModels { LoginViewModelFactory(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,9 +35,7 @@ class LoginActivity : AppCompatActivity() {
         spotifyAuthHelper = SpotifyAuthHelper(this)
         buttonStart()
 
-        lifecycleScope.launch {
-            handleRedirect(intent)
-        }
+        handleRedirect(intent)
     }
 
     private fun buttonStart() {
@@ -45,33 +46,22 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun handleRedirect(intent: Intent?) {
+    private fun handleRedirect(intent: Intent?) {
         val uri = intent?.data
         if (uri != null && uri.toString().startsWith(REDIRECT_URI)) {
-            // Captura o código de autorização da URL
-            val authorizationCode = uri.getQueryParameter("code")
-            if (authorizationCode != null) {
-                // Troca o código de autorização por um access token
-                obtainTokens(authorizationCode)
-            } else {
-                Log.e("LoginActivity", "Código de autorização não encontrado na URL")
-                Toast.makeText(
-                    this,
-                    "Erro: Código de autorização não encontrado",
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-        }
-    }
-
-    private suspend fun obtainTokens(authorizationCode: String) {
-        try {
-            val tokens = spotifyAuthHelper.getAccessToken(authorizationCode)
-            saveTokens(tokens.accessToken, tokens.refreshToken)
-            navigateToMainActivity()
-        } catch (e: Exception) {
-            Log.e("LoginActivity", "Erro ao obter token de acesso: ${e.message}")
-            Toast.makeText(this, "Erro: ${e.message}", Toast.LENGTH_LONG).show()
+            loginViewModel.handleRedirect(uri, REDIRECT_URI).observe(this, Observer { result ->
+                result?.let {
+                    it.onSuccess { tokens ->
+                        if (tokens is AccessTokenResponse) {
+                            saveTokens(tokens.accessToken, tokens.refreshToken)
+                            navigateToMainActivity()
+                        }
+                    }.onFailure { e ->
+                        Log.e("LoginActivity", "Erro ao obter token de acesso: ${e.message}")
+                        Toast.makeText(this, "Erro: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            })
         }
     }
 
