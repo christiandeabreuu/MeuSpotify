@@ -8,11 +8,10 @@
 
     <ImageView
         android:id="@+id/imageArtist"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/circle_background"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_foreground"
@@ -27,9 +26,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:text="Nome do Artista"
-        android:textSize="16sp"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/imageArtist"
-        app:layout_constraintTop_toTopOf="@id/imageArtist" />
-
+        app:layout_constraintTop_toTopOf="@id/imageArtist"
+        app:layout_constraintBottom_toBottomOf="@id/imageArtist"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
+

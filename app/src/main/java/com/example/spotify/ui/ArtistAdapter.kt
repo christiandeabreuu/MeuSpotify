@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import coil.transform.CircleCropTransformation
 import com.example.spotify.Artist
 import com.example.spotify.R
 
@@ -25,6 +26,7 @@ class ArtistAdapter(private val artistList: List<Artist>) : RecyclerView.Adapter
         holder.artistImage.load(artist.images.firstOrNull()?.url) {
             placeholder(R.drawable.ic_launcher_background)
             error(R.drawable.ic_launcher_foreground)
+            transformations(CircleCropTransformation())
         }
     }
 

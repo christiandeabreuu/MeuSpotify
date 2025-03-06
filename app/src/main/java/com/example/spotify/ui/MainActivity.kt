@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import coil.load
+import coil.transform.CircleCropTransformation
 import com.example.spotify.AccessTokenResponse
 import com.example.spotify.R
 import com.example.spotify.RetrofitInstance
@@ -19,6 +21,8 @@ import com.example.spotify.SpotifyTokenService
 import com.example.spotify.TopArtistsResponse
 import com.example.spotify.UserProfile
 import com.example.spotify.auth.SpotifyAuthHelper
+import com.example.spotify.databinding.ActivityLoginBinding
+import com.example.spotify.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
@@ -37,10 +41,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var spotifyApiService: SpotifyApiService
     private lateinit var artistAdapter: ArtistAdapter
     private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         spotifyAuthHelper = SpotifyAuthHelper(this)
         loadTokens()
@@ -56,13 +62,15 @@ class MainActivity : AppCompatActivity() {
                     // Busca os top artists
                     getTopArtists()
                 } catch (e: Exception) {
-                    Toast.makeText(this@MainActivity, "Erro: ${e.message}", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@MainActivity, "Erro: ${e.message}", Toast.LENGTH_LONG)
+                        .show()
                 }
             }
         } else {
             navigateToLogin()
         }
     }
+
 
     private fun loadTokens() {
         val sharedPreferences = getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
@@ -80,11 +88,10 @@ class MainActivity : AppCompatActivity() {
         val api = RetrofitInstance.api
         try {
             val userProfile = api.getUserProfile("Bearer $accessToken")
-            Toast.makeText(
-                this@MainActivity,
-                "Bem-vindo, ${userProfile.displayName}",
-                Toast.LENGTH_LONG
-            ).show()
+            userProfile?.let {
+                // Carrega a imagem de perfil usando Coil
+                imageProfile(it.images.firstOrNull()?.url)
+            }
         } catch (e: HttpException) {
             when (e.code()) {
                 401 -> {
@@ -109,7 +116,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun refreshToken() {
+    private fun imageProfile(imageUrl: String?) {
+        imageUrl?.let {
+            binding.profileImageView.load(it) {
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_launcher_background) // Opcional: imagem de placeholder
+                error(R.drawable.ic_launcher_foreground) // Opcional: imagem de erro
+            }
+        }
+    }
+
+
+
+            private suspend fun refreshToken() {
         try {
             val tokens = spotifyAuthHelper.refreshAccessToken(refreshToken)
             saveAccessToken(tokens.accessToken, tokens.refreshToken)
