@@ -1,5 +1,6 @@
-package com.example.spotify.ui.adapters
+package com.example.spotify.ui.albuns
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -22,6 +23,7 @@ class AlbumsAdapter(private var albums: List<Album>) : RecyclerView.Adapter<Albu
 
     override fun getItemCount(): Int = albums.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun updateData(newAlbums: List<Album>) {
         albums = newAlbums
         notifyDataSetChanged()

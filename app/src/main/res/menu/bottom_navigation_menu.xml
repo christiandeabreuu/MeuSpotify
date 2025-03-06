@@ -9,7 +9,7 @@
         android:icon="@drawable/ic_playlists"
          android:title="Playlists" />
     <item
-        android:id="@+id/navigation_perfil"
+        android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_user"
         android:title="Perfil" />
 </menu>

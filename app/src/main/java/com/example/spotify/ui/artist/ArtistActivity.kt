@@ -15,6 +15,9 @@ import com.example.spotify.databinding.ActivityMainBinding
 import com.example.spotify.ui.artist.ArtistAdapter
 import com.example.spotify.ui.artist.ArtistViewModel
 import com.example.spotify.ui.artist.ArtistViewModelFactory
+import com.example.spotify.ui.playlist.PlaylistActivity
+import com.example.spotify.ui.profile.ProfileActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
 class ArtistActivity : AppCompatActivity() {
@@ -26,6 +29,9 @@ class ArtistActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        bottomNavigationView()
+
 
         binding.artistasRecyclerView.layoutManager = LinearLayoutManager(this)
 
@@ -57,7 +63,37 @@ class ArtistActivity : AppCompatActivity() {
                 navigateToLogin()
             }
         })
+
     }
+
+    private fun bottomNavigationView() {
+        val bottomNavigationView: BottomNavigationView = binding.bottomNavigationView
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.navigation_artistas -> {
+                    val intent = Intent(this, ArtistActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.navigation_playlists -> {
+                    val intent = Intent(this, PlaylistActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                R.id.navigation_profile -> {
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    startActivity(intent)
+                    true
+                }
+
+                else -> false
+            }
+        }
+    }
+
+
 
     private fun saveAccessToken(accessToken: String, refreshToken: String) {
         val sharedPreferences = getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)

@@ -17,6 +17,12 @@
         android:theme="@style/Theme.Spotify"
         tools:targetApi="31">
         <activity
+            android:name=".ui.playlist.PlaylistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.profile.ProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.albuns.AlbumsActivity"
             android:exported="false" />
         <activity
