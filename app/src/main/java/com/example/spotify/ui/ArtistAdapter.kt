@@ -1,42 +1,40 @@
-package com.example.spotify.ui
+package com.example.spotify.ui.adapters
 
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import coil.transform.CircleCropTransformation
 import com.example.spotify.data.Artist
-import com.example.spotify.R
+import com.example.spotify.databinding.ItemArtistaBinding
+import com.example.spotify.ui.albuns.AlbumsActivity
 
-class ArtistAdapter(private val artistList: List<Artist>) : RecyclerView.Adapter<ArtistAdapter.ArtistViewHolder>() {
+class ArtistAdapter(
+    private val artists: List<Artist>,
+    private val context: Context,
+    private val accessToken: String
+) : RecyclerView.Adapter<ArtistAdapter.ArtistViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_artista, parent, false)
-        return ArtistViewHolder(view)
+        val binding = ItemArtistaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ArtistViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
-        val artist = artistList[position]
-        holder.artistName.text = artist.name
-
-        // Utilizando Coil para carregar a imagem
-        holder.artistImage.load(artist.images.firstOrNull()?.url) {
-            placeholder(R.drawable.ic_launcher_background)
-            error(R.drawable.ic_launcher_foreground)
-            transformations(CircleCropTransformation())
+        val artist = artists[position]
+        holder.binding.tvArtist.text = artist.name
+        holder.binding.imageArtist.load(artist.images.firstOrNull()?.url)
+        holder.binding.root.setOnClickListener {
+            val intent = Intent(context, AlbumsActivity::class.java).apply {
+                putExtra("ARTIST_ID", artist.id)
+                putExtra("ACCESS_TOKEN", accessToken)
+            }
+            context.startActivity(intent)
         }
     }
 
-    override fun getItemCount(): Int {
-        return artistList.size
-    }
+    override fun getItemCount(): Int = artists.size
 
-    inner class ArtistViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val artistName: TextView = itemView.findViewById(R.id.tvArtist)
-        val artistImage: ImageView = itemView.findViewById(R.id.imageArtist)
-    }
+    class ArtistViewHolder(val binding: ItemArtistaBinding) : RecyclerView.ViewHolder(binding.root)
 }
-

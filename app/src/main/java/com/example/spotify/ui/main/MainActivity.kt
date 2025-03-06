@@ -1,8 +1,10 @@
-package com.example.spotify.ui.main
+package com.example.spotify.ui
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -12,10 +14,10 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.example.spotify.R
 import com.example.spotify.databinding.ActivityMainBinding
-import com.example.spotify.ui.ArtistAdapter
-import com.example.spotify.ui.LoginActivity
+import com.example.spotify.ui.adapters.ArtistAdapter
+import com.example.spotify.ui.main.MainViewModel
+import com.example.spotify.ui.main.MainViewModelFactory
 import kotlinx.coroutines.launch
-
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -48,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
                     viewModel.getTopArtists(accessToken).observe(this@MainActivity, Observer { artists ->
                         artists?.let {
-                            artistAdapter = ArtistAdapter(it)
+                            artistAdapter = ArtistAdapter(it, this@MainActivity, accessToken)
                             binding.artistasRecyclerView.adapter = artistAdapter
                         }
                     })
@@ -83,10 +85,3 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
-
-
-
-
-
-
-
