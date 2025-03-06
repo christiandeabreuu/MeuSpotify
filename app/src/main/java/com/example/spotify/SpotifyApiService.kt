@@ -11,11 +11,12 @@ interface SpotifyApiService {
     @GET("me")
     suspend fun getUserProfile(@Header("Authorization") authorization: String): UserProfile
 
+    @GET("me/top/artists")
+    fun getTopArtists(
+        @Header("Authorization") accessToken: String,
+        @Query("limit") limit: Int = 20,
+        @Query("time_range") timeRange: String = "medium_term"
+    ): Call<TopArtistsResponse>
 }
 
-//-------------------------------------------
-//-------------------------------------------
-
-//fun handleResponse(requestCode: Int, resultCode: Int, data: Intent?, onSuccess: (String) -> Unit, onError: (String) -> Unit)
-//fun authenticate(onSuccess: (String) -> Unit, onError: (String) -> Unit)
 
