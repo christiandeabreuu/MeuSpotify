@@ -8,9 +8,12 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.spotify.AccessTokenResponse
 import com.example.spotify.R
 import com.example.spotify.RetrofitInstance
+import com.example.spotify.RetrofitInstance.api
 import com.example.spotify.SpotifyApiService
 import com.example.spotify.SpotifyTokenService
 import com.example.spotify.TopArtistsResponse
@@ -32,6 +35,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var refreshToken: String
     private lateinit var spotifyAuthHelper: SpotifyAuthHelper
     private lateinit var spotifyApiService: SpotifyApiService
+    private lateinit var artistAdapter: ArtistAdapter
+    private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,20 +45,23 @@ class MainActivity : AppCompatActivity() {
         spotifyAuthHelper = SpotifyAuthHelper(this)
         loadTokens()
 
+        recyclerView = findViewById(R.id.artistasRecyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
         if (accessToken.isNotEmpty()) {
             lifecycleScope.launch {
                 try {
-                      getUserProfile()
-//                    getTopArtists()
+                    // Busca o perfil do usuário
+                    getUserProfile()
+                    // Busca os top artists
+                    getTopArtists()
                 } catch (e: Exception) {
-                    Toast.makeText(this@MainActivity, "Erro: ${e.message}", Toast.LENGTH_LONG)
-                        .show()
+                    Toast.makeText(this@MainActivity, "Erro: ${e.message}", Toast.LENGTH_LONG).show()
                 }
             }
         } else {
             navigateToLogin()
         }
-
     }
 
     private fun loadTokens() {

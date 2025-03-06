@@ -7,7 +7,7 @@
 
 
     <ImageView
-        android:id="@+id/artistaImageView"
+        android:id="@+id/imageArtist"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_marginStart="8dp"
@@ -21,7 +21,7 @@
 
 
     <TextView
-        android:id="@+id/artistaNomeTextView"
+        android:id="@+id/tvArtist"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -29,7 +29,7 @@
         android:text="Nome do Artista"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/artistaImageView"
-        app:layout_constraintTop_toTopOf="@id/artistaImageView" />
+        app:layout_constraintStart_toEndOf="@id/imageArtist"
+        app:layout_constraintTop_toTopOf="@id/imageArtist" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
