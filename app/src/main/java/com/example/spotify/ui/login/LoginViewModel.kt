@@ -4,7 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.spotify.AccessTokenResponse
+import com.example.spotify.data.AccessTokenResponse
 import com.example.spotify.auth.SpotifyAuthHelper
 import kotlinx.coroutines.Dispatchers
 

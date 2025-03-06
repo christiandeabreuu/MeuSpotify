@@ -9,9 +9,10 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
-import com.example.spotify.AccessTokenResponse
+import com.example.spotify.data.AccessTokenResponse
 import com.example.spotify.auth.SpotifyAuthHelper
 import com.example.spotify.databinding.ActivityLoginBinding
+import com.example.spotify.ui.main.MainActivity
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding

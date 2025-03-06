@@ -1,4 +1,4 @@
-package com.example.spotify
+package com.example.spotify.data
 
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

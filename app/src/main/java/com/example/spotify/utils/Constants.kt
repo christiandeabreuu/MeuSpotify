@@ -1,4 +1,4 @@
-package com.example.spotify
+package com.example.spotify.utils
 
 object Constants {
     const val CLIENT_ID = "9cde7198eaf54c06860b6d0257dcd893"

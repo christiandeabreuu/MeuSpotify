@@ -1,6 +1,5 @@
-package com.example.spotify
+package com.example.spotify.data
 
-import android.content.Intent
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Header

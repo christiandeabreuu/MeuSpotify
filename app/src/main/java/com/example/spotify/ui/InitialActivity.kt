@@ -7,6 +7,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import com.example.spotify.R
+import com.example.spotify.ui.main.MainActivity
 
 
 class InitialActivity : AppCompatActivity(R.layout.activity_initial) {
