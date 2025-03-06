@@ -23,7 +23,7 @@ class InitialActivity : AppCompatActivity(R.layout.activity_initial) {
 
         if (accessToken != null) {
             // Token existe, ir para MainActivity
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, ArtistActivity::class.java)
             intent.putExtra("ACCESS_TOKEN", accessToken)
             startActivity(intent)
             finish()

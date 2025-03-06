@@ -74,7 +74,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+        val intent = Intent(this, ArtistActivity::class.java)
         startActivity(intent)
         finish()
     }

@@ -3,8 +3,6 @@ package com.example.spotify.ui
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
@@ -14,14 +12,14 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.example.spotify.R
 import com.example.spotify.databinding.ActivityMainBinding
-import com.example.spotify.ui.adapters.ArtistAdapter
-import com.example.spotify.ui.main.MainViewModel
-import com.example.spotify.ui.main.MainViewModelFactory
+import com.example.spotify.ui.artist.ArtistAdapter
+import com.example.spotify.ui.artist.ArtistViewModel
+import com.example.spotify.ui.artist.ArtistViewModelFactory
 import kotlinx.coroutines.launch
 
-class MainActivity : AppCompatActivity() {
+class ArtistActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val viewModel: MainViewModel by viewModels { MainViewModelFactory(this) }
+    private val viewModel: ArtistViewModel by viewModels { ArtistViewModelFactory(this) }
     private lateinit var artistAdapter: ArtistAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,11 +33,11 @@ class MainActivity : AppCompatActivity() {
             val (accessToken, refreshToken) = tokens
             if (accessToken.isNotEmpty()) {
                 lifecycleScope.launch {
-                    viewModel.getUserProfile(accessToken).observe(this@MainActivity, Observer { profile ->
+                    viewModel.getUserProfile(accessToken).observe(this@ArtistActivity, Observer { profile ->
                         profile?.let {
                             imageProfile(it.images.firstOrNull()?.url)
                         } ?: run {
-                            viewModel.refreshToken(refreshToken).observe(this@MainActivity, Observer { newTokens ->
+                            viewModel.refreshToken(refreshToken).observe(this@ArtistActivity, Observer { newTokens ->
                                 newTokens?.let {
                                     saveAccessToken(it.accessToken, it.refreshToken)
                                     viewModel.getUserProfile(it.accessToken)
@@ -48,9 +46,9 @@ class MainActivity : AppCompatActivity() {
                         }
                     })
 
-                    viewModel.getTopArtists(accessToken).observe(this@MainActivity, Observer { artists ->
+                    viewModel.getTopArtists(accessToken).observe(this@ArtistActivity, Observer { artists ->
                         artists?.let {
-                            artistAdapter = ArtistAdapter(it, this@MainActivity, accessToken)
+                            artistAdapter = ArtistAdapter(it, this@ArtistActivity, accessToken)
                             binding.artistasRecyclerView.adapter = artistAdapter
                         }
                     })

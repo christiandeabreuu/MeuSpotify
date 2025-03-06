@@ -1,4 +1,4 @@
-package com.example.spotify.ui.main
+package com.example.spotify.ui.artist
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
@@ -11,7 +11,7 @@ import retrofit2.HttpException
 import retrofit2.awaitResponse
 import java.io.IOException
 
-class MainViewModel(private val spotifyAuthHelper: SpotifyAuthHelper) : ViewModel() {
+class ArtistViewModel(private val spotifyAuthHelper: SpotifyAuthHelper) : ViewModel() {
 
     private val spotifyApiService: SpotifyApiService = RetrofitInstance.api
 

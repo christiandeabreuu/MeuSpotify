@@ -1,4 +1,4 @@
-package com.example.spotify.ui.adapters
+package com.example.spotify.ui.artist
 
 import android.content.Context
 import android.content.Intent
@@ -24,11 +24,15 @@ class ArtistAdapter(
     override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
         val artist = artists[position]
         holder.binding.tvArtist.text = artist.name
-        holder.binding.imageArtist.load(artist.images.firstOrNull()?.url)
+        holder.binding.imageArtist.load(artist.images.firstOrNull()?.url){
+            transformations(coil.transform.CircleCropTransformation())
+        }
         holder.binding.root.setOnClickListener {
             val intent = Intent(context, AlbumsActivity::class.java).apply {
                 putExtra("ARTIST_ID", artist.id)
                 putExtra("ACCESS_TOKEN", accessToken)
+                putExtra("ARTIST", artist.name)
+                putExtra("IMAGE_URL", artist.images.firstOrNull()?.url)
             }
             context.startActivity(intent)
         }

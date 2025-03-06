@@ -27,6 +27,7 @@
         android:layout_marginEnd="16dp"
         android:text="Nome do Artista"
         android:textSize="14sp"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/imageArtist"
         app:layout_constraintTop_toTopOf="@id/imageArtist"
