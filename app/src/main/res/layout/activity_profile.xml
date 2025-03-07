@@ -28,7 +28,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="34dp"
-        android:text="Chritian de Abreu "
+        android:text="Nome de Perfil "
         android:textColor="@color/white"
         android:textSize="18sp"
         android:textStyle="bold"

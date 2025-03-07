@@ -18,6 +18,7 @@ import com.example.spotify.data.UserProfile
 import com.example.spotify.databinding.ActivityPlaylistBinding
 import com.example.spotify.ui.ArtistActivity
 import com.example.spotify.ui.LoginActivity
+import com.example.spotify.ui.createplaylist.CreatePlaylistActivity
 import com.example.spotify.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.CoroutineScope
@@ -106,6 +107,12 @@ class PlaylistActivity : AppCompatActivity() {
         }
         playlistAdapter = PlaylistAdapter(playlists)
         binding.playlistsRecyclerView.adapter = playlistAdapter
+
+
+        binding.buttonToGoCreatePlaylist.setOnClickListener {
+            val intent = Intent(this, CreatePlaylistActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun setupBottomNavigationView() {
