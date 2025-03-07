@@ -15,6 +15,7 @@ import com.example.spotify.databinding.ActivityArtistBinding
 import com.example.spotify.ui.artist.ArtistAdapter
 import com.example.spotify.ui.artist.ArtistViewModel
 import com.example.spotify.ui.artist.ArtistViewModelFactory
+import com.example.spotify.ui.login.LoginActivity
 import com.example.spotify.ui.playlist.PlaylistActivity
 import com.example.spotify.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView

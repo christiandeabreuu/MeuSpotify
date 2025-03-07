@@ -1,6 +1,5 @@
-package com.example.spotify.ui
+package com.example.spotify.ui.login
 
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -10,14 +9,14 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.spotify.data.model.AccessTokenResponse
-import com.example.spotify.auth.SpotifyAuthHelper
 import com.example.spotify.databinding.ActivityLoginBinding
+import com.example.spotify.ui.ArtistActivity
+import com.example.spotify.ui.LoginViewModel
+import com.example.spotify.ui.LoginViewModelFactory
 import com.example.spotify.utils.Constants
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
-    private lateinit var spotifyAuthHelper: SpotifyAuthHelper
-
     private val loginViewModel: LoginViewModel by viewModels { LoginViewModelFactory(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,13 +24,8 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initializeAuthHelper()
         setupButtonListeners()
         handleRedirect(intent)
-    }
-
-    private fun initializeAuthHelper() {
-        spotifyAuthHelper = SpotifyAuthHelper(this)
     }
 
     private fun setupButtonListeners() {
@@ -48,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
                 result?.let {
                     it.onSuccess { tokens ->
                         if (tokens is AccessTokenResponse) {
-                            saveTokens(tokens.accessToken, tokens.refreshToken)
+                            loginViewModel.saveTokens(tokens.accessToken, tokens.refreshToken)
                             navigateToMainActivity()
                         }
                     }.onFailure { e ->
@@ -58,14 +52,6 @@ class LoginActivity : AppCompatActivity() {
                 }
             })
         }
-    }
-
-    private fun saveTokens(accessToken: String, refreshToken: String) {
-        val sharedPreferences = getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("ACCESS_TOKEN", accessToken)
-        editor.putString("REFRESH_TOKEN", refreshToken)
-        editor.apply()
     }
 
     private fun navigateToMainActivity() {

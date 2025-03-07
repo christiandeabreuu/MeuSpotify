@@ -10,5 +10,6 @@ data class AlbumsResponse(
 data class Album(
     @SerializedName("id") val id: String,
     @SerializedName("name") val name: String,
+    @SerializedName("release_date") val releaseDate: String,
     @SerializedName("images") val images: List<ImageArtist>
 )
