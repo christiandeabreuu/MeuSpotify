@@ -8,7 +8,6 @@ class CreatePlaylistViewModel : ViewModel() {
 
     fun createPlaylist(playlistName: String) = liveData(Dispatchers.IO) {
         if (playlistName.isNotEmpty()) {
-            // Aqui você pode adicionar a lógica para criar a playlist
             emit(Result.success("Playlist '$playlistName' criada com sucesso!"))
         } else {
             emit(Result.failure<String>(Exception("Por favor, insira um nome para a playlist.")))

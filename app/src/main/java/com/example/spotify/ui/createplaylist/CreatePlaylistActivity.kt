@@ -21,7 +21,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
 
         handleWindowInsets()
         closeButton()
-        createButton()
+        setupCreateButton()
     }
 
     private fun handleWindowInsets() {
@@ -32,7 +32,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
         }
     }
 
-    private fun createButton() {
+    private fun setupCreateButton() {
         binding.createButton.setOnClickListener {
             val playlistName = binding.playlistNameEditText.text.toString()
             viewModel.createPlaylist(playlistName).observe(this, Observer { result ->

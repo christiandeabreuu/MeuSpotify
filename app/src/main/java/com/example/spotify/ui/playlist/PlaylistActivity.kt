@@ -16,6 +16,7 @@ import com.example.spotify.data.UserProfile
 import com.example.spotify.databinding.ActivityPlaylistBinding
 import com.example.spotify.ui.ArtistActivity
 import com.example.spotify.ui.LoginActivity
+import com.example.spotify.ui.createplaylist.CreatePlaylistActivity
 import com.example.spotify.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
@@ -36,6 +37,7 @@ class PlaylistActivity : AppCompatActivity() {
         initializeAccessToken()
         setupUI()
         setupObservers()
+        goToCreatePlaylist()
     }
 
     private fun initializeAccessToken() {
@@ -44,6 +46,13 @@ class PlaylistActivity : AppCompatActivity() {
         if (accessToken.isEmpty()) {
             Log.e("PlaylistActivity", "Access token is null or empty")
             navigateToLogin()
+        }
+    }
+
+    private fun goToCreatePlaylist() {
+        binding.buttonToGoCreatePlaylist.setOnClickListener{
+            val intent = Intent(this, CreatePlaylistActivity::class.java)
+            startActivity(intent)
         }
     }
 
