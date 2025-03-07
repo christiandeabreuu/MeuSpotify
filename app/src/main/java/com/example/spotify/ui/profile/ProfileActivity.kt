@@ -12,7 +12,7 @@ import coil.load
 import com.example.spotify.R
 import com.example.spotify.data.model.UserProfile
 import com.example.spotify.databinding.ActivityProfileBinding
-import com.example.spotify.ui.ArtistActivity
+import com.example.spotify.ui.artist.ArtistActivity
 import com.example.spotify.ui.playlist.PlaylistActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 

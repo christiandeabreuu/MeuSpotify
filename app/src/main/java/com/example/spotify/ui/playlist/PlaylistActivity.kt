@@ -14,7 +14,7 @@ import coil.load
 import com.example.spotify.R
 import com.example.spotify.data.model.UserProfile
 import com.example.spotify.databinding.ActivityPlaylistBinding
-import com.example.spotify.ui.ArtistActivity
+import com.example.spotify.ui.artist.ArtistActivity
 import com.example.spotify.ui.login.LoginActivity
 import com.example.spotify.ui.createplaylist.CreatePlaylistActivity
 import com.example.spotify.ui.profile.ProfileActivity

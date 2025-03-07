@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.example.spotify.data.model.AccessTokenResponse
 import com.example.spotify.databinding.ActivityLoginBinding
-import com.example.spotify.ui.ArtistActivity
+import com.example.spotify.ui.artist.ArtistActivity
 import com.example.spotify.ui.LoginViewModel
 import com.example.spotify.ui.LoginViewModelFactory
 import com.example.spotify.utils.Constants
