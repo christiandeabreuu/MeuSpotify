@@ -8,7 +8,9 @@ import com.example.spotify.R
 import com.example.spotify.data.Playlist
 import com.example.spotify.databinding.ItemPlaylistBinding
 
-class PlaylistAdapter(private val playlists: List<Playlist>) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
+class PlaylistAdapter : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
+
+    private var playlists: List<Playlist> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlaylistViewHolder {
         val binding = ItemPlaylistBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -20,14 +22,19 @@ class PlaylistAdapter(private val playlists: List<Playlist>) : RecyclerView.Adap
         holder.bind(playlist)
     }
 
-    override fun getItemCount() = playlists.size
+    override fun getItemCount(): Int = playlists.size
+
+    fun submitList(newPlaylists: List<Playlist>) {
+        playlists = newPlaylists
+        notifyDataSetChanged()
+    }
 
     class PlaylistViewHolder(private val binding: ItemPlaylistBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(playlist: Playlist) {
             binding.playlistNameTextView.text = playlist.name
-            val imageUrl = playlist.images?.firstOrNull()?.url
-            if (imageUrl != null) {
-                binding.playlistImageView.load(imageUrl) {
+            val image = playlist.images?.firstOrNull()
+            if (image != null) {
+                binding.playlistImageView.load(image.url) {
                 }
             } else {
                 binding.playlistImageView.setImageResource(R.drawable.icon_spotify)

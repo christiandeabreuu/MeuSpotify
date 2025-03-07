@@ -3,7 +3,6 @@ package com.example.spotify.ui.playlist
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -13,18 +12,19 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.example.spotify.R
-import com.example.spotify.data.Playlist
 import com.example.spotify.data.UserProfile
 import com.example.spotify.databinding.ActivityPlaylistBinding
 import com.example.spotify.ui.ArtistActivity
 import com.example.spotify.ui.LoginActivity
-import com.example.spotify.ui.createplaylist.CreatePlaylistActivity
 import com.example.spotify.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class PlaylistActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlaylistBinding
-    private val viewModel: PlaylistViewModel by viewModels()
+    private lateinit var accessToken: String
+    private val viewModel: PlaylistViewModel by viewModels {
+        PlaylistViewModelFactory(accessToken)
+    }
     private lateinit var playlistAdapter: PlaylistAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,20 +33,17 @@ class PlaylistActivity : AppCompatActivity() {
         binding = ActivityPlaylistBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initializeAcessToken()
+        initializeAccessToken()
         setupUI()
-        observeViewModel()
-        viewModel.fetchUserProfile()
-        viewModel.fetchPlaylists()
+        setupObservers()
     }
 
-    private fun initializeAcessToken() {
-        viewModel.accessToken = intent.getStringExtra("ACCESS_TOKEN")
-        Log.d("PlaylistActivity", "Access Token: ${viewModel.accessToken}")
-        if (viewModel.accessToken.isNullOrEmpty()) {
+    private fun initializeAccessToken() {
+        accessToken = intent.getStringExtra("ACCESS_TOKEN") ?: ""
+        Log.d("PlaylistActivity", "Access Token: $accessToken")
+        if (accessToken.isEmpty()) {
             Log.e("PlaylistActivity", "Access token is null or empty")
             navigateToLogin()
-            return
         }
     }
 
@@ -54,32 +51,24 @@ class PlaylistActivity : AppCompatActivity() {
         handleWindowInsets()
         setupBottomNavigationView()
         setupRecyclerView()
-        setupCreatePlaylistButton()
     }
 
-    private fun observeViewModel() {
+    private fun setupObservers() {
         viewModel.userProfile.observe(this, Observer { userProfile ->
             updateProfileUI(userProfile)
-        })
-        viewModel.playlists.observe(this, Observer { playlists ->
-            updatePlaylistsUI(playlists)
         })
         viewModel.error.observe(this, Observer { errorMessage ->
             Log.e("PlaylistActivity", errorMessage)
         })
+        viewModel.playlists.observe(this, Observer { playlists ->
+            playlistAdapter.submitList(playlists)
+        })
     }
 
     private fun setupRecyclerView() {
+        playlistAdapter = PlaylistAdapter()
         binding.playlistsRecyclerView.layoutManager = LinearLayoutManager(this)
-    }
-
-    private fun setupCreatePlaylistButton() {
-        binding.buttonToGoCreatePlaylist.setOnClickListener {
-            val intent = Intent(this, CreatePlaylistActivity::class.java)
-            intent.putExtra("ACCESS_TOKEN", viewModel.accessToken)
-            // You may need to pass userId as well
-            startActivity(intent)
-        }
+        binding.playlistsRecyclerView.adapter = playlistAdapter
     }
 
     private fun handleWindowInsets() {
@@ -88,25 +77,6 @@ class PlaylistActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-    }
-
-    private fun updateProfileUI(userProfile: UserProfile) {
-        binding.playlistsProfileImageView.load(userProfile.images.firstOrNull()?.url) {
-            transformations(coil.transform.CircleCropTransformation())
-        }
-    }
-
-    private fun updatePlaylistsUI(playlists: List<Playlist>?) {
-        Log.d("PlaylistActivity", "Updating playlists UI with ${playlists?.size} playlists")
-        if (playlists.isNullOrEmpty()) {
-            Log.e("PlaylistActivity", "No playlists available")
-            binding.noPlaylistsTextView.visibility = View.VISIBLE
-            return
-        } else {
-            binding.noPlaylistsTextView.visibility = View.GONE
-        }
-        playlistAdapter = PlaylistAdapter(playlists)
-        binding.playlistsRecyclerView.adapter = playlistAdapter
     }
 
     private fun setupBottomNavigationView() {
@@ -133,7 +103,7 @@ class PlaylistActivity : AppCompatActivity() {
 
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
-        intent.putExtra("ACCESS_TOKEN", viewModel.accessToken)  // Passa o token de acesso
+        intent.putExtra("ACCESS_TOKEN", accessToken)  // Passa o token de acesso
         startActivity(intent)
     }
 
@@ -141,5 +111,11 @@ class PlaylistActivity : AppCompatActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun updateProfileUI(userProfile: UserProfile) {
+        binding.playlistsProfileImageView.load(userProfile.images.firstOrNull()?.url) {
+            transformations(coil.transform.CircleCropTransformation())
+        }
     }
 }

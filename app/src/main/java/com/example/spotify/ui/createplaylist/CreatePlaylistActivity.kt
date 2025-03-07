@@ -2,14 +2,17 @@ package com.example.spotify.ui.createplaylist
 
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Observer
 import com.example.spotify.R
 import com.example.spotify.databinding.ActivityCreatePlaylistBinding
 
 class CreatePlaylistActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCreatePlaylistBinding
+    private val viewModel: CreatePlaylistViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +35,14 @@ class CreatePlaylistActivity : AppCompatActivity() {
     private fun createButton() {
         binding.createButton.setOnClickListener {
             val playlistName = binding.playlistNameEditText.text.toString()
-            if (playlistName.isNotEmpty()) {
-                createPlaylist(playlistName)
-            } else {
-                Toast.makeText(this, "Por favor, insira um nome para a playlist.", Toast.LENGTH_SHORT).show()
-            }
+            viewModel.createPlaylist(playlistName).observe(this, Observer { result ->
+                result.onSuccess { message ->
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+                    finish()
+                }.onFailure { e ->
+                    Toast.makeText(this, e.message, Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
 
@@ -44,12 +50,5 @@ class CreatePlaylistActivity : AppCompatActivity() {
         binding.closeButton.setOnClickListener {
             finish()
         }
-    }
-
-    private fun createPlaylist(playlistName: String) {
-        // Aqui você pode adicionar a lógica para criar a playlist
-        Toast.makeText(this, "Playlist '$playlistName' criada com sucesso!", Toast.LENGTH_SHORT).show()
-        // Fechar a atividade após a criação da playlist
-        finish()
     }
 }
