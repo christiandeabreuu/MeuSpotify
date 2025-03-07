@@ -1,5 +1,6 @@
 package com.example.spotify.ui.playlist
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -24,6 +25,7 @@ class PlaylistAdapter : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>
 
     override fun getItemCount(): Int = playlists.size
 
+    @SuppressLint("NotifyDataSetChanged")
     fun submitList(newPlaylists: List<Playlist>) {
         playlists = newPlaylists
         notifyDataSetChanged()
@@ -32,9 +34,11 @@ class PlaylistAdapter : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>
     class PlaylistViewHolder(private val binding: ItemPlaylistBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(playlist: Playlist) {
             binding.playlistNameTextView.text = playlist.name
-            val image = playlist.images?.firstOrNull()
-            if (image != null) {
-                binding.playlistImageView.load(image.url) {
+            binding.playlistOwnerTextView.text = playlist.owner.name
+
+            val images = playlist.images
+            if (!images.isNullOrEmpty()) {
+                binding.playlistImageView.load(images.firstOrNull()?.url) {
                 }
             } else {
                 binding.playlistImageView.setImageResource(R.drawable.icon_spotify)
