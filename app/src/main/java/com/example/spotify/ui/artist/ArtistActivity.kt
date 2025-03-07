@@ -2,18 +2,15 @@ package com.example.spotify.ui.artist
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.example.spotify.R
-import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.databinding.ActivityArtistBinding
 import com.example.spotify.ui.login.LoginActivity
 import com.example.spotify.ui.playlist.PlaylistActivity

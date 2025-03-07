@@ -1,35 +1,26 @@
 package com.example.spotify.ui.artist
 
-import android.content.Context
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.data.network.SpotifyApiService
-import com.example.spotify.auth.SpotifyAuthHelper
+import com.example.spotify.data.repository.AuthRepository
 import kotlinx.coroutines.Dispatchers
 import retrofit2.HttpException
 import retrofit2.awaitResponse
 import java.io.IOException
 
-class ArtistViewModel(private val context: Context) : ViewModel() {
-
-    private val spotifyApiService: SpotifyApiService = RetrofitInstance.api
-    private val spotifyAuthHelper: SpotifyAuthHelper = SpotifyAuthHelper(context)
+class ArtistViewModel(
+    private val authRepository: AuthRepository,
+    private val spotifyApiService: SpotifyApiService
+) : ViewModel() {
 
     fun loadTokens() = liveData(Dispatchers.IO) {
-        val sharedPreferences = context.getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
-        val accessToken = sharedPreferences.getString("ACCESS_TOKEN", "") ?: ""
-        val refreshToken = sharedPreferences.getString("REFRESH_TOKEN", "") ?: ""
-        emit(Pair(accessToken, refreshToken))
+        val tokens = authRepository.loadTokens()
+        emit(tokens)
     }
 
     fun saveAccessToken(accessToken: String, refreshToken: String) {
-        val sharedPreferences = context.getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("ACCESS_TOKEN", accessToken)
-        editor.putString("REFRESH_TOKEN", refreshToken)
-        editor.apply()
+        authRepository.saveTokens(accessToken, refreshToken)
     }
 
     fun getUserProfile(accessToken: String) = liveData(Dispatchers.IO) {
@@ -37,11 +28,7 @@ class ArtistViewModel(private val context: Context) : ViewModel() {
             val userProfile = spotifyApiService.getUserProfile("Bearer $accessToken")
             emit(userProfile)
         } catch (e: HttpException) {
-            if (e.code() == 401) {
-                emit(null) // Emitir nulo em caso de erro 401
-            } else {
-                emit(null)
-            }
+            emit(null) // Emitir nulo em caso de erro 401 ou outros erros
         } catch (e: IOException) {
             emit(null)
         } catch (e: Exception) {
@@ -51,7 +38,7 @@ class ArtistViewModel(private val context: Context) : ViewModel() {
 
     fun refreshToken(refreshToken: String) = liveData(Dispatchers.IO) {
         try {
-            val tokens = spotifyAuthHelper.refreshAccessToken(refreshToken)
+            val tokens = authRepository.refreshAccessToken(refreshToken)
             emit(tokens)
         } catch (e: Exception) {
             emit(null)
@@ -65,11 +52,7 @@ class ArtistViewModel(private val context: Context) : ViewModel() {
             if (response.isSuccessful) {
                 emit(response.body()?.items)
             } else {
-                if (response.code() == 401) {
-                    emit(null)
-                } else {
-                    emit(null)
-                }
+                emit(null)
             }
         } catch (e: IOException) {
             emit(null)
