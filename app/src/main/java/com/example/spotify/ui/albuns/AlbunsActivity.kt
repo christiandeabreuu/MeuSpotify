@@ -11,8 +11,10 @@ import com.example.spotify.databinding.ActivityAlbunsBinding
 import com.example.spotify.ui.AlbumsViewModelFactory
 import com.example.spotify.ui.ArtistActivity
 import com.example.spotify.ui.playlist.PlaylistActivity
-import com.example.spotify.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 class AlbumsActivity : AppCompatActivity() {
@@ -24,6 +26,7 @@ class AlbumsActivity : AppCompatActivity() {
     private lateinit var artistName: String
     private lateinit var imageUrl: String
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAlbunsBinding.inflate(layoutInflater)
@@ -33,7 +36,7 @@ class AlbumsActivity : AppCompatActivity() {
         setupViews()
         observeViewModel()
         backbutton()
-        bottomNavigationView()
+        setupBottomNavigationView()
     }
 
     private fun getIntentData() {
@@ -69,29 +72,38 @@ class AlbumsActivity : AppCompatActivity() {
         }
     }
 
-    private fun bottomNavigationView() {
+    private fun setupBottomNavigationView() {
         val bottomNavigationView: BottomNavigationView = binding.bottomNavigationView
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_artistas -> {
-                    val intent = Intent(this, ArtistActivity::class.java)
-                    startActivity(intent)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        navigateToActivity(ArtistActivity::class.java)
+                    }
                     true
                 }
 
                 R.id.navigation_playlists -> {
-                    val intent = Intent(this, PlaylistActivity::class.java)
-                    startActivity(intent)
+                    CoroutineScope(Dispatchers.Main).launch {
+                        navigateToActivity(PlaylistActivity::class.java)
+                    }
                     true
                 }
 
                 R.id.navigation_profile -> {
-                    val intent = Intent(this, ProfileActivity::class.java)
-                    startActivity(intent)
                     true
                 }
+
                 else -> false
             }
         }
+
+        bottomNavigationView.selectedItemId = R.id.navigation_profile
+    }
+
+    private fun navigateToActivity(activityClass: Class<*>) {
+        val intent = Intent(this, activityClass)
+        intent.putExtra("ACCESS_TOKEN", accessToken)  // Passar o token de acesso
+        startActivity(intent)
     }
 }

@@ -40,7 +40,6 @@ class LoginActivity : AppCompatActivity() {
 
     private fun buttonStart() {
         binding.buttonStart.setOnClickListener {
-            // Abre a URL de autenticação do Spotify
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(AUTH_URL))
             startActivity(intent)
         }
