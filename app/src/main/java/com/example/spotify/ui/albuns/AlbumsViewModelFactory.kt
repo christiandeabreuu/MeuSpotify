@@ -1,14 +1,13 @@
-package com.example.spotify.ui
+package com.example.spotify.ui.albuns
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.spotify.ui.albuns.AlbumsViewModel
+import com.example.spotify.data.SpotifyApiService
 
-class AlbumsViewModelFactory(private val context: Context) : ViewModelProvider.Factory {
+class AlbumsViewModelFactory(private val spotifyApiService: SpotifyApiService) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(AlbumsViewModel::class.java)) {
-            return AlbumsViewModel(context) as T
+            return AlbumsViewModel(spotifyApiService) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

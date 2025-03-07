@@ -7,25 +7,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.example.spotify.R
+import com.example.spotify.data.RetrofitInstance
 import com.example.spotify.databinding.ActivityAlbunsBinding
-import com.example.spotify.ui.AlbumsViewModelFactory
 import com.example.spotify.ui.ArtistActivity
 import com.example.spotify.ui.playlist.PlaylistActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
 
 class AlbumsActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAlbunsBinding
-    private val viewModel: AlbumsViewModel by viewModels { AlbumsViewModelFactory(this) }
-    private lateinit var albumsAdapter: AlbumsAdapter
     private lateinit var accessToken: String
     private lateinit var artistId: String
     private lateinit var artistName: String
     private lateinit var imageUrl: String
-
+    private val viewModel: AlbumsViewModel by viewModels {
+        AlbumsViewModelFactory(RetrofitInstance.api)
+    }
+    private lateinit var albumsAdapter: AlbumsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,33 +74,24 @@ class AlbumsActivity : AppCompatActivity() {
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_artistas -> {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        navigateToActivity(ArtistActivity::class.java)
-                    }
+                    navigateToActivity(ArtistActivity::class.java)
                     true
                 }
-
                 R.id.navigation_playlists -> {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        navigateToActivity(PlaylistActivity::class.java)
-                    }
+                    navigateToActivity(PlaylistActivity::class.java)
                     true
                 }
-
                 R.id.navigation_profile -> {
                     true
                 }
-
                 else -> false
             }
         }
-
-//        bottomNavigationView.selectedItemId = R.id.navigation_artistas
     }
 
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
-        intent.putExtra("ACCESS_TOKEN", accessToken)  // Passar o token de acesso
+        intent.putExtra("ACCESS_TOKEN", accessToken)  // Passa o token de acesso
         startActivity(intent)
     }
 }

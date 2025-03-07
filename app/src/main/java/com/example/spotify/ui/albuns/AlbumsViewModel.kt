@@ -1,6 +1,6 @@
 package com.example.spotify.ui.albuns
 
-import android.content.Context
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.example.spotify.data.RetrofitInstance
@@ -8,8 +8,7 @@ import com.example.spotify.data.SpotifyApiService
 import kotlinx.coroutines.Dispatchers
 import retrofit2.awaitResponse
 
-class AlbumsViewModel(private val context: Context) : ViewModel() {
-    private val spotifyApiService: SpotifyApiService = RetrofitInstance.api
+class AlbumsViewModel(private val spotifyApiService: SpotifyApiService = RetrofitInstance.api) : ViewModel() {
 
     fun getAlbums(accessToken: String, artistId: String) = liveData(Dispatchers.IO) {
         try {
@@ -24,4 +23,5 @@ class AlbumsViewModel(private val context: Context) : ViewModel() {
         }
     }
 }
+
 
