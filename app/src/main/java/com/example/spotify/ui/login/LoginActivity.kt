@@ -12,17 +12,11 @@ import androidx.lifecycle.Observer
 import com.example.spotify.data.AccessTokenResponse
 import com.example.spotify.auth.SpotifyAuthHelper
 import com.example.spotify.databinding.ActivityLoginBinding
+import com.example.spotify.utils.Constants
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private lateinit var spotifyAuthHelper: SpotifyAuthHelper
-
-    companion object {
-        private const val CLIENT_ID = "9cde7198eaf54c06860b6d0257dcd893"
-        private const val REDIRECT_URI = "meuapp://callback"
-        private const val AUTH_URL =
-            "https://accounts.spotify.com/authorize?client_id=$CLIENT_ID&response_type=code&redirect_uri=$REDIRECT_URI&scope=user-read-private%20user-read-email" // Escopos necessários
-    }
 
     // Inicializa a ViewModel usando a ViewModelFactory
     private val loginViewModel: LoginViewModel by viewModels { LoginViewModelFactory(this) }
@@ -32,23 +26,26 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        spotifyAuthHelper = SpotifyAuthHelper(this)
-        buttonStart()
-
+        initializeAuthHelper()
+        setupButtonListeners()
         handleRedirect(intent)
     }
 
-    private fun buttonStart() {
+    private fun initializeAuthHelper() {
+        spotifyAuthHelper = SpotifyAuthHelper(this)
+    }
+
+    private fun setupButtonListeners() {
         binding.buttonStart.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(AUTH_URL))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.AUTH_URL))
             startActivity(intent)
         }
     }
 
     private fun handleRedirect(intent: Intent?) {
         val uri = intent?.data
-        if (uri != null && uri.toString().startsWith(REDIRECT_URI)) {
-            loginViewModel.handleRedirect(uri, REDIRECT_URI).observe(this, Observer { result ->
+        if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
+            loginViewModel.handleRedirect(uri, Constants.REDIRECT_URI).observe(this, Observer { result ->
                 result?.let {
                     it.onSuccess { tokens ->
                         if (tokens is AccessTokenResponse) {

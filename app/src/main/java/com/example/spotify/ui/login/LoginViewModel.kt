@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.spotify.data.AccessTokenResponse
 import com.example.spotify.auth.SpotifyAuthHelper
+import com.example.spotify.data.AccessTokenResponse
 import kotlinx.coroutines.Dispatchers
 
 class LoginViewModel(private val context: Context) : ViewModel() {
