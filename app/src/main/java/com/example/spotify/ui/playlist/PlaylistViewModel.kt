@@ -4,9 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.spotify.data.Playlist
-import com.example.spotify.data.RetrofitInstance
-import com.example.spotify.data.UserProfile
+import com.example.spotify.data.model.Playlist
+import com.example.spotify.data.network.RetrofitInstance
+import com.example.spotify.data.model.UserProfile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext

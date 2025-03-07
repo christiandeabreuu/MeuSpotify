@@ -6,7 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
-import com.example.spotify.data.Artist
+import com.example.spotify.data.model.Artist
 import com.example.spotify.databinding.ItemArtistaBinding
 import com.example.spotify.ui.albuns.AlbumsActivity
 

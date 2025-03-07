@@ -1,5 +1,6 @@
-package com.example.spotify.data
+package com.example.spotify.data.network
 
+import com.example.spotify.data.model.AccessTokenResponse
 import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded

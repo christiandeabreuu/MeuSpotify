@@ -12,7 +12,7 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.example.spotify.R
-import com.example.spotify.data.UserProfile
+import com.example.spotify.data.model.UserProfile
 import com.example.spotify.databinding.ActivityPlaylistBinding
 import com.example.spotify.ui.ArtistActivity
 import com.example.spotify.ui.LoginActivity

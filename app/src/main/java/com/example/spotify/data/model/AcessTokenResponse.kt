@@ -1,4 +1,4 @@
-package com.example.spotify.data
+package com.example.spotify.data.model
 
 import com.google.gson.annotations.SerializedName
 

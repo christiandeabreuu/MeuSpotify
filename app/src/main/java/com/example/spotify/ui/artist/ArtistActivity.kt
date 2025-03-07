@@ -1,13 +1,11 @@
 package com.example.spotify.ui
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
@@ -20,8 +18,6 @@ import com.example.spotify.ui.artist.ArtistViewModelFactory
 import com.example.spotify.ui.playlist.PlaylistActivity
 import com.example.spotify.ui.profile.ProfileActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ArtistActivity : AppCompatActivity() {
@@ -42,35 +38,31 @@ class ArtistActivity : AppCompatActivity() {
         loadUserData()
     }
 
-
     private fun loadUserData() {
-        viewModel.loadTokens(this).observe(this) { tokens ->
+        viewModel.loadTokens().observe(this) { tokens ->
             val (accessToken, refreshToken) = tokens
             if (accessToken.isNotEmpty()) {
                 this.accessToken = accessToken
                 lifecycleScope.launch {
-                    viewModel.getUserProfile(accessToken)
-                        .observe(this@ArtistActivity) { profile ->
-                            profile?.let {
-                                imageProfile(it.images.firstOrNull()?.url)
-                            } ?: run {
-                                viewModel.refreshToken(refreshToken)
-                                    .observe(this@ArtistActivity, Observer { newTokens ->
-                                        newTokens?.let {
-                                            saveAccessToken(it.accessToken, it.refreshToken)
-                                            viewModel.getUserProfile(it.accessToken)
-                                        } ?: navigateToLogin()
-                                    })
+                    viewModel.getUserProfile(accessToken).observe(this@ArtistActivity) { profile ->
+                        profile?.let {
+                            imageProfile(it.images.firstOrNull()?.url)
+                        } ?: run {
+                            viewModel.refreshToken(refreshToken).observe(this@ArtistActivity) { newTokens ->
+                                newTokens?.let {
+                                    viewModel.saveAccessToken(it.accessToken, it.refreshToken)
+                                    viewModel.getUserProfile(it.accessToken)
+                                } ?: navigateToLogin()
                             }
                         }
+                    }
 
-                    viewModel.getTopArtists(accessToken)
-                        .observe(this@ArtistActivity) { artists ->
-                            artists?.let {
-                                artistAdapter = ArtistAdapter(it, this@ArtistActivity, accessToken)
-                                binding.artistasRecyclerView.adapter = artistAdapter
-                            }
+                    viewModel.getTopArtists(accessToken).observe(this@ArtistActivity) { artists ->
+                        artists?.let {
+                            artistAdapter = ArtistAdapter(it, this@ArtistActivity, accessToken)
+                            binding.artistasRecyclerView.adapter = artistAdapter
                         }
+                    }
                 }
             } else {
                 navigateToLogin()
@@ -94,15 +86,11 @@ class ArtistActivity : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_playlists -> {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        navigateToActivity(PlaylistActivity::class.java)
-                    }
+                    navigateToActivity(PlaylistActivity::class.java)
                     true
                 }
                 R.id.navigation_profile -> {
-                    CoroutineScope(Dispatchers.Main).launch {
-                        navigateToActivity(ProfileActivity::class.java)
-                    }
+                    navigateToActivity(ProfileActivity::class.java)
                     true
                 }
                 else -> false
@@ -114,14 +102,6 @@ class ArtistActivity : AppCompatActivity() {
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)  // Passa o token de acesso
         startActivity(intent)
-    }
-
-    private fun saveAccessToken(accessToken: String, refreshToken: String) {
-        val sharedPreferences = getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
-        editor.putString("ACCESS_TOKEN", accessToken)
-        editor.putString("REFRESH_TOKEN", refreshToken)
-        editor.apply()
     }
 
     private fun navigateToLogin() {

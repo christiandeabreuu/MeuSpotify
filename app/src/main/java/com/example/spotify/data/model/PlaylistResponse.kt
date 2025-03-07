@@ -1,4 +1,4 @@
-package com.example.spotify.data
+package com.example.spotify.data.model
 
 
 data class PlaylistsResponse(

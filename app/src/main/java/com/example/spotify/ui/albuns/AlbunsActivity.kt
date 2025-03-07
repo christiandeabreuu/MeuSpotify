@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.example.spotify.R
-import com.example.spotify.data.RetrofitInstance
+import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.databinding.ActivityAlbunsBinding
 import com.example.spotify.ui.ArtistActivity
 import com.example.spotify.ui.playlist.PlaylistActivity

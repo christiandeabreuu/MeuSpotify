@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.spotify.R
-import com.example.spotify.data.Playlist
+import com.example.spotify.data.model.Playlist
 import com.example.spotify.databinding.ItemPlaylistBinding
 
 class PlaylistAdapter : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {

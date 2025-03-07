@@ -1,25 +1,35 @@
 package com.example.spotify.ui.artist
 
 import android.content.Context
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.spotify.data.RetrofitInstance
-import com.example.spotify.data.SpotifyApiService
+import com.example.spotify.data.network.RetrofitInstance
+import com.example.spotify.data.network.SpotifyApiService
 import com.example.spotify.auth.SpotifyAuthHelper
 import kotlinx.coroutines.Dispatchers
 import retrofit2.HttpException
 import retrofit2.awaitResponse
 import java.io.IOException
 
-class ArtistViewModel(private val spotifyAuthHelper: SpotifyAuthHelper) : ViewModel() {
+class ArtistViewModel(private val context: Context) : ViewModel() {
 
     private val spotifyApiService: SpotifyApiService = RetrofitInstance.api
+    private val spotifyAuthHelper: SpotifyAuthHelper = SpotifyAuthHelper(context)
 
-    fun loadTokens(context: Context) = liveData(Dispatchers.IO) {
+    fun loadTokens() = liveData(Dispatchers.IO) {
         val sharedPreferences = context.getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
         val accessToken = sharedPreferences.getString("ACCESS_TOKEN", "") ?: ""
         val refreshToken = sharedPreferences.getString("REFRESH_TOKEN", "") ?: ""
         emit(Pair(accessToken, refreshToken))
+    }
+
+    fun saveAccessToken(accessToken: String, refreshToken: String) {
+        val sharedPreferences = context.getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putString("ACCESS_TOKEN", accessToken)
+        editor.putString("REFRESH_TOKEN", refreshToken)
+        editor.apply()
     }
 
     fun getUserProfile(accessToken: String) = liveData(Dispatchers.IO) {

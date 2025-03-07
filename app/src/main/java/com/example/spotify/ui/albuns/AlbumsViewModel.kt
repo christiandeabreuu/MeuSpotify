@@ -3,8 +3,8 @@ package com.example.spotify.ui.albuns
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.spotify.data.RetrofitInstance
-import com.example.spotify.data.SpotifyApiService
+import com.example.spotify.data.network.RetrofitInstance
+import com.example.spotify.data.network.SpotifyApiService
 import kotlinx.coroutines.Dispatchers
 import retrofit2.awaitResponse
 
