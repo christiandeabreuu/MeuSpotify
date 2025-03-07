@@ -1,5 +1,6 @@
 package com.example.spotify.ui.login
 
+import LoginViewModel
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -8,16 +9,15 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
+import com.example.spotify.auth.SpotifyAuthHelper
 import com.example.spotify.data.model.AccessTokenResponse
 import com.example.spotify.databinding.ActivityLoginBinding
 import com.example.spotify.ui.artist.ArtistActivity
-import com.example.spotify.ui.LoginViewModel
-import com.example.spotify.ui.LoginViewModelFactory
 import com.example.spotify.utils.Constants
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
-    private val loginViewModel: LoginViewModel by viewModels { LoginViewModelFactory(this) }
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +41,7 @@ class LoginActivity : AppCompatActivity() {
             loginViewModel.handleRedirect(uri, Constants.REDIRECT_URI).observe(this, Observer { result ->
                 result?.let {
                     it.onSuccess { tokens ->
-                        if (tokens is AccessTokenResponse) {
+                        if (true) {
                             loginViewModel.saveTokens(tokens.accessToken, tokens.refreshToken)
                             navigateToMainActivity()
                         }
@@ -53,6 +53,7 @@ class LoginActivity : AppCompatActivity() {
             })
         }
     }
+
 
     private fun navigateToMainActivity() {
         val intent = Intent(this, ArtistActivity::class.java)
