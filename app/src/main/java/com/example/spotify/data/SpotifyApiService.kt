@@ -20,6 +20,11 @@ interface SpotifyApiService {
 
     @GET("artists/{id}/albums")
     fun getArtistAlbums(@Header("Authorization") authorization: String, @Path("id") artistId: String): Call<AlbumsResponse>
+
+
+    @GET("me/playlists")
+    suspend fun getUserPlaylists(@Header("Authorization") authorization: String): PlaylistsResponse
+
 }
 
 

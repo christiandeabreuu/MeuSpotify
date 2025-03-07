@@ -30,21 +30,32 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        handleWindowInsets()
+        getAccessToken()
 
-        accessToken = intent.getStringExtra("ACCESS_TOKEN")
         if (accessToken.isNullOrEmpty()) {
-            Log.e("ProfileActivity", "Access token is null or empty")
             return
         }
 
         fetchUserProfile()
         closeButton()
         setupBottomNavigationView()
+    }
+
+    private fun getAccessToken() {
+        accessToken = intent.getStringExtra("ACCESS_TOKEN")
+        if (accessToken.isNullOrEmpty()) {
+            Log.e("ProfileActivity", "Access token is null or empty")
+            return
+        }
+    }
+
+    private fun handleWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
     }
 
     private fun closeButton() {
@@ -75,7 +86,6 @@ class ProfileActivity : AppCompatActivity() {
                 else -> false
             }
         }
-
         bottomNavigationView.selectedItemId = R.id.navigation_profile
     }
 
@@ -103,8 +113,6 @@ class ProfileActivity : AppCompatActivity() {
         userProfile.images.firstOrNull()?.let { image ->
             binding.profileImageView.load(image.url) {
                 transformations(coil.transform.CircleCropTransformation())
-                placeholder(R.drawable.ic_launcher_background)
-                error(R.drawable.ic_launcher_foreground)
             }
         }
     }

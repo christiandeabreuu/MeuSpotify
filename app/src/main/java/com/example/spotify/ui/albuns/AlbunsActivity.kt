@@ -98,7 +98,7 @@ class AlbumsActivity : AppCompatActivity() {
             }
         }
 
-        bottomNavigationView.selectedItemId = R.id.navigation_profile
+//        bottomNavigationView.selectedItemId = R.id.navigation_artistas
     }
 
     private fun navigateToActivity(activityClass: Class<*>) {

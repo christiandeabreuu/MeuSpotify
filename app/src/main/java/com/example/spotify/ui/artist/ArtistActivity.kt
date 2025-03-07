@@ -5,6 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,17 +35,22 @@ class ArtistActivity : AppCompatActivity() {
         binding = ActivityArtistBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        handleWindowInsets()
         bottomNavigationView()
 
         binding.artistasRecyclerView.layoutManager = LinearLayoutManager(this)
+        loadUserData()
+    }
 
-        viewModel.loadTokens(this).observe(this, Observer { tokens ->
+
+    private fun loadUserData() {
+        viewModel.loadTokens(this).observe(this) { tokens ->
             val (accessToken, refreshToken) = tokens
             if (accessToken.isNotEmpty()) {
                 this.accessToken = accessToken
                 lifecycleScope.launch {
                     viewModel.getUserProfile(accessToken)
-                        .observe(this@ArtistActivity, Observer { profile ->
+                        .observe(this@ArtistActivity) { profile ->
                             profile?.let {
                                 imageProfile(it.images.firstOrNull()?.url)
                             } ?: run {
@@ -55,20 +62,28 @@ class ArtistActivity : AppCompatActivity() {
                                         } ?: navigateToLogin()
                                     })
                             }
-                        })
+                        }
 
                     viewModel.getTopArtists(accessToken)
-                        .observe(this@ArtistActivity, Observer { artists ->
+                        .observe(this@ArtistActivity) { artists ->
                             artists?.let {
                                 artistAdapter = ArtistAdapter(it, this@ArtistActivity, accessToken)
                                 binding.artistasRecyclerView.adapter = artistAdapter
                             }
-                        })
+                        }
                 }
             } else {
                 navigateToLogin()
             }
-        })
+        }
+    }
+
+    private fun handleWindowInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
     }
 
     private fun bottomNavigationView() {
@@ -78,14 +93,12 @@ class ArtistActivity : AppCompatActivity() {
                 R.id.navigation_artistas -> {
                     true
                 }
-
                 R.id.navigation_playlists -> {
                     CoroutineScope(Dispatchers.Main).launch {
                         navigateToActivity(PlaylistActivity::class.java)
                     }
                     true
                 }
-
                 R.id.navigation_profile -> {
                     CoroutineScope(Dispatchers.Main).launch {
                         navigateToActivity(ProfileActivity::class.java)
@@ -97,7 +110,7 @@ class ArtistActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun navigateToActivity(activityClass: Class<*>) {
+    private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)  // Passa o token de acesso
         startActivity(intent)
