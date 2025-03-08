@@ -19,14 +19,11 @@ class PlaylistViewModel(
     private val accessToken: String
 ) : ViewModel() {
 
-    private val _userProfile = MutableLiveData<UserProfile>()
-    val userProfile: LiveData<UserProfile> get() = _userProfile
+    private val _userProfile = MutableLiveData<Result<UserProfile>>()
+    val userProfile: LiveData<Result<UserProfile>> get() = _userProfile
 
-    private val _playlists = MutableLiveData<List<Playlist>>()
-    val playlists: LiveData<List<Playlist>> get() = _playlists
-
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> get() = _error
+    private val _playlists = MutableLiveData<Result<List<Playlist>>>()
+    val playlists: LiveData<Result<List<Playlist>>> get() = _playlists
 
     init {
         fetchUserProfile()
@@ -35,28 +32,25 @@ class PlaylistViewModel(
 
     private fun fetchUserProfile() {
         viewModelScope.launch(Dispatchers.IO) {
-            val profile = getPlaylistUserProfileUseCase.execute(accessToken)
-            withContext(Dispatchers.Main) {
-                if (profile != null) {
-                    _userProfile.value = profile
-                } else {
-                    _error.value = "Error fetching user profile"
-                }
+            try {
+                val profile = getPlaylistUserProfileUseCase.execute(accessToken)
+                _userProfile.postValue(Result.success(profile) as Result<UserProfile>?)
+            } catch (e: Exception) {
+                _userProfile.postValue(Result.failure(e))
             }
         }
     }
 
     private fun fetchPlaylists() {
         viewModelScope.launch(Dispatchers.IO) {
-            val playlists = getUserPlaylistsUseCase.execute(accessToken)
-            withContext(Dispatchers.Main) {
-                if (playlists != null) {
-                    _playlists.value = playlists
-                } else {
-                    _error.value = "Error fetching playlists"
-                }
+            try {
+                val playlists = getUserPlaylistsUseCase.execute(accessToken)
+                _playlists.postValue(Result.success(playlists) as Result<List<Playlist>>?)
+            } catch (e: Exception) {
+                _playlists.postValue(Result.failure(e))
             }
         }
     }
 }
+
 

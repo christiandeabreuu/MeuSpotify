@@ -16,10 +16,9 @@ import com.example.spotify.data.model.UserProfile
 import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.databinding.ActivityPlaylistBinding
 import com.example.spotify.ui.artist.ArtistActivity
-import com.example.spotify.ui.login.LoginActivity
 import com.example.spotify.ui.createplaylist.CreatePlaylistActivity
+import com.example.spotify.ui.login.LoginActivity
 import com.example.spotify.ui.profile.ProfileActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class PlaylistActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlaylistBinding
@@ -35,43 +34,25 @@ class PlaylistActivity : AppCompatActivity() {
 
         initializeAccessToken()
 
-        // Checa se o token está vazio ou inválido
-        if (accessToken.isEmpty()) {
-            Log.e("PlaylistActivity", "Access token is null or empty")
-            Toast.makeText(this, "Erro: Token de acesso não encontrado.", Toast.LENGTH_LONG).show()
-            navigateToLogin()
+        if (accessToken.isBlank()) {
+            showErrorAndNavigateToLogin("Token de acesso não encontrado.")
             return
         }
 
         initializeViewModel()
         setupUI()
         setupObservers()
-        goToCreatePlaylist()
+        setupCreatePlaylistButton()
     }
 
     private fun initializeAccessToken() {
-        // Recupera o token da Intent
         accessToken = intent.getStringExtra("ACCESS_TOKEN") ?: ""
-        Log.d("PlaylistActivity", "AccessToken recebido na Intent: $accessToken")
+        Log.d("PlaylistActivity", "AccessToken recebido: $accessToken")
     }
 
     private fun initializeViewModel() {
         val factory = PlaylistViewModelFactory(RetrofitInstance.api, accessToken)
         viewModel = ViewModelProvider(this, factory)[PlaylistViewModel::class.java]
-    }
-
-    private fun goToCreatePlaylist() {
-        binding.buttonToGoCreatePlaylist.setOnClickListener {
-            if (accessToken.isBlank()) {
-                Log.e("PlaylistActivity", "Token vazio ao navegar para a tela de criar playlist")
-                Toast.makeText(this, "Erro: Token de acesso não encontrado.", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
-            }
-
-            val intent = Intent(this, CreatePlaylistActivity::class.java)
-            intent.putExtra("ACCESS_TOKEN", accessToken) // Passa o token para a próxima Activity
-            startActivity(intent)
-        }
     }
 
     private fun setupUI() {
@@ -81,14 +62,21 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        viewModel.userProfile.observe(this) { userProfile ->
-            updateProfileUI(userProfile)
+        viewModel.userProfile.observe(this) { result ->
+            result.onSuccess { userProfile ->
+                updateProfileUI(userProfile)
+            }.onFailure { error ->
+                Log.e("PlaylistActivity", "Erro ao carregar perfil do usuário: ${error.message}")
+                Toast.makeText(this, "Erro ao carregar o perfil.", Toast.LENGTH_SHORT).show()
+            }
         }
-        viewModel.error.observe(this) { errorMessage ->
-            Log.e("PlaylistActivity", errorMessage)
-        }
-        viewModel.playlists.observe(this) { playlists ->
-            playlistAdapter.submitList(playlists)
+        viewModel.playlists.observe(this) { result ->
+            result.onSuccess { playlists ->
+                playlistAdapter.submitList(playlists)
+            }.onFailure { error ->
+                Log.e("PlaylistActivity", "Erro ao carregar playlists: ${error.message}")
+                Toast.makeText(this, "Erro ao carregar playlists.", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -107,39 +95,53 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNavigationView() {
-        val bottomNavigationView: BottomNavigationView = binding.bottomNavigationView
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_artistas -> {
                     navigateToActivity(ArtistActivity::class.java)
                     true
                 }
-                R.id.navigation_playlists -> {
-                    true
-                }
+
+                R.id.navigation_playlists -> true
                 R.id.navigation_profile -> {
                     navigateToActivity(ProfileActivity::class.java)
                     true
                 }
+
                 else -> false
             }
         }
+        binding.bottomNavigationView.selectedItemId = R.id.navigation_playlists
+    }
 
-        bottomNavigationView.selectedItemId = R.id.navigation_playlists
+    private fun setupCreatePlaylistButton() {
+        binding.buttonToGoCreatePlaylist.setOnClickListener {
+            if (accessToken.isBlank()) {
+                showErrorAndNavigateToLogin("Token vazio ao tentar criar uma playlist.")
+            } else {
+                val intent = Intent(this, CreatePlaylistActivity::class.java)
+                intent.putExtra("ACCESS_TOKEN", accessToken)
+                startActivity(intent)
+            }
+        }
+    }
+
+    private fun showErrorAndNavigateToLogin(message: String) {
+        Log.e("PlaylistActivity", message)
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+        navigateToLogin()
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
-        intent.putExtra("ACCESS_TOKEN", accessToken) // Inclui o token em todas as navegações
-        Log.d("PlaylistActivity", "Navegando para ${activityClass.simpleName} com AccessToken: $accessToken")
+        intent.putExtra("ACCESS_TOKEN", accessToken)
         startActivity(intent)
-    }
-
-    private fun navigateToLogin() {
-        Log.d("PlaylistActivity", "Navegando para LoginActivity devido ao token inválido")
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 
     private fun updateProfileUI(userProfile: UserProfile) {
@@ -148,3 +150,4 @@ class PlaylistActivity : AppCompatActivity() {
         }
     }
 }
+
