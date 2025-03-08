@@ -47,7 +47,13 @@ class CreatePlaylistActivity : AppCompatActivity() {
 
     private fun setupCreateButton() {
         binding.createButton.setOnClickListener {
-            val playlistName = binding.playlistNameEditText.text.toString()
+            val playlistName = binding.playlistNameEditText.text.toString().trim()
+
+            // Valida o nome antes de chamar a ViewModel
+            if (playlistName.isBlank()) {
+                showError("Por favor, insira um nome para a playlist.")
+                return@setOnClickListener
+            }
 
             // Logs para depuração
             Log.d("CreatePlaylistActivity", "PlaylistName: $playlistName")
@@ -77,6 +83,6 @@ class CreatePlaylistActivity : AppCompatActivity() {
     private fun showError(message: String) {
         Log.e("CreatePlaylistActivity", "Error: $message")
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-        finish()
     }
 }
+
