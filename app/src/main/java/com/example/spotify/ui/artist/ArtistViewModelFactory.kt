@@ -3,8 +3,7 @@ package com.example.spotify.ui.artist
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.spotify.auth.AuthRepositoryImpl
-import com.example.spotify.auth.SpotifyAuthHelper
+import com.example.spotify.data.repository.AuthRepositoryImpl
 import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.domain.usecase.GetTopArtistsUseCase
 import com.example.spotify.domain.usecase.GetUserProfileUseCase
