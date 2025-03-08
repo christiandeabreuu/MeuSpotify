@@ -5,23 +5,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.data.network.SpotifyApiService
+import com.example.spotify.domain.usecase.GetArtistAlbumsUseCase
 import kotlinx.coroutines.Dispatchers
 import retrofit2.awaitResponse
 
-class AlbumsViewModel(private val spotifyApiService: SpotifyApiService = RetrofitInstance.api) : ViewModel() {
+class AlbumsViewModel(private val getArtistAlbumsUseCase: GetArtistAlbumsUseCase) : ViewModel() {
 
     fun getAlbums(accessToken: String, artistId: String) = liveData(Dispatchers.IO) {
-        try {
-            val response = spotifyApiService.getArtistAlbums("Bearer $accessToken", artistId).awaitResponse()
-            if (response.isSuccessful) {
-                emit(response.body()?.items)
-            } else {
-                emit(null)
-            }
-        } catch (e: Exception) {
-            emit(null)
-        }
+        val albums = getArtistAlbumsUseCase.execute(accessToken, artistId)
+        emit(albums)
     }
 }
+
 
 
