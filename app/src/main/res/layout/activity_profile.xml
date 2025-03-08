@@ -28,9 +28,10 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="34dp"
+        android:fontFamily="@font/rubik_medium"
         android:text="Nome de Perfil "
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -42,6 +43,8 @@
         android:layout_height="42dp"
         android:layout_marginTop="35dp"
         android:backgroundTint="@color/green"
+        android:fontFamily="@font/rubik_bold"
+        android:textSize="16sp"
         android:text="Sair"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -57,6 +60,8 @@
         android:background="@color/black"
         app:itemIconTint="@color/bottom_nav_item_color"
         app:itemTextColor="@color/bottom_nav_item_color"
+        app:itemTextAppearanceActive="@style/BottomNavigationViewText"
+        app:itemTextAppearanceInactive="@style/BottomNavigationViewText"
         app:menu="@menu/bottom_navigation_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

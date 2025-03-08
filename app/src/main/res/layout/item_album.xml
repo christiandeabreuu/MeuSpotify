@@ -28,6 +28,8 @@
             android:id="@+id/albumName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_regular"
+            android:textSize="14sp"
             android:textColor="@color/white"
             android:text="Album Name"/>
 
@@ -35,6 +37,8 @@
             android:id="@+id/albumReleaseDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_regular"
+            android:textSize="12sp"
             android:textColor="@color/white"
             android:text="Release Date"/>
     </LinearLayout>

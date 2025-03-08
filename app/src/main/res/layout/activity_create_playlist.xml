@@ -7,7 +7,6 @@
     android:background="@color/black"
     tools:context=".ui.createplaylist.CreatePlaylistActivity">
 
-    <!-- Botão Fechar -->
     <ImageView
         android:id="@+id/closeButton"
         android:layout_width="32dp"
@@ -27,23 +26,26 @@
         android:layout_marginTop="48dp"
         android:text="Dê o nome a sua playlist"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:fontFamily="@font/rubik_medium"
+        android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/closeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5" />
 
-    <!-- Campo de Texto para Nome da Playlist -->
     <EditText
         android:id="@+id/playlistNameEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Nome da playlist"
+        android:hint="Minha Playlist #1"
+        android:gravity="center"
         android:textColor="@color/white"
         android:backgroundTint="@color/white"
         android:textColorHint="@color/gray"
+        android:fontFamily="@font/rubik_bold"
+        android:textSize="24sp"
         android:inputType="text"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +61,9 @@
         android:layout_marginTop="32dp"
         android:text="Criar"
         android:backgroundTint="@color/green"
-        android:textColor="@color/white"
+        android:fontFamily="@font/rubik_bold"
+        android:textSize="16sp"
+        android:textColor="@color/black"
         app:layout_constraintTop_toBottomOf="@id/playlistNameEditText"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

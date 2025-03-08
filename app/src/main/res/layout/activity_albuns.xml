@@ -26,7 +26,8 @@
         android:layout_marginTop="34dp"
         android:text="Top Artistas"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:fontFamily="@font/rubik_bold"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/backButton"
         app:layout_constraintTop_toTopOf="parent" />
@@ -63,5 +64,7 @@
         android:background="@color/black"
         app:itemIconTint="@color/bottom_nav_item_color"
         app:itemTextColor="@color/bottom_nav_item_color"
+        app:itemTextAppearanceActive="@style/BottomNavigationViewText"
+        app:itemTextAppearanceInactive="@style/BottomNavigationViewText"
         app:menu="@menu/bottom_navigation_menu" />
 </androidx.constraintlayout.widget.ConstraintLayout>

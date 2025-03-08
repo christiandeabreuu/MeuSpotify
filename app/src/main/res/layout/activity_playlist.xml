@@ -15,7 +15,8 @@
         android:layout_marginTop="34dp"
         android:text="Minhas Playlists"
         android:textColor="@color/white"
-        android:textSize="18sp"
+        android:fontFamily="@font/rubik_bold"
+        android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -62,6 +63,9 @@
         android:layout_width="185dp"
         android:layout_height="42dp"
         android:layout_marginTop="35dp"
+        android:fontFamily="@font/rubik_bold"
+        android:textSize="16sp"
+        android:textColor="@color/black"
         android:backgroundTint="@color/green"
         android:text="Criar Playlist"
         app:layout_constraintEnd_toEndOf="parent"
@@ -79,6 +83,8 @@
         android:background="@color/black"
         app:itemIconTint="@color/bottom_nav_item_color"
         app:itemTextColor="@color/bottom_nav_item_color"
+        app:itemTextAppearanceActive="@style/BottomNavigationViewText"
+        app:itemTextAppearanceInactive="@style/BottomNavigationViewText"
         app:menu="@menu/bottom_navigation_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

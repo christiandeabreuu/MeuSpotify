@@ -30,6 +30,8 @@
             android:id="@+id/playlistNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_regular"
+            android:textSize="14sp"
             android:textColor="@color/white"
             android:text="Playlist Name"/>
 
@@ -37,6 +39,8 @@
             android:id="@+id/playlistOwnerTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/rubik_regular"
+            android:textSize="12sp"
             android:textColor="@color/white"
             android:text="Owner"/>
     </LinearLayout>
