@@ -15,11 +15,8 @@ class ProfileViewModel(
     private val accessToken: String
 ) : ViewModel() {
 
-    private val _userProfile = MutableLiveData<UserProfile>()
-    val userProfile: LiveData<UserProfile> get() = _userProfile
-
-    private val _error = MutableLiveData<String>()
-    val error: LiveData<String> get() = _error
+    private val _userProfile = MutableLiveData<Result<UserProfile>>()
+    val userProfile: LiveData<Result<UserProfile>> get() = _userProfile
 
     init {
         fetchUserProfile()
@@ -27,14 +24,13 @@ class ProfileViewModel(
 
     private fun fetchUserProfile() {
         viewModelScope.launch(Dispatchers.IO) {
-            val userProfile = getProfileUserUseCase.execute(accessToken)
-            withContext(Dispatchers.Main) {
-                if (userProfile != null) {
-                    _userProfile.value = userProfile
-                } else {
-                    _error.value = "Error fetching user profile"
-                }
+            try {
+                val userProfile = getProfileUserUseCase.execute(accessToken)
+                _userProfile.postValue(Result.success(userProfile) as Result<UserProfile>?)
+            } catch (e: Exception) {
+                _userProfile.postValue(Result.failure(e))
             }
         }
     }
 }
+
