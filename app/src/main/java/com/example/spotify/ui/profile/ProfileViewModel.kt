@@ -4,13 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.data.model.UserProfile
+import com.example.spotify.domain.usecase.GetProfileUserUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class ProfileViewModel(private val accessToken: String) : ViewModel() {
+class ProfileViewModel(
+    private val getProfileUserUseCase: GetProfileUserUseCase,
+    private val accessToken: String
+) : ViewModel() {
 
     private val _userProfile = MutableLiveData<UserProfile>()
     val userProfile: LiveData<UserProfile> get() = _userProfile
@@ -24,14 +27,12 @@ class ProfileViewModel(private val accessToken: String) : ViewModel() {
 
     private fun fetchUserProfile() {
         viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val userProfile = RetrofitInstance.api.getUserProfile("Bearer $accessToken")
-                withContext(Dispatchers.Main) {
+            val userProfile = getProfileUserUseCase.execute(accessToken)
+            withContext(Dispatchers.Main) {
+                if (userProfile != null) {
                     _userProfile.value = userProfile
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    _error.value = "Error fetching user profile: ${e.message}"
+                } else {
+                    _error.value = "Error fetching user profile"
                 }
             }
         }

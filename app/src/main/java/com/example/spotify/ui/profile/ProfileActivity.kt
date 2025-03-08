@@ -4,25 +4,24 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.spotify.R
 import com.example.spotify.data.model.UserProfile
+import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.databinding.ActivityProfileBinding
 import com.example.spotify.ui.artist.ArtistActivity
+import com.example.spotify.ui.login.LoginActivity
 import com.example.spotify.ui.playlist.PlaylistActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var binding: ActivityProfileBinding
+    private lateinit var viewModel: ProfileViewModel
     private var accessToken: String? = null
-
-    private val viewModel: ProfileViewModel by viewModels {
-        ProfileViewModelFactory(accessToken ?: "")
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,8 +33,13 @@ class ProfileActivity : AppCompatActivity() {
         getAccessToken()
 
         if (accessToken.isNullOrEmpty()) {
+            navigateToLogin()
             return
         }
+
+        // Inicializar o ViewModel após obter o accessToken
+        val factory = ProfileViewModelFactory(RetrofitInstance.api, accessToken!!)
+        viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class.java]
 
         setupObservers()
         setupUI()
@@ -45,8 +49,13 @@ class ProfileActivity : AppCompatActivity() {
         accessToken = intent.getStringExtra("ACCESS_TOKEN")
         if (accessToken.isNullOrEmpty()) {
             Log.e("ProfileActivity", "Access token is null or empty")
-            return
         }
+    }
+
+    private fun navigateToLogin() {
+        val intent = Intent(this, LoginActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun handleWindowInsets() {
@@ -58,12 +67,12 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        viewModel.userProfile.observe(this, { userProfile ->
+        viewModel.userProfile.observe(this) { userProfile ->
             updateProfileUI(userProfile)
-        })
-        viewModel.error.observe(this, { errorMessage ->
+        }
+        viewModel.error.observe(this) { errorMessage ->
             Log.e("ProfileActivity", errorMessage)
-        })
+        }
     }
 
     private fun setupUI() {
