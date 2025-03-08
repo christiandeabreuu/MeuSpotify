@@ -6,16 +6,15 @@ import com.example.spotify.domain.usecase.CreatePlaylistUseCase
 import kotlinx.coroutines.Dispatchers
 
 class CreatePlaylistViewModel(
-    private val createPlaylistUseCase: CreatePlaylistUseCase,
-    private val accessToken: String
+    private val createPlaylistUseCase: CreatePlaylistUseCase
 ) : ViewModel() {
 
-    fun createPlaylist(playlistName: String) = liveData(Dispatchers.IO) {
-        if (playlistName.isNotEmpty()) {
+    fun createPlaylist(accessToken: String, playlistName: String) = liveData(Dispatchers.IO) {
+        if (playlistName.isBlank()) {
+            emit(Result.failure<String>(Exception("Por favor, insira um nome para a playlist.")))
+        } else {
             val result = createPlaylistUseCase.execute(accessToken, playlistName)
             emit(result)
-        } else {
-            emit(Result.failure<String>(Exception("Por favor, insira um nome para a playlist.")))
         }
     }
 }

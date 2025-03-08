@@ -8,7 +8,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.Observer
 import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.databinding.ActivityCreatePlaylistBinding
 
@@ -17,8 +16,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
     private lateinit var accessToken: String
 
     private val viewModel: CreatePlaylistViewModel by viewModels {
-        // Criando o ViewModel com o accessToken atualizado
-        CreatePlaylistViewModelFactory(PlaylistRepository(RetrofitInstance.api), accessToken)
+        CreatePlaylistViewModelFactory(PlaylistRepository(RetrofitInstance.api))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,23 +24,17 @@ class CreatePlaylistActivity : AppCompatActivity() {
         binding = ActivityCreatePlaylistBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Recuperando o AccessToken enviado pela Intent
         accessToken = intent.getStringExtra("ACCESS_TOKEN") ?: ""
 
-        // Adicionando log para verificar o token
-        Log.d("CreatePlaylistActivity", "AccessToken recebido: $accessToken")
-
-        // Validando se o AccessToken está presente
+        // Validação do token
         if (accessToken.isBlank()) {
-            Log.e("CreatePlaylistActivity", "AccessToken está vazio! Finalizando Activity.")
-            Toast.makeText(this, "Erro: Token de acesso não encontrado.", Toast.LENGTH_LONG).show()
-            finish()
+            showError("Token de acesso não encontrado.")
             return
         }
 
         handleWindowInsets()
-        closeButton()
         setupCreateButton()
+        setupCloseButton()
     }
 
     private fun handleWindowInsets() {
@@ -57,33 +49,34 @@ class CreatePlaylistActivity : AppCompatActivity() {
         binding.createButton.setOnClickListener {
             val playlistName = binding.playlistNameEditText.text.toString()
 
-            // Validando o nome da playlist antes de enviar
-            if (playlistName.isBlank()) {
-                Toast.makeText(this, "Por favor, insira um nome para a playlist.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
             // Logs para depuração
             Log.d("CreatePlaylistActivity", "PlaylistName: $playlistName")
-            Log.d("CreatePlaylistActivity", "AccessToken: $accessToken")
 
-            // Chamada para criar a playlist
-            viewModel.createPlaylist(playlistName).observe(this, Observer { result ->
+            viewModel.createPlaylist(accessToken, playlistName).observe(this) { result ->
                 result.onSuccess { message ->
-                    Log.d("CreatePlaylistActivity", "Success Message: $message")
-                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
-                    finish() // Fecha a Activity após criar a playlist
-                }.onFailure { e ->
-                    Log.e("CreatePlaylistActivity", "Erro: ${e.message}")
-                    Toast.makeText(this, "Erro: ${e.message}", Toast.LENGTH_SHORT).show()
+                    showSuccess(message)
+                }.onFailure { exception ->
+                    showError(exception.message ?: "Erro desconhecido.")
                 }
-            })
+            }
         }
     }
 
-    private fun closeButton() {
+    private fun setupCloseButton() {
         binding.closeButton.setOnClickListener {
             finish()
         }
+    }
+
+    private fun showSuccess(message: String) {
+        Log.d("CreatePlaylistActivity", "Success: $message")
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        finish()
+    }
+
+    private fun showError(message: String) {
+        Log.e("CreatePlaylistActivity", "Error: $message")
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+        finish()
     }
 }
