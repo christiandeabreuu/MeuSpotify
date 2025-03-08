@@ -3,12 +3,11 @@ package com.example.spotify.ui.playlist
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
@@ -24,7 +23,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class PlaylistActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlaylistBinding
-    private lateinit var viewModel: PlaylistViewModel // Alterado para lateinit
+    private lateinit var viewModel: PlaylistViewModel
     private lateinit var accessToken: String
     private lateinit var playlistAdapter: PlaylistAdapter
 
@@ -36,23 +35,24 @@ class PlaylistActivity : AppCompatActivity() {
 
         initializeAccessToken()
 
+        // Checa se o token está vazio ou inválido
         if (accessToken.isEmpty()) {
+            Log.e("PlaylistActivity", "Access token is null or empty")
+            Toast.makeText(this, "Erro: Token de acesso não encontrado.", Toast.LENGTH_LONG).show()
             navigateToLogin()
             return
         }
 
-        initializeViewModel() // Inicialize o ViewModel aqui
+        initializeViewModel()
         setupUI()
         setupObservers()
         goToCreatePlaylist()
     }
 
     private fun initializeAccessToken() {
+        // Recupera o token da Intent
         accessToken = intent.getStringExtra("ACCESS_TOKEN") ?: ""
-        Log.d("PlaylistActivity", "Access Token: $accessToken")
-        if (accessToken.isEmpty()) {
-            Log.e("PlaylistActivity", "Access token is null or empty")
-        }
+        Log.d("PlaylistActivity", "AccessToken recebido na Intent: $accessToken")
     }
 
     private fun initializeViewModel() {
@@ -62,7 +62,14 @@ class PlaylistActivity : AppCompatActivity() {
 
     private fun goToCreatePlaylist() {
         binding.buttonToGoCreatePlaylist.setOnClickListener {
+            if (accessToken.isBlank()) {
+                Log.e("PlaylistActivity", "Token vazio ao navegar para a tela de criar playlist")
+                Toast.makeText(this, "Erro: Token de acesso não encontrado.", Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }
+
             val intent = Intent(this, CreatePlaylistActivity::class.java)
+            intent.putExtra("ACCESS_TOKEN", accessToken) // Passa o token para a próxima Activity
             startActivity(intent)
         }
     }
@@ -74,15 +81,15 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        viewModel.userProfile.observe(this, Observer { userProfile ->
+        viewModel.userProfile.observe(this) { userProfile ->
             updateProfileUI(userProfile)
-        })
-        viewModel.error.observe(this, Observer { errorMessage ->
+        }
+        viewModel.error.observe(this) { errorMessage ->
             Log.e("PlaylistActivity", errorMessage)
-        })
-        viewModel.playlists.observe(this, Observer { playlists ->
+        }
+        viewModel.playlists.observe(this) { playlists ->
             playlistAdapter.submitList(playlists)
-        })
+        }
     }
 
     private fun setupRecyclerView() {
@@ -123,11 +130,13 @@ class PlaylistActivity : AppCompatActivity() {
 
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
-        intent.putExtra("ACCESS_TOKEN", accessToken)  // Passa o token de acesso
+        intent.putExtra("ACCESS_TOKEN", accessToken) // Inclui o token em todas as navegações
+        Log.d("PlaylistActivity", "Navegando para ${activityClass.simpleName} com AccessToken: $accessToken")
         startActivity(intent)
     }
 
     private fun navigateToLogin() {
+        Log.d("PlaylistActivity", "Navegando para LoginActivity devido ao token inválido")
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
         finish()
@@ -139,4 +148,3 @@ class PlaylistActivity : AppCompatActivity() {
         }
     }
 }
-
