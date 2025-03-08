@@ -19,7 +19,6 @@ class AuthRepositoryImpl(private val context: Context) : AuthRepository {
         .readTimeout(30, TimeUnit.SECONDS)
         .build()
 
-
     private val sharedPreferences = context.getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
 
     override suspend fun getAccessToken(authorizationCode: String): Tokens {
