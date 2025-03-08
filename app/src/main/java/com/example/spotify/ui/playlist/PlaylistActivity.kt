@@ -9,10 +9,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.example.spotify.R
 import com.example.spotify.data.model.UserProfile
+import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.databinding.ActivityPlaylistBinding
 import com.example.spotify.ui.artist.ArtistActivity
 import com.example.spotify.ui.login.LoginActivity
@@ -22,10 +24,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class PlaylistActivity : AppCompatActivity() {
     private lateinit var binding: ActivityPlaylistBinding
+    private lateinit var viewModel: PlaylistViewModel // Alterado para lateinit
     private lateinit var accessToken: String
-    private val viewModel: PlaylistViewModel by viewModels {
-        PlaylistViewModelFactory(accessToken)
-    }
     private lateinit var playlistAdapter: PlaylistAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +35,13 @@ class PlaylistActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         initializeAccessToken()
+
+        if (accessToken.isEmpty()) {
+            navigateToLogin()
+            return
+        }
+
+        initializeViewModel() // Inicialize o ViewModel aqui
         setupUI()
         setupObservers()
         goToCreatePlaylist()
@@ -45,12 +52,16 @@ class PlaylistActivity : AppCompatActivity() {
         Log.d("PlaylistActivity", "Access Token: $accessToken")
         if (accessToken.isEmpty()) {
             Log.e("PlaylistActivity", "Access token is null or empty")
-            navigateToLogin()
         }
     }
 
+    private fun initializeViewModel() {
+        val factory = PlaylistViewModelFactory(RetrofitInstance.api, accessToken)
+        viewModel = ViewModelProvider(this, factory)[PlaylistViewModel::class.java]
+    }
+
     private fun goToCreatePlaylist() {
-        binding.buttonToGoCreatePlaylist.setOnClickListener{
+        binding.buttonToGoCreatePlaylist.setOnClickListener {
             val intent = Intent(this, CreatePlaylistActivity::class.java)
             startActivity(intent)
         }
@@ -128,3 +139,4 @@ class PlaylistActivity : AppCompatActivity() {
         }
     }
 }
+
