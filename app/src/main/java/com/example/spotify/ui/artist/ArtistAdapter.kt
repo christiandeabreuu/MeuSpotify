@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.spotify.R
 import com.example.spotify.data.model.Artist
 import com.example.spotify.databinding.ItemArtistaBinding
 import com.example.spotify.ui.albuns.AlbumsActivity
@@ -26,6 +27,8 @@ class ArtistAdapter(
         holder.binding.tvArtist.text = artist.name
         holder.binding.imageArtist.load(artist.images.firstOrNull()?.url){
             transformations(coil.transform.CircleCropTransformation())
+            placeholder(R.drawable.ic_spotify_full)
+            error(R.drawable.ic_spotify_full)
         }
         holder.binding.root.setOnClickListener {
             val intent = Intent(context, AlbumsActivity::class.java).apply {

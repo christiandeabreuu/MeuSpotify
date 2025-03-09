@@ -40,8 +40,6 @@ class PlaylistAdapter : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>
             if (!images.isNullOrEmpty()) {
                 binding.playlistImageView.load(images.firstOrNull()?.url) {
                 }
-            } else {
-                binding.playlistImageView.setImageResource(R.drawable.icon_spotify)
             }
         }
     }

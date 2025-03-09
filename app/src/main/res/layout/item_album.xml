@@ -3,12 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:background="@color/black"
     android:padding="@dimen/margin_8">
 
     <ImageView
         android:id="@+id/albumCover"
         android:layout_width="@dimen/margin_100"
         android:layout_height="@dimen/margin_100"
+        android:background="@color/transparent"
+        tools:src="@drawable/ic_spotify_full"
         android:contentDescription="@string/imagem_album"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
