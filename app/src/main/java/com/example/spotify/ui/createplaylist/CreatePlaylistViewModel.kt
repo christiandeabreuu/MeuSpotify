@@ -10,11 +10,16 @@ class CreatePlaylistViewModel(
 ) : ViewModel() {
 
     fun createPlaylist(accessToken: String, playlistName: String) = liveData(Dispatchers.IO) {
-        if (playlistName.isBlank()) {
-            emit(Result.failure<String>(Exception("Por favor, insira um nome para a playlist.")))
-        } else {
+        try {
+            if (playlistName.isBlank()) {
+                emit(Result.failure(Exception("Por favor, insira um nome para a playlist.")))
+                return@liveData
+            }
             val result = createPlaylistUseCase.execute(accessToken, playlistName)
             emit(result)
+        } catch (e: Exception) {
+            emit(Result.failure(e))
         }
     }
 }
+

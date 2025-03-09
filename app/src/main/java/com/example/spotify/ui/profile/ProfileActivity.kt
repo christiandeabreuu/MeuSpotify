@@ -23,7 +23,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var viewModel: ProfileViewModel
     private var accessToken: String? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreate(savedInstanceState:Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityProfileBinding.inflate(layoutInflater)
@@ -37,10 +37,7 @@ class ProfileActivity : AppCompatActivity() {
             return
         }
 
-        // Inicializar o ViewModel após obter o accessToken
-        val factory = ProfileViewModelFactory(RetrofitInstance.api, accessToken!!)
-        viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class.java]
-
+        initializeViewModel()
         setupObservers()
         setupUI()
     }
@@ -52,43 +49,47 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    private fun initializeViewModel() {
+        val factory = ProfileViewModelFactory(RetrofitInstance.api, accessToken!!)
+        viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class.java]
+    }
+
     private fun navigateToLogin() {
-        val intent = Intent(this, LoginActivity::class.java)
-        startActivity(intent)
+        startActivity(Intent(this, LoginActivity::class.java))
         finish()
     }
 
     private fun handleWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
     }
 
     private fun setupObservers() {
-        viewModel.userProfile.observe(this) { userProfile ->
-            updateProfileUI(userProfile)
-        }
-        viewModel.error.observe(this) { errorMessage ->
-            Log.e("ProfileActivity", errorMessage)
+        viewModel.userProfile.observe(this) { result ->
+            result.onSuccess { userProfile ->
+                updateProfileUI(userProfile)
+            }.onFailure { error ->
+                Log.e("ProfileActivity", "Error fetching user profile: ${error.message}")
+            }
         }
     }
 
     private fun setupUI() {
-        closeButton()
+        setupCloseButton()
         setupBottomNavigationView()
     }
 
-    private fun closeButton() {
+    private fun setupCloseButton() {
         binding.buttonClose.setOnClickListener {
             finishAffinity()
         }
     }
 
     private fun setupBottomNavigationView() {
-        val bottomNavigationView: BottomNavigationView = binding.bottomNavigationView
-        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+        binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.navigation_artistas -> {
                     navigateToActivity(ArtistActivity::class.java)
@@ -98,18 +99,16 @@ class ProfileActivity : AppCompatActivity() {
                     navigateToActivity(PlaylistActivity::class.java)
                     true
                 }
-                R.id.navigation_profile -> {
-                    true
-                }
+                R.id.navigation_profile -> true
                 else -> false
             }
         }
-        bottomNavigationView.selectedItemId = R.id.navigation_profile
+        binding.bottomNavigationView.selectedItemId = R.id.navigation_profile
     }
 
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
-        intent.putExtra("ACCESS_TOKEN", accessToken)  // Passa o token de acesso
+        intent.putExtra("ACCESS_TOKEN", accessToken)
         startActivity(intent)
     }
 
@@ -118,7 +117,10 @@ class ProfileActivity : AppCompatActivity() {
         userProfile.images.firstOrNull()?.let { image ->
             binding.profileImageView.load(image.url) {
                 transformations(coil.transform.CircleCropTransformation())
+                placeholder(R.drawable.ic_launcher_background)
+                error(R.drawable.ic_launcher_foreground)
             }
         }
     }
 }
+
