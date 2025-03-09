@@ -58,6 +58,7 @@ class AlbumsActivity : AppCompatActivity() {
     private fun setupViews() {
         binding.albumTitleTextView.text = artistName
         binding.albumPostImageView.load(imageUrl) {
+            transformations(coil.transform.CircleCropTransformation())
             placeholder(R.drawable.ic_launcher_background)
             error(R.drawable.ic_launcher_foreground)
         }

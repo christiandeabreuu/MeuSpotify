@@ -34,11 +34,28 @@ class AlbumsAdapter(private var albums: List<Album>) : RecyclerView.Adapter<Albu
 
     class AlbumViewHolder(val binding: ItemAlbumBinding) : RecyclerView.ViewHolder(binding.root)
 
-    // Função para converter a data de "yyyy-MM-dd" para "dd/MM/yyyy"
-    private fun formatDate(dateString: String): String {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        val date = inputFormat.parse(dateString)
-        return outputFormat.format(date)
+    fun formatDate(dateString: String): String {
+        val formats = listOf(
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()), // Formato completo: ano/mês/dia
+            SimpleDateFormat("MM/yyyy", Locale.getDefault()),    // Formato mês/ano
+            SimpleDateFormat("yyyy", Locale.getDefault())        // Formato apenas ano
+        )
+
+        val targetFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Formato final desejado
+
+        for (format in formats) {
+            try {
+                val parsedDate = format.parse(dateString)
+                if (parsedDate != null) {
+                    return targetFormat.format(parsedDate) // Retorna no formato dd/MM/yyyy
+                }
+            } catch (e: Exception) {
+                // Ignorar e tentar o próximo formato
+            }
+        }
+
+        // Caso nenhuma correspondência seja encontrada, retornar uma data padrão
+        return "01/01/1989" // Adicione aqui um valor padrão apropriado
     }
+
 }

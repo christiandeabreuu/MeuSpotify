@@ -3,21 +3,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:padding="@dimen/margin_8">
 
     <ImageView
         android:id="@+id/albumCover"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="@dimen/margin_100"
+        android:layout_height="@dimen/margin_100"
+        android:contentDescription="@string/imagem_album"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         android:scaleType="centerCrop"/>
 
     <LinearLayout
-        android:layout_width="0dp"
+        android:layout_width="@dimen/margin_0"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="@dimen/margin_8"
         android:orientation="vertical"
         app:layout_constraintStart_toEndOf="@id/albumCover"
         app:layout_constraintTop_toTopOf="parent"
@@ -29,17 +30,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/rubik_regular"
-            android:textSize="14sp"
+            android:textSize="@dimen/text_14"
             android:textColor="@color/white"
-            android:text="Album Name"/>
+            android:text="@string/album_name"/>
 
         <TextView
             android:id="@+id/albumReleaseDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/rubik_regular"
-            android:textSize="12sp"
+            android:textSize="@dimen/text_12"
             android:textColor="@color/white"
-            android:text="Release Date"/>
+            android:text="@string/release_date"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

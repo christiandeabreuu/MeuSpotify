@@ -2,4 +2,37 @@
     <string name="app_name">Spotify</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    //login
+    <string name="enter_account_spotify">Entre com sua conta Spotify</string>
+    <string name="entrar_button">Entrar</string>
+
+    //top artists
+    <string name="top_artistas">Top Artistas</string>
+    <string name="foto_profile">foto do perfil</string>
+    <string name="artist_name">Nome do Artista</string>
+    <string name="artist_image">imagem do artista</string>
+
+    //album
+    <string name="back_button">botão de voltar</string>
+    <string name="top_artists">Top Artistas</string>
+    <string name="image_profile_artist">imagem perfil do artista</string>
+    <string name="imagem_album">imagem de capa do album</string>
+    <string name="album_name">Nome do Album</string>
+    <string name="release_date">Release Date</string>
+    <string name="my_playlists">Minhas Playlists</string>
+    <string name="no_playlist_avaiable">Nenhuma playlist disponível</string>
+    <string name="create_playlist_button">Criar Playlist</string>
+    <string name="image_playlist">imagem de capa da playlist</string>
+    <string name="playlist_name">Playlist Name</string>
+    <string name="owner">Owner</string>
+    <string name="close_buttom">Fechar</string>
+    <string name="insert_name_your_playlist_title">Dê o nome a sua playlist</string>
+    <string name="insert_name_your_playlist">Minha Playlist #1</string>
+    <string name="creat_your_playlist_button">Criar</string>
+    <string name="imag_profile_perfil">imagem do perfil do usuario</string>
+    <string name="name_profile_spotify">Nome de Perfil</string>
+    <string name="close_app_button">Sair</string>
+
+
 </resources>

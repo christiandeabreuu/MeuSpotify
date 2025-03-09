@@ -56,7 +56,7 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
-        handleWindowInsets()
+//        handleWindowInsets()
         setupBottomNavigationView()
         setupRecyclerView()
     }

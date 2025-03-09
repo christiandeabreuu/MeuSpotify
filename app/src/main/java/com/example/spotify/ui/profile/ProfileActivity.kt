@@ -29,7 +29,7 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        handleWindowInsets()
+//        handleWindowInsets()
         getAccessToken()
 
         if (accessToken.isNullOrEmpty()) {
@@ -46,6 +46,8 @@ class ProfileActivity : AppCompatActivity() {
         accessToken = intent.getStringExtra("ACCESS_TOKEN")
         if (accessToken.isNullOrEmpty()) {
             Log.e("ProfileActivity", "Access token is null or empty")
+        } else {
+            Log.d("ProfileActivity", "Access token recebido: $accessToken")
         }
     }
 
@@ -67,15 +69,7 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupObservers() {
-        viewModel.userProfile.observe(this) { result ->
-            result.onSuccess { userProfile ->
-                updateProfileUI(userProfile)
-            }.onFailure { error ->
-                Log.e("ProfileActivity", "Error fetching user profile: ${error.message}")
-            }
-        }
-    }
+
 
     private fun setupUI() {
         setupCloseButton()
@@ -112,8 +106,22 @@ class ProfileActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+
+
+    private fun setupObservers() {
+        viewModel.userProfile.observe(this) { result ->
+            result.onSuccess { userProfile ->
+                Log.d("ProfileActivity", "Usuário recebido: $userProfile")
+                updateProfileUI(userProfile)
+            }.onFailure { error ->
+                Log.e("ProfileActivity", "Erro ao buscar perfil do usuário: ${error.message}")
+            }
+        }
+    }
+
     private fun updateProfileUI(userProfile: UserProfile) {
-        binding.profileTextView.text = userProfile.displayName
+        Log.d("ProfileActivity", "Atualizando UI com o nome: ${userProfile.displayName} e imagem: ${userProfile.images.firstOrNull()?.url}")
+        binding.profileTextView.text = userProfile.displayName ?: "Usuário desconhecido"
         userProfile.images.firstOrNull()?.let { image ->
             binding.profileImageView.load(image.url) {
                 transformations(coil.transform.CircleCropTransformation())
@@ -122,5 +130,6 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
     }
+
 }
 

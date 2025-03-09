@@ -29,7 +29,7 @@ class ArtistActivity : AppCompatActivity() {
         binding = ActivityArtistBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        handleWindowInsets()
+//        handleWindowInsets()
         setupBottomNavigationView()
 
         setupRecyclerView()

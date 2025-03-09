@@ -12,22 +12,23 @@
         android:id="@+id/topArtistasTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="34dp"
-        android:text="Top Artistas"
+        android:layout_marginStart="@dimen/margin_24"
+        android:layout_marginTop="@dimen/margin_34"
+        android:text="@string/top_artistas"
         android:fontFamily="@font/rubik_bold"
         android:textColor="@color/white"
-        android:textSize="16sp"
+        android:textSize="@dimen/text_16"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/profileImageView"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginTop="34dp"
-        android:layout_marginEnd="24dp"
+        android:layout_width="@dimen/margin_32"
+        android:layout_height="@dimen/margin_32"
+        android:layout_marginTop="@dimen/margin_34"
+        android:layout_marginEnd="@dimen/margin_24"
+        android:contentDescription="@string/foto_profile"
         android:background="@drawable/circle_background"
         android:scaleType="centerCrop"
         android:src="@drawable/icon_spotify"
@@ -36,20 +37,20 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/artistasRecyclerView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="@dimen/margin_0"
+        android:layout_height="@dimen/margin_0"
         app:layout_constraintTop_toBottomOf="@id/profileImageView"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginTop="@dimen/margin_16"
+        android:layout_marginBottom="@dimen/margin_8"
         tools:listitem="@layout/item_artista" />
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
-        android:layout_width="0dp"
+        android:layout_width="@dimen/margin_0"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
