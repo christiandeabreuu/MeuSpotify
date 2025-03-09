@@ -1,7 +1,9 @@
 package com.example.spotify.ui.artist
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import com.example.spotify.data.model.SpotifyTokens
 import com.example.spotify.domain.usecase.*
 import kotlinx.coroutines.Dispatchers
 
@@ -10,7 +12,8 @@ class ArtistViewModel(
     private val saveTokensUseCase: SaveTokensUseCase,
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
-    private val getTopArtistsUseCase: GetTopArtistsUseCase
+    private val getTopArtistsUseCase: GetTopArtistsUseCase,
+    private val getAccessTokenUseCase: GetAccessTokenUseCase
 ) : ViewModel() {
 
     // Carregar tokens
@@ -23,7 +26,25 @@ class ArtistViewModel(
         }
     }
 
-    // Salvar tokens
+    fun exchangeCodeForTokens(authorizationCode: String, redirectUri: String) = liveData(Dispatchers.IO) {
+        try {
+            Log.d(
+                "ArtistViewModel",
+                "Chamando getAccessToken com authorizationCode: $authorizationCode e redirectUri: $redirectUri"
+            )
+            val tokens: SpotifyTokens.Tokens = getAccessTokenUseCase.execute(authorizationCode, redirectUri)
+            Log.d(
+                "ArtistViewModel",
+                "Tokens obtidos: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}"
+            )
+            emit(Result.success(tokens))
+        } catch (e: Exception) {
+            Log.e("ArtistViewModel", "Erro ao trocar código pelos tokens: ${e.message}")
+            emit(Result.failure<SpotifyTokens.Tokens>(e))
+        }
+    }
+
+        // Salvar tokens
     fun saveAccessToken(accessToken: String, refreshToken: String) {
         saveTokensUseCase.execute(accessToken, refreshToken)
     }

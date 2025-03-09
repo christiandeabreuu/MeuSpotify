@@ -1,7 +1,9 @@
 package com.example.spotify.ui.artist
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -14,6 +16,7 @@ import com.example.spotify.databinding.ActivityArtistBinding
 import com.example.spotify.ui.login.LoginActivity
 import com.example.spotify.ui.playlist.PlaylistActivity
 import com.example.spotify.ui.profile.ProfileActivity
+import com.example.spotify.utils.Constants
 
 class ArtistActivity : AppCompatActivity() {
     private lateinit var binding: ActivityArtistBinding
@@ -32,6 +35,25 @@ class ArtistActivity : AppCompatActivity() {
         setupRecyclerView()
         loadUserData()
     }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        val uri: Uri? = intent.data
+        Log.d("ArtistActivity", "onNewIntent chamado com URI: $uri")
+
+        if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
+            // Processa o callback do Spotify e troca pelo token
+            val code = uri.getQueryParameter("code")
+            Log.d("ArtistActivity", "Código de autorização recebido: $code")
+            if (code != null) {
+                // Chama o ViewModel ou UseCase para trocar o código por tokens
+                viewModel.exchangeCodeForTokens(code, Constants.REDIRECT_URI)
+            } else {
+                Log.e("ArtistActivity", "Código de autorização ausente no URI")
+            }
+        }
+    }
+
 
     private fun setupRecyclerView() {
         binding.artistasRecyclerView.layoutManager = LinearLayoutManager(this)
