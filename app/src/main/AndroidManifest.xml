@@ -30,13 +30,17 @@
             android:exported="false" />
         <activity
             android:name=".ui.login.LoginActivity"
+            android:launchMode="singleTask"
             android:exported="true">
+            <!-- Intent Filter de lançamento -->
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Intent Filter para o callback do Spotify -->
+
         </activity>
+
         <activity
             android:name=".ui.artist.ArtistActivity"
             android:exported="true">
@@ -51,9 +55,7 @@
                     android:scheme="meuapp" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.InitialActivity"
-            android:exported="false" />
+
     </application>
 
 </manifest>

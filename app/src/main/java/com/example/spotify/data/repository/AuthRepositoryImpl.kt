@@ -21,7 +21,7 @@ class AuthRepositoryImpl(private val context: Context) : AuthRepository {
 
     private val sharedPreferences = context.getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
 
-    override suspend fun getAccessToken(authorizationCode: String): Tokens {
+    override suspend fun getAccessToken(authorizationCode: String, redirectUri: String): Tokens {
         val requestBody = FormBody.Builder()
             .add("grant_type", "authorization_code")
             .add("code", authorizationCode)
@@ -49,6 +49,8 @@ class AuthRepositoryImpl(private val context: Context) : AuthRepository {
         val refreshToken = jsonObject.getString("refresh_token")
         return Tokens(accessToken, refreshToken)
     }
+
+
 
     override suspend fun refreshAccessToken(refreshToken: String): Tokens {
         val requestBody = FormBody.Builder()

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.spotify.data.repository.AuthRepositoryImpl
 import com.example.spotify.data.network.RetrofitInstance
+import com.example.spotify.domain.usecase.GetAccessTokenUseCase
 import com.example.spotify.domain.usecase.GetTopArtistsUseCase
 import com.example.spotify.domain.usecase.GetUserProfileUseCase
 import com.example.spotify.domain.usecase.LoadTokensUseCase
@@ -22,13 +23,16 @@ class ArtistViewModelFactory(private val context: Context) : ViewModelProvider.F
             val getUserProfileUseCase = GetUserProfileUseCase(spotifyApiService)
             val refreshAccessTokenUseCase = RefreshAccessTokenUseCase(authRepository)
             val getTopArtistsUseCase = GetTopArtistsUseCase(spotifyApiService)
+            val getAccessTokenUseCase = GetAccessTokenUseCase(authRepository)
 
             return ArtistViewModel(
                 loadTokensUseCase,
                 saveTokensUseCase,
                 getUserProfileUseCase,
                 refreshAccessTokenUseCase,
-                getTopArtistsUseCase
+                getTopArtistsUseCase,
+                getAccessTokenUseCase
+
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

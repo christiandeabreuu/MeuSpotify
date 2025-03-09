@@ -1,5 +1,8 @@
+package com.example.spotify.ui.login
+
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
 import com.example.spotify.data.model.SpotifyTokens.Tokens
@@ -12,15 +15,21 @@ class LoginViewModel(
 ) : ViewModel() {
 
     fun handleRedirect(uri: Uri, redirectUri: String) = liveData(Dispatchers.IO) {
+        // Extrai o código de autorização da URI
         val authorizationCode = uri.getQueryParameter("code")
+        Log.d("LoginViewModel", "authorizationCode extraído: $authorizationCode")
         if (authorizationCode != null) {
             try {
-                val tokens: Tokens = getAccessTokenUseCase.execute(authorizationCode)
+                Log.d("LoginViewModel", "Chamando getAccessToken com authorizationCode: $authorizationCode e redirectUri: $redirectUri")
+                val tokens: Tokens = getAccessTokenUseCase.execute(authorizationCode, redirectUri)
+                Log.d("LoginViewModel", "Tokens obtidos: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}")
                 emit(Result.success(tokens))
             } catch (e: Exception) {
+                Log.e("LoginViewModel", "Erro ao trocar código pelos tokens: ${e.message}")
                 emit(Result.failure<Tokens>(e))
             }
         } else {
+            Log.e("LoginViewModel", "Código de autorização não encontrado na URI")
             emit(Result.failure<Tokens>(Exception("Código de autorização não encontrado")))
         }
     }
@@ -31,5 +40,6 @@ class LoginViewModel(
         editor.putString("ACCESS_TOKEN", accessToken)
         editor.putString("REFRESH_TOKEN", refreshToken)
         editor.apply()
+        Log.d("LoginViewModel", "Tokens salvos localmente: accessToken=$accessToken, refreshToken=$refreshToken")
     }
 }
