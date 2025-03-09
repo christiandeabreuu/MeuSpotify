@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.spotify.R
@@ -15,7 +16,7 @@ class ArtistAdapter(
     private val artists: List<Artist>,
     private val context: Context,
     private val accessToken: String
-) : RecyclerView.Adapter<ArtistAdapter.ArtistViewHolder>() {
+) : PagingDataAdapter<ArtistAdapter.ArtistViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
         val binding = ItemArtistaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
