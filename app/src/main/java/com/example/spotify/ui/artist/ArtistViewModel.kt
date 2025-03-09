@@ -3,7 +3,7 @@ package com.example.spotify.ui.artist
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.spotify.data.model.SpotifyTokens
+import com.example.spotify.data.model.Tokens
 import com.example.spotify.domain.usecase.*
 import kotlinx.coroutines.Dispatchers
 
@@ -32,7 +32,7 @@ class ArtistViewModel(
                 "ArtistViewModel",
                 "Chamando getAccessToken com authorizationCode: $authorizationCode e redirectUri: $redirectUri"
             )
-            val tokens: SpotifyTokens.Tokens = getAccessTokenUseCase.execute(authorizationCode, redirectUri)
+            val tokens: Tokens = getAccessTokenUseCase.execute(authorizationCode, redirectUri)
             Log.d(
                 "ArtistViewModel",
                 "Tokens obtidos: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}"
@@ -40,7 +40,7 @@ class ArtistViewModel(
             emit(Result.success(tokens))
         } catch (e: Exception) {
             Log.e("ArtistViewModel", "Erro ao trocar código pelos tokens: ${e.message}")
-            emit(Result.failure<SpotifyTokens.Tokens>(e))
+            emit(Result.failure<Tokens>(e))
         }
     }
 

@@ -1,7 +1,7 @@
 package com.example.spotify.domain.usecase
 
 import com.example.spotify.data.repository.AuthRepository
-import com.example.spotify.data.model.SpotifyTokens.Tokens
+import com.example.spotify.data.model.Tokens
 
 
 

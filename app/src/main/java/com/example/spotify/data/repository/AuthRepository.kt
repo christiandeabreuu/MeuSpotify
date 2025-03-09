@@ -1,7 +1,7 @@
 package com.example.spotify.data.repository
 
 
-import com.example.spotify.data.model.SpotifyTokens.Tokens
+import com.example.spotify.data.model.Tokens
 
 interface AuthRepository {
     // Agora o método getAccessToken recebe também o redirectUri, o que é necessário para

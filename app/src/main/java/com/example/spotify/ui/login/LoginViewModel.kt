@@ -5,7 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.spotify.data.model.SpotifyTokens.Tokens
+import com.example.spotify.data.model.Tokens
 import com.example.spotify.domain.usecase.GetAccessTokenUseCase
 import kotlinx.coroutines.Dispatchers
 
