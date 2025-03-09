@@ -1,5 +1,6 @@
 package com.example.spotify.data.paging
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.spotify.data.model.Artist
@@ -10,26 +11,27 @@ import kotlinx.coroutines.flow.firstOrNull
 
 
 class ArtistPagingSource(
-    val useCaseTopArtists: GetTopArtistsUseCase,
-    val query: String
+    private val useCaseTopArtists: GetTopArtistsUseCase,
+    private val accessToken: String // Receba o token aqui
 ) : PagingSource<Int, Artist>() {
-    override suspend fun load(
-        params: LoadParams<Int>
-    ): LoadResult<Int, Artist> {
+
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Artist> {
         try {
-            // Start refresh at page 1 if undefined.
             val nextPageNumber = params.key ?: 1
-            val response = useCaseTopArtists.execute(query, nextPageNumber)
+            Log.d("ArtistPagingSource", "Carregando artistas com token: Bearer $accessToken")
+            val response = useCaseTopArtists.execute("Bearer $accessToken", nextPageNumber) // Use o token correto aqui
             return LoadResult.Page(
                 data = response.firstOrNull()?.items ?: emptyList(),
-                prevKey = null, // Only paging forward.
+                prevKey = null,
                 nextKey = response.firstOrNull()?.offset
             )
         } catch (e: Exception) {
-            throw e
+            Log.e("ArtistPagingSource", "Erro: ${e.message}")
+            return LoadResult.Error(e)
         }
 
     }
+
 
     override fun getRefreshKey(state: PagingState<Int, Artist>): Int? {
         // Try to find the page key of the closest page to anchorPosition from

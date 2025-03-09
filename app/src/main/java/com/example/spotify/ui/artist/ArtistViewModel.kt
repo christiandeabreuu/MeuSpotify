@@ -3,9 +3,17 @@ package com.example.spotify.ui.artist
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
+import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import com.example.spotify.data.model.Artist
 import com.example.spotify.data.model.Tokens
+import com.example.spotify.data.paging.ArtistPagingSource
 import com.example.spotify.domain.usecase.*
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 
 class ArtistViewModel(
     private val loadTokensUseCase: LoadTokensUseCase,
@@ -70,7 +78,7 @@ class ArtistViewModel(
     }
 
     // Buscar principais artistas
-    fun getTopArtists(accessToken: String) = liveData(Dispatchers.IO) {
+    fun getTopArtist(accessToken: String) = liveData(Dispatchers.IO) {
         try {
             val topArtists = getTopArtistsUseCase.execute(accessToken)
             emit(Result.success(topArtists))
@@ -78,5 +86,22 @@ class ArtistViewModel(
             emit(Result.failure(e))
         }
     }
+
+    fun getArtistsPagingData(accessToken: String): Flow<PagingData<Artist>> {
+        Log.d("ArtistViewModel", "Inicializando PagingSource com token: $accessToken")
+        return Pager(
+            config = PagingConfig(
+                pageSize = 20,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = { ArtistPagingSource(getTopArtistsUseCase, accessToken) } // Aqui passe o token real
+        ).flow.cachedIn(viewModelScope)
+    }
+
+
 }
+
+
+
+
 

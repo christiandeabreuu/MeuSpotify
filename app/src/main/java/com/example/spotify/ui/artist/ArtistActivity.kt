@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.CircleCropTransformation
@@ -17,6 +18,8 @@ import com.example.spotify.ui.login.LoginActivity
 import com.example.spotify.ui.playlist.PlaylistActivity
 import com.example.spotify.ui.profile.ProfileActivity
 import com.example.spotify.utils.Constants
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 class ArtistActivity : AppCompatActivity() {
     private lateinit var binding: ActivityArtistBinding
@@ -30,9 +33,10 @@ class ArtistActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 //        handleWindowInsets()
-        setupBottomNavigationView()
-
         setupRecyclerView()
+        setupBottomNavigationView()
+        observeArtistsPagingData()
+
         loadUserData()
     }
 
@@ -54,10 +58,25 @@ class ArtistActivity : AppCompatActivity() {
         }
     }
 
+    private fun observeArtistsPagingData() {
+        lifecycleScope.launch {
+            Log.d("ArtistActivity", "Token passado ao ViewModel: $accessToken")
+            viewModel.getArtistsPagingData(accessToken).collectLatest { pagingData ->
+                Log.d("ArtistActivity", "Dados recebidos no adapter: $pagingData")
+                artistAdapter.submitData(pagingData)
+            }
+        }
+    }
+
+
 
     private fun setupRecyclerView() {
+        artistAdapter = ArtistAdapter(this, accessToken) // Adapter ajustado
         binding.artistasRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.artistasRecyclerView.adapter = artistAdapter
     }
+
+
 
     private fun loadUserData() {
         // Carrega tokens
@@ -66,7 +85,7 @@ class ArtistActivity : AppCompatActivity() {
                 val (accessToken, refreshToken) = tokens
                 this.accessToken = accessToken
                 loadProfileData(accessToken, refreshToken)
-                loadArtistsData(accessToken)
+                loadArtistsData()
             }.onFailure {
                 navigateToLogin()
             }
@@ -98,16 +117,14 @@ class ArtistActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadArtistsData(accessToken: String) {
-        viewModel.getTopArtists(accessToken).observe(this) { result ->
-            result.onSuccess { artists ->
-                artistAdapter = ArtistAdapter(artists ?: emptyList(), this, accessToken)
-                binding.artistasRecyclerView.adapter = artistAdapter
-            }.onFailure {
-                // Exemplo: mostrar um Toast ou uma mensagem de erro
+    private fun loadArtistsData() {
+        lifecycleScope.launch {
+            viewModel.getArtistsPagingData("query").collectLatest { pagingData ->
+                artistAdapter.submitData(pagingData)
             }
         }
     }
+
 
     private fun handleWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
