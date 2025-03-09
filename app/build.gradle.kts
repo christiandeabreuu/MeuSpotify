@@ -46,8 +46,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.paging.common.android)
-    implementation(libs.androidx.paging.runtime.ktx)
+    implementation(libs.room.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -56,8 +56,8 @@ dependencies {
     implementation(libs.coil)
 
     // Navigation
-    implementation(libs.navigationFragmentKtx)    // Fragment
-    implementation(libs.navigationUiKtx)           // UI
+    implementation(libs.navigationFragmentKtx)
+    implementation(libs.navigationUiKtx)
 
     // Coroutines
     implementation(libs.coroutines.android)
@@ -76,6 +76,7 @@ dependencies {
 
     // MockK para testes unitários
     testImplementation(libs.mockk)
+
     // MockK para testes instrumentados (Android)
     androidTestImplementation(libs.mockk.android)
 
@@ -95,4 +96,14 @@ dependencies {
     // Dependência para autenticação OAuth
     implementation(libs.spotify.auth)
     implementation(libs.browser)
+
+    //pagination
+    implementation(libs.androidx.paging.common.android)
+    implementation(libs.androidx.paging.runtime.ktx)
+
+    // Room
+//    implementation(libs.room.runtime)
+//    implementation(libs.room.ktx)
+//    implementation(libs.room.compiler)
+
 }

@@ -4,10 +4,7 @@ import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.spotify.data.model.Artist
-import com.example.spotify.data.model.TopArtistsResponse
-import com.example.spotify.data.network.SpotifyApiService
 import com.example.spotify.domain.usecase.GetTopArtistsUseCase
-import kotlinx.coroutines.flow.firstOrNull
 
 
 class ArtistPagingSource(

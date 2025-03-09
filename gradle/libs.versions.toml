@@ -27,6 +27,7 @@ spotify-auth = "1.2.3"
 browser = "1.4.0"
 pagingCommonAndroid = "3.3.6"
 pagingRuntimeKtx = "3.3.6"
+room = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -59,6 +60,9 @@ spotify-auth = { module = "com.spotify.android:auth", version.ref = "spotify-aut
 browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-paging-common-android = { group = "androidx.paging", name = "paging-common-android", version.ref = "pagingCommonAndroid" }
 androidx-paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "pagingRuntimeKtx" }
+room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

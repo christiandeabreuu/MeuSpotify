@@ -1,5 +1,6 @@
 package com.example.spotify.ui.albuns
 
+import ArtistActivity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -10,7 +11,6 @@ import coil.load
 import com.example.spotify.R
 import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.databinding.ActivityAlbunsBinding
-import com.example.spotify.ui.artist.ArtistActivity
 import com.example.spotify.ui.playlist.PlaylistActivity
 
 class AlbumsActivity : AppCompatActivity() {
