@@ -94,9 +94,10 @@ class ArtistViewModel(
                 pageSize = 20,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { ArtistPagingSource(getTopArtistsUseCase, accessToken) } // Aqui passe o token real
+            pagingSourceFactory = { ArtistPagingSource(getTopArtistsUseCase, accessToken) } // O token correto deve vir aqui
         ).flow.cachedIn(viewModelScope)
     }
+
 
 
 }

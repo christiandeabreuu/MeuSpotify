@@ -7,9 +7,9 @@ data class TopArtistsResponse(
     @SerializedName("total") val total: Int,
     @SerializedName("limit") val limit: Int,
     @SerializedName("offset") val offset: Int,
-    @SerializedName("href") val href: String,
-    @SerializedName("next") val next: String? = null,
-    @SerializedName("previous") val previous: String? = null
+    @SerializedName("href") val href: String?,
+    @SerializedName("next") val next: String?,
+    @SerializedName("previous") val previous: String?
 )
 
 data class Artist(

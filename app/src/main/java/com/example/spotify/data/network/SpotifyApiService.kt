@@ -22,10 +22,10 @@ interface SpotifyApiService {
     @GET("me/top/artists")
     suspend fun getTopArtists(
         @Header("Authorization") accessToken: String,
-        @Query("limit") limit: Int = 20,
-        @Query("time_range") timeRange: String = "medium_term",
+        @Query("limit") limit: Int = 10,
+        @Query("time_range") timeRange: String = "short_term",
         @Query("offset") offset: Int = 0
-    ): Call<TopArtistsResponse>
+    ): TopArtistsResponse
 
     @GET("artists/{id}/albums")
     fun getArtistAlbums(@Header("Authorization") authorization: String, @Path("id") artistId: String): Call<AlbumsResponse>

@@ -10,15 +10,17 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 
 class GetTopArtistsUseCase(private val apiService: SpotifyApiService) {
-     fun execute(accessToken: String, offset: Int = 0): Flow<TopArtistsResponse> {
-        Log.d("GetTopArtistsUseCase", "execute() chamado com accessToken: $accessToken")
-        return flow {
-            val response = apiService.getTopArtists("Bearer $accessToken", offset = offset)
-
-            emit(requireNotNull( response.awaitResponse().body()))
-        }.catch { e ->
-            Log.e("GetTopArtistsUseCase", "Exceção na requisição: ${e.message}", e)
-        }
+    suspend fun execute(accessToken: String, offset: Int = 0): TopArtistsResponse {
+        Log.d(
+            "GetTopArtistsUseCase",
+            "Chamada API com: accessToken=Bearer $accessToken, offset=$offset"
+        )
+        return apiService.getTopArtists(
+            accessToken = "Bearer $accessToken",
+            limit = 20, // ou outro valor que você queira
+            timeRange = "medium_term",
+            offset = offset
+        )
     }
 }
 

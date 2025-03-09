@@ -62,11 +62,12 @@ class ArtistActivity : AppCompatActivity() {
         lifecycleScope.launch {
             Log.d("ArtistActivity", "Token passado ao ViewModel: $accessToken")
             viewModel.getArtistsPagingData(accessToken).collectLatest { pagingData ->
-                Log.d("ArtistActivity", "Dados recebidos no adapter: $pagingData")
                 artistAdapter.submitData(pagingData)
             }
         }
     }
+
+
 
 
 
@@ -85,7 +86,7 @@ class ArtistActivity : AppCompatActivity() {
                 val (accessToken, refreshToken) = tokens
                 this.accessToken = accessToken
                 loadProfileData(accessToken, refreshToken)
-                loadArtistsData()
+                observeArtistsPagingData()
             }.onFailure {
                 navigateToLogin()
             }
