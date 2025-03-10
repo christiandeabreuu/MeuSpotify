@@ -16,8 +16,8 @@ import com.example.spotify.databinding.ItemArtistaBinding
 import com.example.spotify.ui.albuns.AlbumsActivity
 
 class ArtistAdapter(
-    private val context: Context,
     private val accessToken: String,
+    private val onClick: (Artist) -> Unit
 ) : PagingDataAdapter<Artist, ArtistAdapter.ArtistViewHolder>(ArtistDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
@@ -26,7 +26,8 @@ class ArtistAdapter(
     }
 
     override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
-        val artist = getItem(position) // Pega o item da posição com `PagingDataAdapter`
+        val artist = getItem(position)
+
         Log.d("ArtistAdapter", "Artist at position $position: $artist")
         artist?.let { // Apenas executa o bind se o item não for nulo
             holder.binding.tvArtist.text = it.name
@@ -35,14 +36,9 @@ class ArtistAdapter(
                 placeholder(R.drawable.ic_spotify_full)
                 error(R.drawable.ic_spotify_full)
             }
+            Log.d("ArtistAdapter", "Token ao criar o Intent: $accessToken")
             holder.binding.root.setOnClickListener {
-                val intent = Intent(context, AlbumsActivity::class.java).apply {
-                    putExtra("ARTIST_ID", artist.id)
-                    putExtra("ACCESS_TOKEN", accessToken)
-                    putExtra("ARTIST", artist.name)
-                    putExtra("IMAGE_URL", artist.images.firstOrNull()?.url)
-                }
-                context.startActivity(intent)
+                onClick(artist)
             }
         }
     }
