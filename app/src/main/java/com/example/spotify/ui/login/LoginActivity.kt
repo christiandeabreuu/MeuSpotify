@@ -5,13 +5,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.example.spotify.databinding.ActivityLoginBinding
-import com.example.spotify.domain.usecase.GetAccessTokenUseCase
 import com.example.spotify.ui.LoginViewModelFactory
 import com.example.spotify.ui.artist.ArtistActivity
 import com.example.spotify.utils.Constants
@@ -35,38 +32,33 @@ class LoginActivity : AppCompatActivity() {
         handleRedirect(intent)
     }
 
-    // Se a activity já estiver ativa e receber uma nova Intent, ela entrará aqui.
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        Log.d("LoginActivity", "onNewIntent chamado com URI: ${intent?.data}")
+        Log.d("LoginActivity", "onNewIntent chamado com URI: ${intent.data}")
         handleRedirect(intent)
     }
 
     private fun setupButtonListeners() {
         binding.buttonStart.setOnClickListener {
             Log.d("LoginActivity", "Botão de início clicado. Abrindo URL: ${Constants.AUTH_URL}")
-            showLoading(true)
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.AUTH_URL))
             startActivity(intent)
         }
     }
 
     private fun showLoading(isLoading: Boolean) {
-        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
-        binding.buttonStart.visibility = if (!isLoading) View.VISIBLE else View.GONE
+        binding.progressBar.isVisible = isLoading
+        binding.buttonStart.isVisible = !isLoading
         binding.buttonStart.isEnabled = !isLoading
     }
 
     private fun handleRedirect(intent: Intent?) {
-        // Exibe o dado recebido na Intent
         val uri: Uri? = intent?.data
         Log.d("LoginActivity", "handleRedirect() chamado com URI: $uri")
 
-        // Verifica se a URI não é nula e corresponde ao seu redirect URI
         if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
             Log.d("LoginActivity", "URI inicia com REDIRECT_URI, processando redirecionamento...")
-            loginViewModel.handleRedirect(uri, Constants.REDIRECT_URI)
-                .observe(this) { result ->
+            loginViewModel.handleRedirect(uri, Constants.REDIRECT_URI).observe(this) { result ->
                     result?.onSuccess { tokenState ->
                         tokenState.token?.let { tokens ->
 
@@ -78,23 +70,24 @@ class LoginActivity : AppCompatActivity() {
                         }
                         showLoading(tokenState.event == TokenStateEvent.Loading)
 
-                        // Navegar automaticamente para a ArtistActivity
                         navigateToMainActivity()
                     }?.onFailure { e ->
                         Log.e("LoginActivity", "Erro ao obter token: ${e.message}")
                     }
                 }
         } else {
-            Log.e("LoginActivity", "Redirecionamento inválido ou URI não corresponde ao REDIRECT_URI esperado")
+            Log.e(
+                "LoginActivity",
+                "Redirecionamento inválido ou URI não corresponde ao REDIRECT_URI esperado"
+            )
         }
     }
-
 
     private fun navigateToMainActivity() {
         Log.d("LoginActivity", "Navegando para ArtistActivity")
         val intent = Intent(this, ArtistActivity::class.java)
         startActivity(intent)
-        finish() // Finaliza a tela atual para não voltar ao login.
+        finish()
     }
 
 }

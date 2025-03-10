@@ -36,6 +36,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/rubik_regular"
             android:textSize="@dimen/text_14"
+            android:layout_marginEnd="@dimen/margin_12"
             android:textColor="@color/white"
             android:text="@string/album_name"/>
 

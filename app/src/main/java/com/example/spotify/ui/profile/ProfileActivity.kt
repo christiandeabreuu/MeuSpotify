@@ -1,6 +1,8 @@
 package com.example.spotify.ui.profile
 
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION
+import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -103,6 +105,8 @@ class ProfileActivity : AppCompatActivity() {
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)
+        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
+        intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 
@@ -125,8 +129,8 @@ class ProfileActivity : AppCompatActivity() {
         userProfile.images.firstOrNull()?.let { image ->
             binding.profileImageView.load(image.url) {
                 transformations(coil.transform.CircleCropTransformation())
-                placeholder(R.drawable.ic_launcher_background)
-                error(R.drawable.ic_launcher_foreground)
+                placeholder(R.drawable.ic_spotify_full)
+                error(R.drawable.ic_spotify_full_black)
             }
         }
     }

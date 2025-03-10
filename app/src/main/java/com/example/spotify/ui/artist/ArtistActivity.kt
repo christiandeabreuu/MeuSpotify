@@ -1,6 +1,8 @@
 package com.example.spotify.ui.artist
 
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION
+import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -167,6 +169,8 @@ class ArtistActivity : AppCompatActivity() {
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)
+        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
+        intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 
@@ -180,8 +184,8 @@ class ArtistActivity : AppCompatActivity() {
         imageUrl?.let {
             binding.profileImageView.load(it) {
                 transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_launcher_background)
-                error(R.drawable.ic_launcher_foreground)
+                placeholder(R.drawable.ic_spotify_full)
+                error(R.drawable.ic_spotify_full_black)
             }
         }
     }

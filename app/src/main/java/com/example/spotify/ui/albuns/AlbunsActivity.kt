@@ -1,6 +1,8 @@
 package com.example.spotify.ui.albuns
 
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION
+import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -125,6 +127,8 @@ class AlbumsActivity : AppCompatActivity() {
         Log.d("AlbumsActivity", "Navegando para ${activityClass.simpleName} com ACCESS_TOKEN=$accessToken")
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)
+        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
+        intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 
