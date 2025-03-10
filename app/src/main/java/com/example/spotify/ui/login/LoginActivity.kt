@@ -1,6 +1,9 @@
 package com.example.spotify.ui.login
 
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -29,7 +32,9 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+
         Log.d("LoginActivity", "onCreate chamado. Intent data: ${intent?.data}")
+
         setupButtonListeners()
         handleRedirect(intent)
     }
@@ -41,12 +46,29 @@ class LoginActivity : AppCompatActivity() {
         handleRedirect(intent)
     }
 
+
+
     private fun setupButtonListeners() {
         binding.buttonStart.setOnClickListener {
-            Log.d("LoginActivity", "Botão de início clicado. Abrindo URL: ${Constants.AUTH_URL}")
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.AUTH_URL))
-            startActivity(intent)
+            if (!isInternetAvailable()) {
+                Log.w("LoginActivity", "Sem conexão ao clicar no botão. Redirecionando para ArtistActivity.")
+                Toast.makeText(this, "Sem conexão com a internet. Carregando dados offline.", Toast.LENGTH_SHORT).show()
+                navigateToMainActivity()
+            } else {
+                Log.d("LoginActivity", "Internet disponível. Abrindo URL de autenticação.")
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.AUTH_URL))
+                startActivity(intent)
+            }
         }
+    }
+
+
+
+    private fun isInternetAvailable(): Boolean {
+        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return activeNetwork.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
     }
 
     private fun handleRedirect(intent: Intent?) {
