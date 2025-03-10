@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.example.spotify.R
+import com.example.spotify.data.local.SpotifyDatabase
 import com.example.spotify.data.model.UserProfile
 import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.databinding.ActivityPlaylistBinding
@@ -51,12 +52,13 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun initializeViewModel() {
-        val factory = PlaylistViewModelFactory(RetrofitInstance.api, accessToken)
+        // Ajustando para passar o SpotifyDAO no PlaylistViewModelFactory
+        val dao = SpotifyDatabase.getSpotifyDatabase(applicationContext).spotifyDao()
+        val factory = PlaylistViewModelFactory(RetrofitInstance.api, dao, accessToken)
         viewModel = ViewModelProvider(this, factory)[PlaylistViewModel::class.java]
     }
 
     private fun setupUI() {
-//        handleWindowInsets()
         setupBottomNavigationView()
         setupRecyclerView()
     }
@@ -84,14 +86,6 @@ class PlaylistActivity : AppCompatActivity() {
         playlistAdapter = PlaylistAdapter()
         binding.playlistsRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.playlistsRecyclerView.adapter = playlistAdapter
-    }
-
-    private fun handleWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
     }
 
     private fun setupBottomNavigationView() {
