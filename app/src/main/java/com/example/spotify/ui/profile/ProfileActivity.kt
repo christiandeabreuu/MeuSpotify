@@ -1,6 +1,8 @@
 package com.example.spotify.ui.profile
 
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION
+import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.enableEdgeToEdge
@@ -29,7 +31,7 @@ class ProfileActivity : AppCompatActivity() {
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        handleWindowInsets()
+//        handleWindowInsets()
         getAccessToken()
 
         if (accessToken.isNullOrEmpty()) {
@@ -46,6 +48,8 @@ class ProfileActivity : AppCompatActivity() {
         accessToken = intent.getStringExtra("ACCESS_TOKEN")
         if (accessToken.isNullOrEmpty()) {
             Log.e("ProfileActivity", "Access token is null or empty")
+        } else {
+            Log.d("ProfileActivity", "Access token recebido: $accessToken")
         }
     }
 
@@ -67,15 +71,7 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupObservers() {
-        viewModel.userProfile.observe(this) { result ->
-            result.onSuccess { userProfile ->
-                updateProfileUI(userProfile)
-            }.onFailure { error ->
-                Log.e("ProfileActivity", "Error fetching user profile: ${error.message}")
-            }
-        }
-    }
+
 
     private fun setupUI() {
         setupCloseButton()
@@ -109,18 +105,35 @@ class ProfileActivity : AppCompatActivity() {
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)
+        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
+        intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 
-    private fun updateProfileUI(userProfile: UserProfile) {
-        binding.profileTextView.text = userProfile.displayName
-        userProfile.images.firstOrNull()?.let { image ->
-            binding.profileImageView.load(image.url) {
-                transformations(coil.transform.CircleCropTransformation())
-                placeholder(R.drawable.ic_launcher_background)
-                error(R.drawable.ic_launcher_foreground)
+
+
+    private fun setupObservers() {
+        viewModel.userProfile.observe(this) { result ->
+            result.onSuccess { userProfile ->
+                Log.d("ProfileActivity", "Usuário recebido: $userProfile")
+                updateProfileUI(userProfile)
+            }.onFailure { error ->
+                Log.e("ProfileActivity", "Erro ao buscar perfil do usuário: ${error.message}")
             }
         }
     }
+
+    private fun updateProfileUI(userProfile: UserProfile) {
+        Log.d("ProfileActivity", "Atualizando UI com o nome: ${userProfile.displayName} e imagem: ${userProfile.images.firstOrNull()?.url}")
+        binding.profileTextView.text = userProfile.displayName ?: "Usuário desconhecido"
+        userProfile.images.firstOrNull()?.let { image ->
+            binding.profileImageView.load(image.url) {
+                transformations(coil.transform.CircleCropTransformation())
+                placeholder(R.drawable.ic_spotify_full)
+                error(R.drawable.ic_spotify_full_black)
+            }
+        }
+    }
+
 }
 

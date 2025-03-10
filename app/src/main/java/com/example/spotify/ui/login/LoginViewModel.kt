@@ -3,11 +3,15 @@ package com.example.spotify.ui.login
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.spotify.data.model.SpotifyTokens.Tokens
+import androidx.lifecycle.viewModelScope
+import com.example.spotify.data.model.Tokens
 import com.example.spotify.domain.usecase.GetAccessTokenUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val context: Context,
@@ -21,16 +25,18 @@ class LoginViewModel(
         if (authorizationCode != null) {
             try {
                 Log.d("LoginViewModel", "Chamando getAccessToken com authorizationCode: $authorizationCode e redirectUri: $redirectUri")
+                emit(Result.success(TokenState()))
                 val tokens: Tokens = getAccessTokenUseCase.execute(authorizationCode, redirectUri)
                 Log.d("LoginViewModel", "Tokens obtidos: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}")
-                emit(Result.success(tokens))
+
+                emit(Result.success(TokenState(tokens, TokenStateEvent.GetToken)))
             } catch (e: Exception) {
                 Log.e("LoginViewModel", "Erro ao trocar código pelos tokens: ${e.message}")
-                emit(Result.failure<Tokens>(e))
+                emit(Result.failure(e))
             }
         } else {
             Log.e("LoginViewModel", "Código de autorização não encontrado na URI")
-            emit(Result.failure<Tokens>(Exception("Código de autorização não encontrado")))
+            emit(Result.failure(Exception("Código de autorização não encontrado")))
         }
     }
 

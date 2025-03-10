@@ -3,8 +3,7 @@
     import android.content.Context
 
 
-    class SpotifyTokens(private val context: Context) {
 
-        // Classe de dados para armazenar os tokens
-        data class Tokens(val accessToken: String, val refreshToken: String)
-    }
+
+    data class Tokens(val accessToken: String, val refreshToken: String)
+

@@ -2,7 +2,7 @@ package com.example.spotify.data.repository
 
 
 import android.content.Context
-import com.example.spotify.data.model.SpotifyTokens.Tokens
+import com.example.spotify.data.model.Tokens
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.FormBody
