@@ -9,16 +9,15 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import android.util.Log
-
 import com.example.spotify.R
-import com.example.spotify.data.model.Artist
+import com.example.spotify.data.local.ArtistWithImages
 import com.example.spotify.databinding.ItemArtistaBinding
 import com.example.spotify.ui.albuns.AlbumsActivity
 
 class ArtistAdapter(
     private val context: Context,
     private val accessToken: String,
-) : PagingDataAdapter<Artist, ArtistAdapter.ArtistViewHolder>(ArtistDiffCallback()) {
+) : PagingDataAdapter<ArtistWithImages, ArtistAdapter.ArtistViewHolder>(ArtistDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
         val binding = ItemArtistaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -26,11 +25,14 @@ class ArtistAdapter(
     }
 
     override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
-        val artist = getItem(position) // Pega o item da posição com `PagingDataAdapter`
-        Log.d("ArtistAdapter", "Artist at position $position: $artist")
-        artist?.let { // Apenas executa o bind se o item não for nulo
-            holder.binding.tvArtist.text = it.name
-            holder.binding.imageArtist.load(it.images.firstOrNull()?.url) {
+        Log.d("ArtistAdapter", "onBindViewHolder() chamado com position: $position")
+        val artistWithImages = getItem(position)
+        Log.d("ArtistAdapter", "Artist at position $position: $artistWithImages")
+        artistWithImages?.let {
+            val artist = it.artist
+            val firstImage = it.images.firstOrNull()
+            holder.binding.tvArtist.text = artist.name
+            holder.binding.imageArtist.load(firstImage?.url) {
                 transformations(coil.transform.CircleCropTransformation())
                 placeholder(R.drawable.ic_spotify_full)
                 error(R.drawable.ic_spotify_full)
@@ -40,7 +42,7 @@ class ArtistAdapter(
                     putExtra("ARTIST_ID", artist.id)
                     putExtra("ACCESS_TOKEN", accessToken)
                     putExtra("ARTIST", artist.name)
-                    putExtra("IMAGE_URL", artist.images.firstOrNull()?.url)
+                    putExtra("IMAGE_URL", firstImage?.url)
                 }
                 context.startActivity(intent)
             }
@@ -49,14 +51,13 @@ class ArtistAdapter(
 
     class ArtistViewHolder(val binding: ItemArtistaBinding) : RecyclerView.ViewHolder(binding.root)
 
-    class ArtistDiffCallback : DiffUtil.ItemCallback<Artist>() {
-        override fun areItemsTheSame(oldItem: Artist, newItem: Artist): Boolean {
-            return oldItem.id == newItem.id
+    class ArtistDiffCallback : DiffUtil.ItemCallback<ArtistWithImages>() {
+        override fun areItemsTheSame(oldItem: ArtistWithImages, newItem: ArtistWithImages): Boolean {
+            return oldItem.artist.id == newItem.artist.id
         }
 
-        override fun areContentsTheSame(oldItem: Artist, newItem: Artist): Boolean {
+        override fun areContentsTheSame(oldItem: ArtistWithImages, newItem: ArtistWithImages): Boolean {
             return oldItem == newItem
         }
     }
 }
-

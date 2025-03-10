@@ -32,11 +32,9 @@ class ArtistActivity : AppCompatActivity() {
         binding = ActivityArtistBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        handleWindowInsets()
+        // handleWindowInsets()
         setupRecyclerView()
         setupBottomNavigationView()
-        observeArtistsPagingData()
-
         loadUserData()
     }
 
@@ -46,12 +44,19 @@ class ArtistActivity : AppCompatActivity() {
         Log.d("ArtistActivity", "onNewIntent chamado com URI: $uri")
 
         if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
-            // Processa o callback do Spotify e troca pelo token
             val code = uri.getQueryParameter("code")
             Log.d("ArtistActivity", "Código de autorização recebido: $code")
             if (code != null) {
-                // Chama o ViewModel ou UseCase para trocar o código por tokens
-                viewModel.exchangeCodeForTokens(code, Constants.REDIRECT_URI)
+                viewModel.exchangeCodeForTokens(code, Constants.REDIRECT_URI).observe(this) { result ->
+                    result.onSuccess { tokens ->
+                        val (accessToken, refreshToken) = tokens
+                        this.accessToken = accessToken
+                        loadProfileData(accessToken, refreshToken)
+                        observeArtistsPagingData()
+                    }.onFailure {
+                        navigateToLogin()
+                    }
+                }
             } else {
                 Log.e("ArtistActivity", "Código de autorização ausente no URI")
             }
@@ -60,27 +65,22 @@ class ArtistActivity : AppCompatActivity() {
 
     private fun observeArtistsPagingData() {
         lifecycleScope.launch {
+            Log.d("ArtistActivity", "observeArtistsPagingData() chamado")
             Log.d("ArtistActivity", "Token passado ao ViewModel: $accessToken")
             viewModel.getArtistsPagingData(accessToken).collectLatest { pagingData ->
+                Log.d("ArtistActivity", "collectLatest chamado com pagingData: $pagingData")
                 artistAdapter.submitData(pagingData)
             }
         }
     }
 
-
-
-
-
     private fun setupRecyclerView() {
-        artistAdapter = ArtistAdapter(this, accessToken) // Adapter ajustado
+        artistAdapter = ArtistAdapter(this, accessToken)
         binding.artistasRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.artistasRecyclerView.adapter = artistAdapter
     }
 
-
-
     private fun loadUserData() {
-        // Carrega tokens
         viewModel.loadTokens().observe(this) { result ->
             result.onSuccess { tokens ->
                 val (accessToken, refreshToken) = tokens
@@ -97,6 +97,7 @@ class ArtistActivity : AppCompatActivity() {
         viewModel.getUserProfile(accessToken).observe(this) { result ->
             result.onSuccess { profile ->
                 profile?.images?.firstOrNull()?.url?.let { imageProfile(it) }
+                loadArtistsData(accessToken)
             }.onFailure {
                 refreshAccessToken(refreshToken)
             }
@@ -118,14 +119,15 @@ class ArtistActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadArtistsData() {
-        lifecycleScope.launch {
-            viewModel.getArtistsPagingData("query").collectLatest { pagingData ->
-                artistAdapter.submitData(pagingData)
+    private fun loadArtistsData(accessToken: String) {
+        viewModel.getTopArtist(accessToken).observe(this) { result ->
+            result.onSuccess {
+                Log.d("ArtistActivity", "Artistas carregados com sucesso")
+            }.onFailure {
+                Log.e("ArtistActivity", "Erro ao carregar artistas", it)
             }
         }
     }
-
 
     private fun handleWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -176,5 +178,3 @@ class ArtistActivity : AppCompatActivity() {
         }
     }
 }
-
-

@@ -4,22 +4,21 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 
 @Dao
 interface SpotifyDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertTopArtists(topArtists: TopArtistsDB)
-
-    @Query("SELECT * FROM TopArtistsDB")
-    suspend fun getTopArtists(): TopArtistsDB
+    suspend fun insertTopArtistsDB(topArtistsDB: TopArtistsDB): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAlbums(albums: List<AlbumsDB>)
+    suspend fun insertArtists(artists: List<Artist>): List<Long>
 
-    suspend fun insertUserProfile(userProfile: List<UserProfileDB>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertImageArtists(imageArtists: List<ImageArtist>)
 
-    suspend fun insertPlaylists(playlists: List<PlaylistsDB>)
-
-
+    @Transaction
+    @Query("SELECT * FROM top_artists WHERE timeRange = :timeRange LIMIT :limit OFFSET :offset")
+    suspend fun getTopArtistsWithOffsetAndLimit(limit: Int, offset: Int, timeRange: String): TopArtistsWithArtistsAndImages
 }

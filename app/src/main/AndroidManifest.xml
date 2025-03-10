@@ -47,14 +47,12 @@
                     android:host="callback"
                     android:scheme="meuapp" />
             </intent-filter>
-
         </activity>
 
         <activity
             android:name=".ui.artist.ArtistActivity"
-            android:exported="true">
-
-
+            android:exported="true"
+            android:launchMode="singleTask">
         </activity>
 
     </application>

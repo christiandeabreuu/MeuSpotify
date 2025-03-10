@@ -3,38 +3,38 @@ package com.example.spotify.data.paging
 import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.spotify.data.model.Artist
+import com.example.spotify.data.local.ArtistWithImages
 import com.example.spotify.domain.usecase.GetTopArtistsUseCase
 
 
 class ArtistPagingSource(
     private val useCaseTopArtists: GetTopArtistsUseCase,
     private val accessToken: String
-) : PagingSource<Int, Artist>() {
+) : PagingSource<Int, ArtistWithImages>() {
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Artist> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, ArtistWithImages> {
         return try {
-            val nextPageNumber = params.key ?: 0 // Inicia na página 0
-            Log.d("ArtistPagingSource", "Carregando artistas com token: $accessToken, offset: $nextPageNumber")
-
-            // Chama o use case para obter os artistas
-            val response = useCaseTopArtists.execute(accessToken, nextPageNumber)
-
+            val nextPageNumber = params.key ?: 0
+            val offset = nextPageNumber * 20
+            val limit = params.loadSize
+            Log.d("ArtistPagingSource", "load() chamado com limit: $limit, offset: $offset, timeRange: medium_term")
+            val response = useCaseTopArtists.getFromDBWithOffsetAndLimit(limit, offset)
+            Log.d("ArtistPagingSource", "load() response.artists.size: ${response.artists.size}")
+            val artists = response.artists
             LoadResult.Page(
-                data = response.items ?: emptyList(), // Lista de artistas
-                prevKey = if (nextPageNumber == 0) null else nextPageNumber - response.limit, // Previous page
-                nextKey = if (response.next != null) nextPageNumber + response.limit else null // Próxima página
+                data = artists,
+                prevKey = if (nextPageNumber == 0) null else nextPageNumber - 1,
+                nextKey = if (artists.isEmpty()) null else nextPageNumber + 1
             )
         } catch (e: Exception) {
-            Log.e("ArtistPagingSource", "Erro ao carregar artistas: ${e.message}")
             LoadResult.Error(e)
         }
     }
 
-    override fun getRefreshKey(state: PagingState<Int, Artist>): Int? {
+    override fun getRefreshKey(state: PagingState<Int, ArtistWithImages>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             val anchorPage = state.closestPageToPosition(anchorPosition)
-            anchorPage?.prevKey?.plus(20) ?: anchorPage?.nextKey?.minus(20)
+            anchorPage?.prevKey?.plus(1) ?: anchorPage?.nextKey?.minus(1)
         }
     }
 }
