@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -44,9 +45,16 @@ class LoginActivity : AppCompatActivity() {
     private fun setupButtonListeners() {
         binding.buttonStart.setOnClickListener {
             Log.d("LoginActivity", "Botão de início clicado. Abrindo URL: ${Constants.AUTH_URL}")
+            showLoading(true)
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.AUTH_URL))
             startActivity(intent)
         }
+    }
+
+    private fun showLoading(isLoading: Boolean) {
+        binding.progressBar.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.buttonStart.visibility = if (!isLoading) View.VISIBLE else View.GONE
+        binding.buttonStart.isEnabled = !isLoading
     }
 
     private fun handleRedirect(intent: Intent?) {
@@ -59,9 +67,16 @@ class LoginActivity : AppCompatActivity() {
             Log.d("LoginActivity", "URI inicia com REDIRECT_URI, processando redirecionamento...")
             loginViewModel.handleRedirect(uri, Constants.REDIRECT_URI)
                 .observe(this) { result ->
-                    result?.onSuccess { tokens ->
-                        Log.d("LoginActivity", "Tokens recebidos com sucesso: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}")
-                        loginViewModel.saveTokens(tokens.accessToken, tokens.refreshToken)
+                    result?.onSuccess { tokenState ->
+                        tokenState.token?.let { tokens ->
+
+                            Log.d(
+                                "LoginActivity",
+                                "Tokens recebidos com sucesso: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}"
+                            )
+                            loginViewModel.saveTokens(tokens.accessToken, tokens.refreshToken)
+                        }
+                        showLoading(tokenState.event == TokenStateEvent.Loading)
 
                         // Navegar automaticamente para a ArtistActivity
                         navigateToMainActivity()
