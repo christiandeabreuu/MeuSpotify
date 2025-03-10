@@ -9,9 +9,11 @@ import androidx.room.RoomDatabase
     entities = [
         TopArtistsDB::class,
         Artist::class,
-        ImageArtist::class
+        ImageArtist::class,
+        UserProfileDB::class,
+        PlaylistDB::class
     ],
-    version = 1
+    version = 3
 )
 abstract class SpotifyDatabase : RoomDatabase() {
 

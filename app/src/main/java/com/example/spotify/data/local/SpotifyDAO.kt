@@ -20,5 +20,24 @@ interface SpotifyDAO {
 
     @Transaction
     @Query("SELECT * FROM top_artists WHERE timeRange = :timeRange LIMIT :limit OFFSET :offset")
-    suspend fun getTopArtistsWithOffsetAndLimit(limit: Int, offset: Int, timeRange: String): TopArtistsWithArtistsAndImages
+    suspend fun getTopArtistsWithOffsetAndLimit(
+        limit: Int,
+        offset: Int,
+        timeRange: String
+    ): TopArtistsWithArtistsAndImages
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertUserProfile(userProfile: UserProfileDB): Long
+
+    @Query("SELECT * FROM user_profile LIMIT 1")
+    suspend fun getUserProfile(): UserProfileDB?
+
+    // Insere uma lista de playlists no banco
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPlaylists(playlists: List<PlaylistDB>)
+
+    // Busca todas as playlists no banco
+    @Query("SELECT * FROM playlist")
+    suspend fun getPlaylists():List<PlaylistDB>
+
 }

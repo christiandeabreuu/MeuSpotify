@@ -10,8 +10,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import coil.load
 import com.example.spotify.R
+import com.example.spotify.data.local.SpotifyDAO
+import com.example.spotify.data.local.SpotifyDatabase
 import com.example.spotify.data.model.UserProfile
 import com.example.spotify.data.network.RetrofitInstance
+import com.example.spotify.data.repository.UserProfileRepository
 import com.example.spotify.databinding.ActivityProfileBinding
 import com.example.spotify.ui.artist.ArtistActivity
 import com.example.spotify.ui.login.LoginActivity
@@ -19,8 +22,11 @@ import com.example.spotify.ui.playlist.PlaylistActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class ProfileActivity : AppCompatActivity() {
+    private lateinit var spotifyDAO: SpotifyDAO
     private lateinit var binding: ActivityProfileBinding
     private lateinit var viewModel: ProfileViewModel
+
+
     private var accessToken: String? = null
 
     override fun onCreate(savedInstanceState:Bundle?) {
@@ -36,10 +42,16 @@ class ProfileActivity : AppCompatActivity() {
             navigateToLogin()
             return
         }
-
+        initializedatabase()
         initializeViewModel()
         setupObservers()
         setupUI()
+    }
+
+    private fun initializedatabase() {
+        // Inicializando o banco de dados e o DAO
+        val database = SpotifyDatabase.getSpotifyDatabase(applicationContext)
+        spotifyDAO = database.spotifyDao()
     }
 
     private fun getAccessToken() {
@@ -52,7 +64,9 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun initializeViewModel() {
-        val factory = ProfileViewModelFactory(RetrofitInstance.api, accessToken!!)
+        val apiService = RetrofitInstance.api
+        val repository = UserProfileRepository(apiService, spotifyDAO)
+        val factory = ProfileViewModelFactory(RetrofitInstance.api, spotifyDAO, repository, accessToken!!)
         viewModel = ViewModelProvider(this, factory)[ProfileViewModel::class.java]
     }
 
@@ -125,11 +139,10 @@ class ProfileActivity : AppCompatActivity() {
         userProfile.images.firstOrNull()?.let { image ->
             binding.profileImageView.load(image.url) {
                 transformations(coil.transform.CircleCropTransformation())
-                placeholder(R.drawable.ic_launcher_background)
-                error(R.drawable.ic_launcher_foreground)
+                placeholder(R.drawable.ic_spotify_full)
+                error(R.drawable.ic_spotify_full_black)
             }
         }
     }
-
 }
 
