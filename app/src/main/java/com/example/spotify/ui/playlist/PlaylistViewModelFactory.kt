@@ -1,22 +1,28 @@
 package com.example.spotify.ui.playlist
 
-import GetUserPlaylistsUseCase
+import GetPlaylistsUseCase
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.spotify.data.local.SpotifyDAO
 import com.example.spotify.data.network.SpotifyApiService
-import com.example.spotify.domain.usecase.GetPlaylistUserProfileUseCase
+import com.example.spotify.data.repository.PlaylistRepository
+import com.example.spotify.domain.usecase.GetUserProfilePlaylistUseCase
 
 class PlaylistViewModelFactory(
     private val apiService: SpotifyApiService,
+    private val spotifyDAO: SpotifyDAO, // Adicionar o DAO como um parâmetro
     private val accessToken: String
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PlaylistViewModel::class.java)) {
-            val getPlaylistUserProfileUseCase = GetPlaylistUserProfileUseCase(apiService)
-            val getUserPlaylistsUseCase = GetUserPlaylistsUseCase(apiService)
-            return PlaylistViewModel(getPlaylistUserProfileUseCase, getUserPlaylistsUseCase, accessToken) as T
+            return PlaylistViewModel(
+                getUserProfilePlaylistUseCase = GetUserProfilePlaylistUseCase(apiService),
+                getPlaylistsUseCase = GetPlaylistsUseCase(PlaylistRepository(apiService, spotifyDAO)),
+                accessToken = accessToken
+            ) as T
         }
-        throw IllegalArgumentException("Unknown ViewModel class")
+        throw IllegalArgumentException("Classe ViewModel desconhecida")
     }
 }
+
 

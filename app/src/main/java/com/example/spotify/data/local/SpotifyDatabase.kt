@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [
@@ -13,7 +15,7 @@ import androidx.room.RoomDatabase
         UserProfileDB::class,
         PlaylistDB::class
     ],
-    version = 3
+    version = 4
 )
 abstract class SpotifyDatabase : RoomDatabase() {
 
@@ -22,6 +24,8 @@ abstract class SpotifyDatabase : RoomDatabase() {
     companion object {
         @Volatile
         private var INSTANCE: SpotifyDatabase? = null
+
+
 
         fun getSpotifyDatabase(context: Context): SpotifyDatabase {
             val tempInstance = INSTANCE
@@ -33,7 +37,8 @@ abstract class SpotifyDatabase : RoomDatabase() {
                     context.applicationContext,
                     SpotifyDatabase::class.java,
                     "spotify_db"
-                ).fallbackToDestructiveMigration().build()
+                ).fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 return instance
             }

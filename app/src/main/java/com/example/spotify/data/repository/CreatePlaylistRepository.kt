@@ -2,7 +2,7 @@ import android.util.Log
 import com.example.spotify.data.model.CreatePlaylistRequest
 import com.example.spotify.data.network.SpotifyApiService
 
-class PlaylistRepository(private val apiService: SpotifyApiService) {
+class CreatePlaylistRepository(private val apiService: SpotifyApiService) {
 
     suspend fun createPlaylist(accessToken: String, playlistName: String): String {
         Log.d("PlaylistRepository", "URL sendo usada: https://api.spotify.com/v1/me/playlists")

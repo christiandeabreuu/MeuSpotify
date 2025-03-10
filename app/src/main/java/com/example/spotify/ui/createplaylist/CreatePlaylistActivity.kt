@@ -1,6 +1,6 @@
 package com.example.spotify.ui.createplaylist
 
-import PlaylistRepository
+import CreatePlaylistRepository
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -16,7 +16,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
     private lateinit var accessToken: String
 
     private val viewModel: CreatePlaylistViewModel by viewModels {
-        CreatePlaylistViewModelFactory(PlaylistRepository(RetrofitInstance.api))
+        CreatePlaylistViewModelFactory(CreatePlaylistRepository(RetrofitInstance.api))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

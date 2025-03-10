@@ -8,6 +8,7 @@ import androidx.room.PrimaryKey
 data class PlaylistDB(
     @PrimaryKey(autoGenerate = true)
     val databaseId: Int = 0,
+    val id: String,
     val name: String, // Nome da playlist
     val description: String?, // Descrição da playlist
     val ownerName: String, // Nome do proprietário da playlist
