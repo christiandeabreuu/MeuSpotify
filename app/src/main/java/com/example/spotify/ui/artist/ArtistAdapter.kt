@@ -11,13 +11,14 @@ import coil.load
 import android.util.Log
 import com.example.spotify.R
 import com.example.spotify.data.local.ArtistWithImages
+import com.example.spotify.data.model.Artist
 import com.example.spotify.databinding.ItemArtistaBinding
 import com.example.spotify.ui.albuns.AlbumsActivity
 
 class ArtistAdapter(
-    private val context: Context,
     private val accessToken: String,
-) : PagingDataAdapter<ArtistWithImages, ArtistAdapter.ArtistViewHolder>(ArtistDiffCallback()) {
+    private val onClick: (Artist) -> Unit
+) : PagingDataAdapter<Artist, ArtistAdapter.ArtistViewHolder>(ArtistDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
         val binding = ItemArtistaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -25,38 +26,31 @@ class ArtistAdapter(
     }
 
     override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
-        Log.d("ArtistAdapter", "onBindViewHolder() chamado com position: $position")
-        val artistWithImages = getItem(position)
-        Log.d("ArtistAdapter", "Artist at position $position: $artistWithImages")
-        artistWithImages?.let {
-            val artist = it.artist
-            val firstImage = it.images.firstOrNull()
-            holder.binding.tvArtist.text = artist.name
-            holder.binding.imageArtist.load(firstImage?.url) {
+        val artist = getItem(position)
+
+        Log.d("ArtistAdapter", "Artist at position $position: $artist")
+        artist?.let { // Apenas executa o bind se o item não for nulo
+            holder.binding.tvArtist.text = it.name
+            holder.binding.imageArtist.load(it.images.firstOrNull()?.url) {
                 transformations(coil.transform.CircleCropTransformation())
                 placeholder(R.drawable.ic_spotify_full)
                 error(R.drawable.ic_spotify_full)
             }
+            Log.d("ArtistAdapter", "Token ao criar o Intent: $accessToken")
             holder.binding.root.setOnClickListener {
-                val intent = Intent(context, AlbumsActivity::class.java).apply {
-                    putExtra("ARTIST_ID", artist.id)
-                    putExtra("ACCESS_TOKEN", accessToken)
-                    putExtra("ARTIST", artist.name)
-                    putExtra("IMAGE_URL", firstImage?.url)
-                }
-                context.startActivity(intent)
+                onClick(artist)
             }
         }
     }
 
     class ArtistViewHolder(val binding: ItemArtistaBinding) : RecyclerView.ViewHolder(binding.root)
 
-    class ArtistDiffCallback : DiffUtil.ItemCallback<ArtistWithImages>() {
-        override fun areItemsTheSame(oldItem: ArtistWithImages, newItem: ArtistWithImages): Boolean {
-            return oldItem.artist.id == newItem.artist.id
+    class ArtistDiffCallback : DiffUtil.ItemCallback<Artist>() {
+        override fun areItemsTheSame(oldItem: Artist, newItem: Artist): Boolean {
+            return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: ArtistWithImages, newItem: ArtistWithImages): Boolean {
+        override fun areContentsTheSame(oldItem: Artist, newItem: Artist): Boolean {
             return oldItem == newItem
         }
     }
