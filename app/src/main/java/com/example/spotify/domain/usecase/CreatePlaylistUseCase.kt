@@ -8,7 +8,7 @@ class CreatePlaylistUseCase(private val playlistRepository: PlaylistRepository) 
             val response = playlistRepository.createPlaylist(accessToken, playlistName)
             Result.success(response) // Retorna uma mensagem de sucesso
         } catch (e: Exception) {
-            Result.failure(e) // Retorna uma falha com a mensagem de erro
+            Result.failure(e)
         }
     }
 }
