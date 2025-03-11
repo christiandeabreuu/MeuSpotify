@@ -50,11 +50,9 @@ class AlbumsAdapter(private var albums: List<Album>) : RecyclerView.Adapter<Albu
                     return targetFormat.format(parsedDate) // Retorna no formato dd/MM/yyyy
                 }
             } catch (e: Exception) {
-                // Ignorar e tentar o próximo formato
+
             }
         }
-
-        // Caso nenhuma correspondência seja encontrada, retornar uma data padrão
         return "01/01/1989" // Adicione aqui um valor padrão apropriado
     }
 

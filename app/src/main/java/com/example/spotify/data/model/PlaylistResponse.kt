@@ -7,7 +7,6 @@ data class PlaylistsResponse(
     @SerializedName("items") val items: List<Playlist>
 )
 
-
 data class Playlist(
     val id: String,
     val name: String,
@@ -17,12 +16,10 @@ data class Playlist(
     val images: List<Image>
 )
 
-
 data class Owner(
     val id: String,
     @SerializedName("display_name") val name: String
 )
-
 
 data class ImagePlaylist(
     val url: String

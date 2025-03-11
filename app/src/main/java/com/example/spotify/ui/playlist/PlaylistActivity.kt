@@ -68,11 +68,10 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        // Observa os dados do perfil do usuário
         viewModel.userProfile.observe(this) { result ->
             result.onSuccess { userProfile ->
                 if (userProfile != null && !userProfile.images.isNullOrEmpty()) {
-                    updateProfileUI(userProfile) // Apenas chama se for válido
+                    updateProfileUI(userProfile)
                 } else {
                     Log.e("PlaylistActivity", "UserProfile está nulo ou sem imagens.")
                     binding.playlistsProfileImageView.setImageResource(R.drawable.ic_spotify_full)
@@ -83,7 +82,6 @@ class PlaylistActivity : AppCompatActivity() {
             }
         }
 
-        // Observa as playlists e atualiza a UI
         viewModel.playlists.observe(this) { result ->
             result.onSuccess { playlists ->
                 playlistAdapter.submitList(playlists) // Atualiza o adapter com as playlists
@@ -94,7 +92,6 @@ class PlaylistActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun setupRecyclerView() {
         playlistAdapter = PlaylistAdapter()

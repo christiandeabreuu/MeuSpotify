@@ -8,8 +8,6 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
@@ -36,12 +34,9 @@ class ArtistActivity : AppCompatActivity() {
         binding = ActivityArtistBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-//        handleWindowInsets()
         observeArtistsPagingData()
-
         setupRecyclerView()
         setupBottomNavigationView()
-
         loadUserData()
     }
 
@@ -51,11 +46,9 @@ class ArtistActivity : AppCompatActivity() {
         Log.d("ArtistActivity", "onNewIntent chamado com URI: $uri")
 
         if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
-            // Processa o callback do Spotify e troca pelo token
             val code = uri.getQueryParameter("code")
             Log.d("ArtistActivity", "Código de autorização recebido: $code")
             if (code != null) {
-                // Chama o ViewModel ou UseCase para trocar o código por tokens
                 viewModel.exchangeCodeForTokens(code, Constants.REDIRECT_URI)
             } else {
                 Log.e("ArtistActivity", "Código de autorização ausente no URI")
@@ -103,8 +96,6 @@ class ArtistActivity : AppCompatActivity() {
         }
     }
 
-
-
     private fun loadProfileData(accessToken: String, refreshToken: String) {
         viewModel.getUserProfile(accessToken).observe(this) { result ->
             result.onSuccess { profile ->
@@ -135,15 +126,6 @@ class ArtistActivity : AppCompatActivity() {
             viewModel.getArtistsPagingData("query").collectLatest { pagingData ->
                 artistAdapter.submitData(pagingData)
             }
-        }
-    }
-
-
-    private fun handleWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
         }
     }
 
@@ -179,7 +161,6 @@ class ArtistActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
-
 
     private fun imageProfile(imageUrl: String?) {
         imageUrl?.let {

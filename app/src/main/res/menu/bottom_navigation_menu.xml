@@ -3,13 +3,13 @@
     <item
         android:id="@+id/navigation_artistas"
         android:icon="@drawable/ic_artists"
-        android:title="Artistas" />
+        android:title="@string/artistas" />
     <item
         android:id="@+id/navigation_playlists"
         android:icon="@drawable/ic_playlists"
-         android:title="Playlists" />
+         android:title="@string/playlists" />
     <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_user"
-        android:title="Perfil" />
+        android:title="@string/perfil" />
 </menu>

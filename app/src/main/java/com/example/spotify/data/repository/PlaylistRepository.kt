@@ -17,7 +17,6 @@ class PlaylistRepository(
         }
     }
 
-    // Salva playlists no banco
     suspend fun insertPlaylistsIntoDB(playlists: List<PlaylistDB>) {
         spotifyDAO.insertPlaylists(playlists)
     }

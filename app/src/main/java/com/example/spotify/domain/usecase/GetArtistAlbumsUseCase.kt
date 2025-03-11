@@ -1,6 +1,5 @@
 package com.example.spotify.domain.usecase
 
-import android.util.Log
 import com.example.spotify.data.model.Album
 import com.example.spotify.data.network.SpotifyApiService
 import retrofit2.awaitResponse

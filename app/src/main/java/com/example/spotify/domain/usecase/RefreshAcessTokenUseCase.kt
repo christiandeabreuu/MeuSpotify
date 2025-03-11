@@ -1,6 +1,5 @@
 package com.example.spotify.domain.usecase
 
-import android.util.Log
 import com.example.spotify.data.repository.AuthRepository
 import com.example.spotify.data.model.Tokens
 

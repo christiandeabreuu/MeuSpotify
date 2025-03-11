@@ -10,7 +10,6 @@ import com.example.spotify.data.network.SpotifyApiService
 class UserProfileRepository(
     private val apiService: SpotifyApiService, private val spotifyDAO: SpotifyDAO
 ) {
-    // Busca o perfil da API
     suspend fun getUserProfileFromApi(accessToken: String): UserProfile? {
         return try {
             val userProfile = apiService.getUserProfile("Bearer $accessToken")
@@ -20,13 +19,11 @@ class UserProfileRepository(
         }
     }
 
-    // Insere o perfil no banco local
     suspend fun insertUserProfile(userProfile: UserProfileDB) {
         spotifyDAO.insertUserProfile(userProfile)
         Log.d("UserProfileRepository", "Perfil inserido no banco: $userProfile")
     }
 
-    // Recupera o perfil do banco local
     suspend fun getUserProfileFromDB(): UserProfileDB? {
         val userProfile = spotifyDAO.getUserProfile()
         Log.d("UserProfileRepository", "Perfil recuperado do banco: $userProfile")

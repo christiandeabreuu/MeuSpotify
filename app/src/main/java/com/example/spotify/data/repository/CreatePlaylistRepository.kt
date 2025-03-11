@@ -5,7 +5,7 @@ class CreatePlaylistRepository(private val apiService: SpotifyApiService) {
 
     suspend fun createPlaylist(accessToken: String, playlistName: String): String {
         val requestBody = CreatePlaylistRequest(
-            name = playlistName, public = true // Define se a playlist será pública ou privada
+            name = playlistName, public = true
         )
         val response = apiService.createPlaylist("Bearer $accessToken", requestBody)
         if (response.isSuccessful) {

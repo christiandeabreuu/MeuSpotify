@@ -50,8 +50,6 @@ class AuthRepositoryImpl(private val context: Context) : AuthRepository {
         return Tokens(accessToken, refreshToken)
     }
 
-
-
     override suspend fun refreshAccessToken(refreshToken: String): Tokens {
         val requestBody = FormBody.Builder()
             .add("grant_type", "refresh_token")

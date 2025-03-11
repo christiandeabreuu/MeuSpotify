@@ -32,11 +32,9 @@ interface SpotifyDAO {
     @Query("SELECT * FROM user_profile LIMIT 1")
     suspend fun getUserProfile(): UserProfileDB?
 
-    // Insere uma lista de playlists no banco
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPlaylists(playlists: List<PlaylistDB>)
 
-    // Busca todas as playlists no banco
     @Query("SELECT * FROM playlist")
     suspend fun getPlaylists():List<PlaylistDB>
 
