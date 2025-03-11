@@ -26,6 +26,7 @@ class LoginActivity : AppCompatActivity() {
         ViewModelProvider(this, factory)[LoginViewModel::class.java]
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
