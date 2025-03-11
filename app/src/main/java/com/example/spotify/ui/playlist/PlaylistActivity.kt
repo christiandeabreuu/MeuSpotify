@@ -50,11 +50,15 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun initializeViewModel() {
-        // Adicionando o SpotifyDatabase no ViewModelFactory
         val dao = SpotifyDatabase.getSpotifyDatabase(applicationContext).spotifyDao()
-        val factory = PlaylistViewModelFactory(RetrofitInstance.api, dao, accessToken)
+        val factory = PlaylistViewModelFactory(
+            apiService = RetrofitInstance.api,
+            dao = dao,
+            accessToken = accessToken,
+        )
         viewModel = ViewModelProvider(this, factory)[PlaylistViewModel::class.java]
     }
+
 
     private fun setupUI() {
         setupBottomNavigationView()
@@ -62,10 +66,15 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun setupObservers() {
-        // Observa os dados do perfil do usuário (já implementado)
+        // Observa os dados do perfil do usuário
         viewModel.userProfile.observe(this) { result ->
             result.onSuccess { userProfile ->
-                updateProfileUI(userProfile)
+                if (userProfile != null && !userProfile.images.isNullOrEmpty()) {
+                    updateProfileUI(userProfile) // Apenas chama se for válido
+                } else {
+                    Log.e("PlaylistActivity", "UserProfile está nulo ou sem imagens.")
+                    binding.playlistsProfileImageView.setImageResource(R.drawable.ic_spotify_full)
+                }
             }.onFailure { error ->
                 Log.e("PlaylistActivity", "Erro ao carregar perfil do usuário: ${error.message}")
                 Toast.makeText(this, "Erro ao carregar o perfil.", Toast.LENGTH_SHORT).show()
@@ -83,6 +92,7 @@ class PlaylistActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun setupRecyclerView() {
         playlistAdapter = PlaylistAdapter()
@@ -139,8 +149,14 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun updateProfileUI(userProfile: UserProfile) {
-        binding.playlistsProfileImageView.load(userProfile.images.firstOrNull()?.url) {
-            transformations(coil.transform.CircleCropTransformation())
+        val profileImageUrl = userProfile.images.firstOrNull()?.url ?: ""
+        if (profileImageUrl.isNotBlank()) {
+            binding.playlistsProfileImageView.load(profileImageUrl) {
+                transformations(coil.transform.CircleCropTransformation())
+            }
+        } else {
+            Log.e("PlaylistActivity", "Imagem de perfil vazia. Exibindo placeholder.")
+            binding.playlistsProfileImageView.setImageResource(R.drawable.ic_spotify_full)
         }
     }
 }

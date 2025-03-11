@@ -1,13 +1,12 @@
-package com.example.spotify.data.repository
-
+import android.util.Log
 import com.example.spotify.data.local.PlaylistDB
 import com.example.spotify.data.local.SpotifyDAO
 import com.example.spotify.data.model.Playlist
 import com.example.spotify.data.network.SpotifyApiService
 
 class PlaylistRepository(
-    private val apiService: SpotifyApiService,
-    private val spotifyDAO: SpotifyDAO // Conexão com o banco de dados
+    private val spotifyDAO: SpotifyDAO,
+    private val apiService: SpotifyApiService
 ) {
     // Busca playlists da API
     suspend fun getPlaylistsFromApi(accessToken: String): List<Playlist>? {
@@ -15,17 +14,20 @@ class PlaylistRepository(
             val response = apiService.getPlaylists("Bearer $accessToken")
             response.items
         } catch (e: Exception) {
-            null // Retorna null se a API falhar
+            Log.e("PlaylistRepository", "Erro ao buscar playlists da API: ${e.message}")
+            null
         }
     }
 
-    // Insere playlists no banco
+    // Salva playlists no banco
     suspend fun insertPlaylistsIntoDB(playlists: List<PlaylistDB>) {
         spotifyDAO.insertPlaylists(playlists)
     }
 
-    // Busca playlists do banco de dados
     suspend fun getPlaylistsFromDB(): List<PlaylistDB> {
-        return spotifyDAO.getPlaylists()
+        val playlists = spotifyDAO.getPlaylists()
+        Log.d("PlaylistRepository", "Playlists recuperadas do banco: $playlists")
+        return playlists
     }
+
 }
