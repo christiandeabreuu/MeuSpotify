@@ -41,10 +41,10 @@ class PlaylistAdapter : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>
             val images = playlist.images
             if (!images.isNullOrEmpty()) {
                 binding.playlistImageView.load(
-                    images.firstOrNull()?.url ?: R.drawable.ic_spotify_full_black
+                    images.firstOrNull()?.url ?: R.drawable.ic_spotify_full
                 )
             } else {
-                binding.playlistImageView.load(R.drawable.ic_spotify_full_black)
+                binding.playlistImageView.load(R.drawable.ic_spotify_full)
 
             }
         }

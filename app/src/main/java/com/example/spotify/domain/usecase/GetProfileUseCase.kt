@@ -16,18 +16,14 @@ class GetProfileUserUseCase(
     // Função principal que busca os dados
     suspend fun getUserProfileFromApi(accessToken: String): UserProfile? {
         return try {
-            // Tenta buscar os dados da API
-            Log.d("GetUserProfileUseCase", "Buscando perfil do usuário na API com token: Bearer $accessToken")
             val responseApi = repository.getUserProfileFromApi(accessToken)
             if (responseApi != null) {
-                // Salva no banco local e retorna os dados da API
                 mapToUserProfileDB(responseApi)
                 responseApi
             } else {
                 throw Exception("Resposta da API nula")
             }
         } catch (e: Exception) {
-            Log.e("GetUserProfileUseCase", "Erro ao buscar dados da API, tentando carregar do banco local: ${e.message}")
             val userProfileDB = repository.getUserProfileFromDB()
             userProfileDB?.let { mapToUserProfile(it) }
         }

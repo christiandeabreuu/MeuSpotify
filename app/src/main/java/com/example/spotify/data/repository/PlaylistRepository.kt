@@ -8,13 +8,11 @@ class PlaylistRepository(
     private val spotifyDAO: SpotifyDAO,
     private val apiService: SpotifyApiService
 ) {
-    // Busca playlists da API
     suspend fun getPlaylistsFromApi(accessToken: String): List<Playlist>? {
         return try {
             val response = apiService.getPlaylists("Bearer $accessToken")
             response.items
         } catch (e: Exception) {
-            Log.e("PlaylistRepository", "Erro ao buscar playlists da API: ${e.message}")
             null
         }
     }

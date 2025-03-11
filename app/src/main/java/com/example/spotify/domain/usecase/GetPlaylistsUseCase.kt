@@ -11,11 +11,9 @@ class GetPlaylistsUseCase(
     private val apiService: SpotifyApiService,
     private val repository: PlaylistRepository = PlaylistRepository(spotifyDAO ,apiService)
 ) {
-    // Busca playlists da API e as salva no banco
     suspend fun getFromApi(accessToken: String): List<Playlist> {
-        Log.d("GetPlaylistsUseCase", "Chamando API com accessToken=Bearer $accessToken")
         val playlistsFromApi = repository.getPlaylistsFromApi(accessToken)
-        playlistsFromApi?.let { mapToPlaylistDB(it) } // Mapeia e salva no banco
+        playlistsFromApi?.let { mapToPlaylistDB(it) }
         return playlistsFromApi ?: emptyList()
     }
 

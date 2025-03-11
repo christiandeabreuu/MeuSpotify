@@ -13,12 +13,9 @@ class UserProfileRepository(
     // Busca o perfil da API
     suspend fun getUserProfileFromApi(accessToken: String): UserProfile? {
         return try {
-            Log.d("UserProfileRepository", "Solicitando perfil com token: Bearer $accessToken")
             val userProfile = apiService.getUserProfile("Bearer $accessToken")
-            Log.d("UserProfileRepository", "Resposta recebida: $userProfile")
             userProfile
         } catch (e: Exception) {
-            Log.e("UserProfileRepository", "Erro na requisição do perfil: ${e.message}")
             null
         }
     }
