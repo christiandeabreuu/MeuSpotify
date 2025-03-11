@@ -26,7 +26,6 @@ class CreatePlaylistActivity : AppCompatActivity() {
 
         accessToken = intent.getStringExtra("ACCESS_TOKEN") ?: ""
 
-        // Validação do token
         if (accessToken.isBlank()) {
             showError("Token de acesso não encontrado.")
             return
@@ -49,13 +48,11 @@ class CreatePlaylistActivity : AppCompatActivity() {
         binding.createButton.setOnClickListener {
             val playlistName = binding.playlistNameEditText.text.toString().trim()
 
-            // Valida o nome antes de chamar a ViewModel
             if (playlistName.isBlank()) {
                 showError("Por favor, insira um nome para a playlist.")
                 return@setOnClickListener
             }
 
-            // Logs para depuração
             Log.d("CreatePlaylistActivity", "PlaylistName: $playlistName")
 
             viewModel.createPlaylist(accessToken, playlistName).observe(this) { result ->

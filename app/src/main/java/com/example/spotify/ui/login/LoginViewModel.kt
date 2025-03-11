@@ -19,7 +19,6 @@ class LoginViewModel(
 ) : ViewModel() {
 
     fun handleRedirect(uri: Uri, redirectUri: String) = liveData(Dispatchers.IO) {
-        // Extrai o código de autorização da URI
         val authorizationCode = uri.getQueryParameter("code")
         Log.d("LoginViewModel", "authorizationCode extraído: $authorizationCode")
         if (authorizationCode != null) {

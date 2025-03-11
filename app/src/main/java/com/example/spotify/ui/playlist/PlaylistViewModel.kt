@@ -34,7 +34,7 @@ class PlaylistViewModel(
 
     private fun fetchUserProfile() {
         viewModelScope.launch(Dispatchers.IO) {
-            try { // essa funcao busca o usuario
+            try {
                 val profile = getUserProfilePlaylistUseCase.getUserProfile(accessToken)
                 _userProfile.postValue(Result.success(profile) as Result<UserProfile>?)
             } catch (e: Exception) {
@@ -55,7 +55,6 @@ class PlaylistViewModel(
         }
     }
 
-
     fun PlaylistDB.toPlaylist(): Playlist {
         return Playlist(
             id = this.id, // ID único da playlist
@@ -70,10 +69,6 @@ class PlaylistViewModel(
             }
         )
     }
-
-
-
-
 }
 
 

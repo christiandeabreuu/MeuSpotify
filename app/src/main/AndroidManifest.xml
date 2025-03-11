@@ -32,7 +32,6 @@
             android:name=".ui.login.LoginActivity"
             android:launchMode="singleTask"
             android:exported="true">
-            <!-- Intent Filter de lançamento -->
             <intent-filter tools:ignore="AppLinkUrlError">
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -7,7 +7,6 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -26,12 +25,10 @@ class LoginActivity : AppCompatActivity() {
         ViewModelProvider(this, factory)[LoginViewModel::class.java]
     }
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         Log.d("LoginActivity", "onCreate chamado. Intent data: ${intent?.data}")
         setupButtonListeners()
         handleRedirect(intent)
@@ -56,8 +53,6 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
-
-
 
     private fun isInternetAvailable(): Boolean {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -109,5 +104,4 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
-
 }

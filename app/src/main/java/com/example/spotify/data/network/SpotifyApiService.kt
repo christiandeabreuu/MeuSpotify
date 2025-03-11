@@ -33,7 +33,7 @@ interface SpotifyApiService {
     @GET("me/playlists")
     suspend fun getPlaylists(@Header("Authorization") authorization: String): PlaylistsResponse
 
-    @POST("me/playlists") // Removido o "v1/"
+    @POST("me/playlists")
     suspend fun createPlaylist(
         @Header("Authorization") accessToken: String,
         @Body requestBody: CreatePlaylistRequest

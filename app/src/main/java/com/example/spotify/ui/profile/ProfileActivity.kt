@@ -27,8 +27,6 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var spotifyDAO: SpotifyDAO
     private lateinit var binding: ActivityProfileBinding
     private lateinit var viewModel: ProfileViewModel
-
-
     private var accessToken: String? = null
 
     override fun onCreate(savedInstanceState:Bundle?) {
@@ -36,8 +34,6 @@ class ProfileActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-//        handleWindowInsets()
         getAccessToken()
 
         if (accessToken.isNullOrEmpty()) {
@@ -51,7 +47,6 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun initializedatabase() {
-        // Inicializando o banco de dados e o DAO
         val database = SpotifyDatabase.getSpotifyDatabase(applicationContext)
         spotifyDAO = database.spotifyDao()
     }
@@ -76,16 +71,6 @@ class ProfileActivity : AppCompatActivity() {
         startActivity(Intent(this, LoginActivity::class.java))
         finish()
     }
-
-    private fun handleWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-    }
-
-
 
     private fun setupUI() {
         setupCloseButton()
@@ -123,8 +108,6 @@ class ProfileActivity : AppCompatActivity() {
         intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
-
-
 
     private fun setupObservers() {
         viewModel.userProfile.observe(this) { result ->
