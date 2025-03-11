@@ -9,12 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import com.example.spotify.R
 import com.example.spotify.data.local.ArtistWithImages
+import com.example.spotify.data.local.Artist
 import com.example.spotify.databinding.ItemArtistaBinding
 
 class ArtistAdapter(
     private val accessToken: String,
-    private val onClick: (Artist) -> Unit
-) : PagingDataAdapter<ArtistWithImages, ArtistAdapter.ArtistViewHolder>(ArtistDiffCallback()) {
+    private val onClick: (com.example.spotify.data.model.Artist) -> Unit
+) : PagingDataAdapter<com.example.spotify.data.model.Artist, ArtistAdapter.ArtistViewHolder>(ArtistDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArtistViewHolder {
         val binding = ItemArtistaBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -22,18 +23,17 @@ class ArtistAdapter(
     }
 
     override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
-        Log.d("ArtistAdapter", "onBindViewHolder() chamado com position: $position")
-        val artistWithImages = getItem(position)
-        Log.d("ArtistAdapter", "Artist at position $position: $artistWithImages")
-        artistWithImages?.let {
-            val artist = it.artist
-            val firstImage = it.images.firstOrNull()
-            holder.binding.tvArtist.text = artist.name
-            holder.binding.imageArtist.load(firstImage?.url) {
+        val artist = getItem(position)
+
+        Log.d("ArtistAdapter", "Artist at position $position: $artist")
+        artist?.let { // Apenas executa o bind se o item não for nulo
+            holder.binding.tvArtist.text = it.name
+            holder.binding.imageArtist.load(it.images.firstOrNull()?.url) {
                 transformations(coil.transform.CircleCropTransformation())
                 placeholder(R.drawable.ic_spotify_full)
                 error(R.drawable.ic_spotify_full)
             }
+            Log.d("ArtistAdapter", "Token ao criar o Intent: $accessToken")
             holder.binding.root.setOnClickListener {
                 onClick(artist)
             }
@@ -42,12 +42,12 @@ class ArtistAdapter(
 
     class ArtistViewHolder(val binding: ItemArtistaBinding) : RecyclerView.ViewHolder(binding.root)
 
-    class ArtistDiffCallback : DiffUtil.ItemCallback<ArtistWithImages>() {
-        override fun areItemsTheSame(oldItem: ArtistWithImages, newItem: ArtistWithImages): Boolean {
-            return oldItem.artist.id == newItem.artist.id
+    class ArtistDiffCallback : DiffUtil.ItemCallback<com.example.spotify.data.model.Artist>() {
+        override fun areItemsTheSame(oldItem: com.example.spotify.data.model.Artist, newItem: com.example.spotify.data.model.Artist): Boolean {
+            return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: ArtistWithImages, newItem: ArtistWithImages): Boolean {
+        override fun areContentsTheSame(oldItem: com.example.spotify.data.model.Artist, newItem: com.example.spotify.data.model.Artist): Boolean {
             return oldItem == newItem
         }
     }

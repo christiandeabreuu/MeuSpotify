@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.example.spotify.R
-import com.example.spotify.data.model.Artist
+import com.example.spotify.data.local.Artist
 import com.example.spotify.databinding.ActivityArtistBinding
 import com.example.spotify.ui.albuns.AlbumsActivity
 import com.example.spotify.ui.login.LoginActivity
@@ -35,10 +35,13 @@ class ArtistActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityArtistBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+//        handleWindowInsets()
         observeArtistsPagingData()
+
         setupRecyclerView()
         setupBottomNavigationView()
-        observeArtistsPagingData()
+
         loadUserData()
     }
 
@@ -48,26 +51,19 @@ class ArtistActivity : AppCompatActivity() {
         Log.d("ArtistActivity", "onNewIntent chamado com URI: $uri")
 
         if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
+            // Processa o callback do Spotify e troca pelo token
             val code = uri.getQueryParameter("code")
             Log.d("ArtistActivity", "Código de autorização recebido: $code")
             if (code != null) {
-                viewModel.exchangeCodeForTokens(code, Constants.REDIRECT_URI).observe(this) { result ->
-                    result.onSuccess { tokens ->
-                        val (accessToken, refreshToken) = tokens
-                        this.accessToken = accessToken
-                        loadProfileData(accessToken, refreshToken)
-                        observeArtistsPagingData()
-                    }.onFailure {
-                        navigateToLogin()
-                    }
-                }
+                // Chama o ViewModel ou UseCase para trocar o código por tokens
+                viewModel.exchangeCodeForTokens(code, Constants.REDIRECT_URI)
             } else {
                 Log.e("ArtistActivity", "Código de autorização ausente no URI")
             }
         }
     }
 
-    private fun goToAlbum(artist: Artist) {
+    private fun goToAlbum(artist: com.example.spotify.data.model.Artist) {
         val intent = Intent(this, AlbumsActivity::class.java).apply {
             putExtra("ARTIST_ID", artist.id)
             putExtra("ACCESS_TOKEN", accessToken)
@@ -98,13 +94,16 @@ class ArtistActivity : AppCompatActivity() {
             result.onSuccess { tokens ->
                 val (accessToken, refreshToken) = tokens
                 this.accessToken = accessToken
+                Log.d("ArtistActivity", "Token carregado: $accessToken")
                 loadProfileData(accessToken, refreshToken)
-                observeArtistsPagingData()
+                observeArtistsPagingData() // Chame após carregar o token
             }.onFailure {
                 navigateToLogin()
             }
         }
     }
+
+
 
     private fun loadProfileData(accessToken: String, refreshToken: String) {
         viewModel.getUserProfile(accessToken).observe(this) { result ->
@@ -131,15 +130,14 @@ class ArtistActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadArtistsData(accessToken: String) {
-        viewModel.getTopArtist(accessToken).observe(this) { result ->
-            result.onSuccess {
-                Log.d("ArtistActivity", "Artistas carregados com sucesso")
-            }.onFailure {
-                Log.e("ArtistActivity", "Erro ao carregar artistas", it)
+    private fun loadArtistsData() {
+        lifecycleScope.launch {
+            viewModel.getArtistsPagingData("query").collectLatest { pagingData ->
+                artistAdapter.submitData(pagingData)
             }
         }
     }
+
 
     private fun handleWindowInsets() {
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
