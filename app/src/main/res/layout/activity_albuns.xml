@@ -21,15 +21,17 @@
 
     <TextView
         android:id="@+id/albumTitleTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/margin_24"
+        android:layout_marginStart="@dimen/margin_8"
+        android:layout_marginEnd="@dimen/margin_8"
         android:text="@string/top_artists"
         android:textColor="@color/white"
         android:fontFamily="@font/rubik_bold"
         android:textSize="@dimen/text_16"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@id/backButton"
+        app:layout_constraintEnd_toStartOf="@id/albumPostImageView"
         app:layout_constraintTop_toTopOf="@id/albumPostImageView"
         app:layout_constraintBottom_toBottomOf="@id/albumPostImageView"/>
 

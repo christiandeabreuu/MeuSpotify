@@ -1,6 +1,8 @@
 package com.example.spotify.ui.playlist
 
 import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION
+import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -145,6 +147,8 @@ class PlaylistActivity : AppCompatActivity() {
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)
+        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
+        intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 
