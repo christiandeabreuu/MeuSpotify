@@ -29,26 +29,25 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        Log.d("LoginActivity", "onCreate chamado. Intent data: ${intent?.data}")
         setupButtonListeners()
         handleRedirect(intent)
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        Log.d("LoginActivity", "onNewIntent chamado com URI: ${intent?.data}")
         handleRedirect(intent)
     }
 
     private fun setupButtonListeners() {
         binding.buttonStart.setOnClickListener {
             if (!isInternetAvailable()) {
-                Log.w("LoginActivity", "Sem conexão ao clicar no botão. Redirecionando para ArtistActivity.")
-                Toast.makeText(this, "Sem conexão com a internet. Carregando dados offline.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this,
+                    "Sem conexão com a internet. Carregando dados offline.",
+                    Toast.LENGTH_SHORT
+                ).show()
                 navigateToMainActivity()
             } else {
-                Log.d("LoginActivity", "Internet disponível. Abrindo URL de autenticação.")
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(Constants.AUTH_URL))
                 startActivity(intent)
             }
@@ -56,7 +55,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun isInternetAvailable(): Boolean {
-        val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val network = connectivityManager.activeNetwork ?: return false
         val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
         return activeNetwork.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
@@ -73,26 +73,22 @@ class LoginActivity : AppCompatActivity() {
         Log.d("LoginActivity", "handleRedirect() chamado com URI: $uri")
 
         if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
-            Log.d("LoginActivity", "URI inicia com REDIRECT_URI, processando redirecionamento...")
             loginViewModel.handleRedirect(uri, Constants.REDIRECT_URI).observe(this) { result ->
-                    result?.onSuccess { tokenState ->
-                        tokenState.token?.let { tokens ->
-
-                            Log.d(
-                                "LoginActivity",
-                                "Tokens recebidos com sucesso: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}"
-                            )
-                            loginViewModel.saveTokens(tokens.accessToken, tokens.refreshToken)
-                        }
-                        showLoading(tokenState.event == TokenStateEvent.Loading)
-
-                        navigateToMainActivity()
-                    }?.onFailure { e ->
-                        Log.e("LoginActivity", "Erro ao obter token: ${e.message}")
+                result?.onSuccess { tokenState ->
+                    tokenState.token?.let { tokens ->
+                        loginViewModel.saveTokens(tokens.accessToken, tokens.refreshToken)
                     }
+                    showLoading(tokenState.event == TokenStateEvent.Loading)
+                    navigateToMainActivity()
+                }?.onFailure { e ->
+                    Log.e("LoginActivity", "Erro ao obter token: ${e.message}")
                 }
+            }
         } else {
-            Log.e("LoginActivity", "Redirecionamento inválido ou URI não corresponde ao REDIRECT_URI esperado")
+            Log.e(
+                "LoginActivity",
+                "Redirecionamento inválido ou URI não corresponde ao REDIRECT_URI esperado"
+            )
         }
     }
 
@@ -102,5 +98,4 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
-
 }

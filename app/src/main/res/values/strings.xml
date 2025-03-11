@@ -33,6 +33,9 @@
     <string name="imag_profile_perfil">imagem do perfil do usuario</string>
     <string name="name_profile_spotify">Nome de Perfil</string>
     <string name="close_app_button">Sair</string>
+    <string name="artistas">Artistas</string>
+    <string name="playlists">Playlists</string>
+    <string name="perfil">Perfil</string>
 
 
 </resources>

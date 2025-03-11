@@ -15,10 +15,10 @@ class PlaylistViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(PlaylistViewModel::class.java)) {
-            val repository = PlaylistRepository( dao, apiService)
+            val repository = PlaylistRepository(dao, apiService)
             return PlaylistViewModel(
                 getUserProfilePlaylistUseCase = GetUserProfilePlaylistUseCase(apiService),
-                getPlaylistsUseCase = GetPlaylistsUseCase(dao,apiService,repository),
+                getPlaylistsUseCase = GetPlaylistsUseCase(dao, apiService, repository),
                 accessToken = accessToken
             ) as T
         }

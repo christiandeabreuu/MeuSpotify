@@ -9,13 +9,12 @@ import com.example.spotify.data.network.SpotifyApiService
 class GetPlaylistsUseCase(
     private val spotifyDAO: SpotifyDAO,
     private val apiService: SpotifyApiService,
-    private val repository: PlaylistRepository = PlaylistRepository(spotifyDAO ,apiService)
+    private val repository: PlaylistRepository = PlaylistRepository(spotifyDAO, apiService)
 ) {
-    // Busca playlists da API e as salva no banco
     suspend fun getFromApi(accessToken: String): List<Playlist> {
         Log.d("GetPlaylistsUseCase", "Chamando API com accessToken=Bearer $accessToken")
         val playlistsFromApi = repository.getPlaylistsFromApi(accessToken)
-        playlistsFromApi?.let { mapToPlaylistDB(it) } // Mapeia e salva no banco
+        playlistsFromApi?.let { mapToPlaylistDB(it) }
         return playlistsFromApi ?: emptyList()
     }
 
@@ -27,13 +26,12 @@ class GetPlaylistsUseCase(
                 description = playlist.description,
                 ownerName = playlist.owner.name,
                 tracksCount = playlist.tracksCount,
-                imageUrl = playlist.images?.firstOrNull()?.url ?: "" // Garante string não-nula
+                imageUrl = playlist.images.firstOrNull()?.url ?: ""
             )
         }
         repository.insertPlaylistsIntoDB(playlistsDB)
         Log.d("GetPlaylistsUseCase", "Playlists salvas no banco: ${playlistsDB.size}")
     }
-
 
     suspend fun getFromDBOrApi(accessToken: String): List<Playlist> {
         val playlistsFromDB = repository.getPlaylistsFromDB().map { it.toPlaylist() }
@@ -51,20 +49,22 @@ class GetPlaylistsUseCase(
             }
         }
     }
+
     fun PlaylistDB.toPlaylist(): Playlist {
         return Playlist(
-            id = this.id, // ID único da playlist
-            name = this.name, // Nome da playlist
-            description = this.description, // Descrição da playlist
-            owner = Owner(id = "", name = this.ownerName), // Cria o objeto Owner com o nome do proprietário
-            tracksCount = this.tracksCount, // Quantidade de músicas na playlist
+            id = this.id,
+            name = this.name,
+            description = this.description,
+            owner = Owner(
+                id = "",
+                name = this.ownerName
+            ),
+            tracksCount = this.tracksCount,
             images = if (this.imageUrl.isNullOrBlank()) {
-                emptyList() // Retorna uma lista vazia se não houver URL de imagem
+                emptyList()
             } else {
-                listOf(Image(url = this.imageUrl)) // Cria uma lista com uma única imagem
+                listOf(Image(url = this.imageUrl))
             }
         )
     }
-
-
 }

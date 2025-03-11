@@ -15,7 +15,7 @@ class ProfileViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
-            val getProfileUserUseCase = GetProfileUserUseCase(spotifyDAO, apiService, repository )
+            val getProfileUserUseCase = GetProfileUserUseCase(spotifyDAO, apiService, repository)
             return ProfileViewModel(getProfileUserUseCase, accessToken) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

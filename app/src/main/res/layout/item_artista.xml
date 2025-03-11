@@ -5,15 +5,14 @@
     android:layout_height="wrap_content"
     android:padding="@dimen/margin_8">
 
-
     <ImageView
         android:id="@+id/imageArtist"
         android:layout_width="@dimen/margin_64"
         android:layout_height="@dimen/margin_64"
-        android:contentDescription="@string/artist_image"
         android:layout_marginStart="@dimen/margin_16"
         android:layout_marginTop="@dimen/margin_16"
         android:background="@drawable/circle_background"
+        android:contentDescription="@string/artist_image"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_foreground"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,13 +24,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_16"
         android:layout_marginEnd="@dimen/margin_16"
-        android:text="@string/artist_name"
         android:fontFamily="@font/rubik_regular"
-        android:textSize="@dimen/text_14"
+        android:text="@string/artist_name"
         android:textColor="@color/white"
+        android:textSize="@dimen/text_14"
+        app:layout_constraintBottom_toBottomOf="@id/imageArtist"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/imageArtist"
-        app:layout_constraintTop_toTopOf="@id/imageArtist"
-        app:layout_constraintBottom_toBottomOf="@id/imageArtist"/>
+        app:layout_constraintTop_toTopOf="@id/imageArtist" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 

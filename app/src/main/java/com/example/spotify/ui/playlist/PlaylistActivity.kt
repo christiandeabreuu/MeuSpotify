@@ -12,9 +12,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.example.spotify.R
-import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.data.local.SpotifyDatabase
 import com.example.spotify.data.model.UserProfile
+import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.databinding.ActivityPlaylistBinding
 import com.example.spotify.ui.artist.ArtistActivity
 import com.example.spotify.ui.createplaylist.CreatePlaylistActivity
@@ -61,14 +61,12 @@ class PlaylistActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this, factory)[PlaylistViewModel::class.java]
     }
 
-
     private fun setupUI() {
         setupBottomNavigationView()
         setupRecyclerView()
     }
 
     private fun setupObservers() {
-        // Observa os dados do perfil do usuário
         viewModel.userProfile.observe(this) { result ->
             result.onSuccess { userProfile ->
                 if (userProfile != null && !userProfile.images.isNullOrEmpty()) {
@@ -83,10 +81,9 @@ class PlaylistActivity : AppCompatActivity() {
             }
         }
 
-        // Observa as playlists e atualiza a UI
         viewModel.playlists.observe(this) { result ->
             result.onSuccess { playlists ->
-                playlistAdapter.submitList(playlists) // Atualiza o adapter com as playlists
+                playlistAdapter.submitList(playlists)
                 Log.d("PlaylistActivity", "Playlists carregadas: $playlists")
             }.onFailure { error ->
                 Log.e("PlaylistActivity", "Erro ao carregar playlists: ${error.message}")
@@ -94,7 +91,6 @@ class PlaylistActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun setupRecyclerView() {
         playlistAdapter = PlaylistAdapter()

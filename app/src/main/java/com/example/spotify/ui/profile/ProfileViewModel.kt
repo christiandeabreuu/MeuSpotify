@@ -9,11 +9,9 @@ import com.example.spotify.data.model.UserProfile
 import com.example.spotify.domain.usecase.GetProfileUserUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ProfileViewModel(
-    private val getProfileUserUseCase: GetProfileUserUseCase,
-    private val accessToken: String
+    private val getProfileUserUseCase: GetProfileUserUseCase, private val accessToken: String
 ) : ViewModel() {
 
     private val _userProfile = MutableLiveData<Result<UserProfile>>()
@@ -27,7 +25,8 @@ class ProfileViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 Log.d("ProfileViewModel", "Iniciando busca do perfil do usuário")
-                val userProfile = getProfileUserUseCase.getUserProfileFromApi(accessToken) // Use Case decide API ou Banco
+                val userProfile =
+                    getProfileUserUseCase.getUserProfileFromApi(accessToken) // Use Case decide API ou Banco
                 if (userProfile != null) {
                     Log.d("ProfileViewModel", "Perfil do usuário recebido: $userProfile")
                     _userProfile.postValue(Result.success(userProfile))
@@ -41,6 +40,5 @@ class ProfileViewModel(
             }
         }
     }
-
 }
 

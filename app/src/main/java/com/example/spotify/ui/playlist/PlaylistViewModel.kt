@@ -6,9 +6,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.spotify.data.local.PlaylistDB
-import com.example.spotify.data.model.Image
-import com.example.spotify.data.model.Owner
 import com.example.spotify.data.model.Playlist
 import com.example.spotify.data.model.UserProfile
 import com.example.spotify.domain.usecase.GetUserProfilePlaylistUseCase
@@ -34,7 +31,7 @@ class PlaylistViewModel(
 
     private fun fetchUserProfile() {
         viewModelScope.launch(Dispatchers.IO) {
-            try { // essa funcao busca o usuario
+            try {
                 val profile = getUserProfilePlaylistUseCase.getUserProfile(accessToken)
                 _userProfile.postValue(Result.success(profile) as Result<UserProfile>?)
             } catch (e: Exception) {
@@ -47,33 +44,13 @@ class PlaylistViewModel(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val playlists = getPlaylistsUseCase.getFromDBOrApi(accessToken)
-                _playlists.postValue(Result.success(playlists)) // Atualiza o LiveData com os dados
+                _playlists.postValue(Result.success(playlists))
             } catch (e: Exception) {
                 Log.e("PlaylistViewModel", "Erro ao carregar playlists: ${e.message}")
                 _playlists.postValue(Result.failure(e))
             }
         }
     }
-
-
-    fun PlaylistDB.toPlaylist(): Playlist {
-        return Playlist(
-            id = this.id, // ID único da playlist
-            name = this.name, // Nome da playlist
-            description = this.description, // Descrição da playlist
-            owner = Owner(id = "", name = this.ownerName), // Cria o objeto Owner usando o nome do proprietário
-            tracksCount = this.tracksCount, // Quantidade de músicas
-            images = if (this.imageUrl.isNullOrBlank()) {
-                emptyList() // Retorna uma lista vazia se imageUrl for nulo ou vazio
-            } else {
-                listOf(Image(url = this.imageUrl)) // Cria uma lista com uma única imagem
-            }
-        )
-    }
-
-
-
-
 }
 
 
