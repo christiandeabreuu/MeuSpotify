@@ -8,14 +8,13 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.example.spotify.R
-import com.example.spotify.data.model.UserProfile
 import com.example.spotify.data.network.RetrofitInstance
+import com.example.spotify.data.local.SpotifyDatabase
+import com.example.spotify.data.model.UserProfile
 import com.example.spotify.databinding.ActivityPlaylistBinding
 import com.example.spotify.ui.artist.ArtistActivity
 import com.example.spotify.ui.createplaylist.CreatePlaylistActivity
@@ -53,28 +52,42 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun initializeViewModel() {
-        val factory = PlaylistViewModelFactory(RetrofitInstance.api, accessToken)
+        val dao = SpotifyDatabase.getSpotifyDatabase(applicationContext).spotifyDao()
+        val factory = PlaylistViewModelFactory(
+            apiService = RetrofitInstance.api,
+            dao = dao,
+            accessToken = accessToken,
+        )
         viewModel = ViewModelProvider(this, factory)[PlaylistViewModel::class.java]
     }
 
+
     private fun setupUI() {
-//        handleWindowInsets()
         setupBottomNavigationView()
         setupRecyclerView()
     }
 
     private fun setupObservers() {
+        // Observa os dados do perfil do usuário
         viewModel.userProfile.observe(this) { result ->
             result.onSuccess { userProfile ->
-                updateProfileUI(userProfile)
+                if (userProfile != null && !userProfile.images.isNullOrEmpty()) {
+                    updateProfileUI(userProfile) // Apenas chama se for válido
+                } else {
+                    Log.e("PlaylistActivity", "UserProfile está nulo ou sem imagens.")
+                    binding.playlistsProfileImageView.setImageResource(R.drawable.ic_spotify_full)
+                }
             }.onFailure { error ->
                 Log.e("PlaylistActivity", "Erro ao carregar perfil do usuário: ${error.message}")
                 Toast.makeText(this, "Erro ao carregar o perfil.", Toast.LENGTH_SHORT).show()
             }
         }
+
+        // Observa as playlists e atualiza a UI
         viewModel.playlists.observe(this) { result ->
             result.onSuccess { playlists ->
-                playlistAdapter.submitList(playlists)
+                playlistAdapter.submitList(playlists) // Atualiza o adapter com as playlists
+                Log.d("PlaylistActivity", "Playlists carregadas: $playlists")
             }.onFailure { error ->
                 Log.e("PlaylistActivity", "Erro ao carregar playlists: ${error.message}")
                 Toast.makeText(this, "Erro ao carregar playlists.", Toast.LENGTH_SHORT).show()
@@ -82,18 +95,11 @@ class PlaylistActivity : AppCompatActivity() {
         }
     }
 
+
     private fun setupRecyclerView() {
         playlistAdapter = PlaylistAdapter()
         binding.playlistsRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.playlistsRecyclerView.adapter = playlistAdapter
-    }
-
-    private fun handleWindowInsets() {
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
     }
 
     private fun setupBottomNavigationView() {
@@ -103,13 +109,11 @@ class PlaylistActivity : AppCompatActivity() {
                     navigateToActivity(ArtistActivity::class.java)
                     true
                 }
-
                 R.id.navigation_playlists -> true
                 R.id.navigation_profile -> {
                     navigateToActivity(ProfileActivity::class.java)
                     true
                 }
-
                 else -> false
             }
         }
@@ -149,9 +153,14 @@ class PlaylistActivity : AppCompatActivity() {
     }
 
     private fun updateProfileUI(userProfile: UserProfile) {
-        binding.playlistsProfileImageView.load(userProfile.images.firstOrNull()?.url) {
-            transformations(coil.transform.CircleCropTransformation())
+        val profileImageUrl = userProfile.images.firstOrNull()?.url ?: ""
+        if (profileImageUrl.isNotBlank()) {
+            binding.playlistsProfileImageView.load(profileImageUrl) {
+                transformations(coil.transform.CircleCropTransformation())
+            }
+        } else {
+            Log.e("PlaylistActivity", "Imagem de perfil vazia. Exibindo placeholder.")
+            binding.playlistsProfileImageView.setImageResource(R.drawable.ic_spotify_full)
         }
     }
 }
-

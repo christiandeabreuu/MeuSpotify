@@ -8,8 +8,10 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.spotify.data.local.ArtistWithImages
 import com.example.spotify.data.model.Artist
 import com.example.spotify.data.model.Tokens
+import com.example.spotify.data.model.TopArtistsResponse
 import com.example.spotify.data.paging.ArtistPagingSource
 import com.example.spotify.domain.usecase.*
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +54,7 @@ class ArtistViewModel(
         }
     }
 
-        // Salvar tokens
+    // Salvar tokens
     fun saveAccessToken(accessToken: String, refreshToken: String) {
         saveTokensUseCase.execute(accessToken, refreshToken)
     }
@@ -80,7 +82,7 @@ class ArtistViewModel(
     // Buscar principais artistas
     fun getTopArtist(accessToken: String) = liveData(Dispatchers.IO) {
         try {
-            val topArtists = getTopArtistsUseCase.execute(accessToken)
+            val topArtists = getTopArtistsUseCase.getFromApi(accessToken)
             emit(Result.success(topArtists))
         } catch (e: Exception) {
             emit(Result.failure(e))
@@ -101,8 +103,3 @@ class ArtistViewModel(
 
 
 }
-
-
-
-
-

@@ -180,6 +180,7 @@ class ArtistActivity : AppCompatActivity() {
         finish()
     }
 
+
     private fun imageProfile(imageUrl: String?) {
         imageUrl?.let {
             binding.profileImageView.load(it) {
@@ -190,5 +191,3 @@ class ArtistActivity : AppCompatActivity() {
         }
     }
 }
-
-

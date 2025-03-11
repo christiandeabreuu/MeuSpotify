@@ -9,8 +9,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import android.util.Log
-
 import com.example.spotify.R
+import com.example.spotify.data.local.ArtistWithImages
 import com.example.spotify.data.model.Artist
 import com.example.spotify.databinding.ItemArtistaBinding
 import com.example.spotify.ui.albuns.AlbumsActivity
@@ -55,4 +55,3 @@ class ArtistAdapter(
         }
     }
 }
-

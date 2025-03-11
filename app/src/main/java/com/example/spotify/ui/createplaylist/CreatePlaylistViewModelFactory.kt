@@ -1,12 +1,12 @@
 package com.example.spotify.ui.createplaylist
 
-import PlaylistRepository
+import CreatePlaylistRepository
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.spotify.domain.usecase.CreatePlaylistUseCase
 
 class CreatePlaylistViewModelFactory(
-    private val playlistRepository: PlaylistRepository
+    private val playlistRepository: CreatePlaylistRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(CreatePlaylistViewModel::class.java)) {

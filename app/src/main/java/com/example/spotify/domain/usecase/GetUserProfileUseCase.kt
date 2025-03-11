@@ -13,7 +13,7 @@ class GetUserProfileUseCase(private val apiService: SpotifyApiService) {
             userProfile
         } catch (e: Exception) {
             Log.e("GetUserProfileUseCase", "Erro na requisição do perfil: ${e.message}")
-            null // Retorna nulo em caso de erro
+            null
         }
     }
 }
