@@ -55,8 +55,8 @@ class GetTopArtistsUseCase(
         repository.insertImageArtists(imageArtistsDB)
     }
 
-    suspend fun getFromDBWithOffsetAndLimit(limit: Int, offset: Int, timeRange: String = "medium_term"): TopArtistsWithArtistsAndImages {
-        Log.d("GetTopArtistsUseCase", "getFromDBWithOffsetAndLimit() chamado com limit: $limit, offset: $offset, timeRange: $timeRange")
-        return repository.getTopArtistsDBWithOffsetAndLimit(limit, offset, timeRange)
-    }
+//    suspend fun getFromDBWithOffsetAndLimit(limit: Int, offset: Int, timeRange: String = "medium_term"): TopArtistsWithArtistsAndImages {
+//        Log.d("GetTopArtistsUseCase", "getFromDBWithOffsetAndLimit() chamado com limit: $limit, offset: $offset, timeRange: $timeRange")
+//        return repository.getTopArtistsDBWithOffsetAndLimit(limit, offset, timeRange)
+//    }
 }

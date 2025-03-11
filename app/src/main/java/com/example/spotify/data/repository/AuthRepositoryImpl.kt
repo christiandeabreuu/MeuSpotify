@@ -14,26 +14,21 @@ import java.util.concurrent.TimeUnit
 
 class AuthRepositoryImpl(private val context: Context) : AuthRepository {
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .build()
+    private val client = OkHttpClient.Builder().connectTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS).build()
 
-    private val sharedPreferences = context.getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
+    private val sharedPreferences =
+        context.getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
 
     override suspend fun getAccessToken(authorizationCode: String, redirectUri: String): Tokens {
-        val requestBody = FormBody.Builder()
-            .add("grant_type", "authorization_code")
-            .add("code", authorizationCode)
-            .add("redirect_uri", "meuapp://callback")
+        val requestBody = FormBody.Builder().add("grant_type", "authorization_code")
+            .add("code", authorizationCode).add("redirect_uri", "meuapp://callback")
             .add("client_id", "9cde7198eaf54c06860b6d0257dcd893")
-            .add("client_secret", "d601127a963c4791a61e9145bedd7fe6")
-            .build()
+            .add("client_secret", "d601127a963c4791a61e9145bedd7fe6").build()
 
-        val request = Request.Builder()
-            .url("https://accounts.spotify.com/api/token")
-            .post(requestBody)
-            .build()
+        val request =
+            Request.Builder().url("https://accounts.spotify.com/api/token").post(requestBody)
+                .build()
 
         val response = withContext(Dispatchers.IO) {
             client.newCall(request).execute()
@@ -50,25 +45,17 @@ class AuthRepositoryImpl(private val context: Context) : AuthRepository {
         return Tokens(accessToken, refreshToken)
     }
 
-
-
     override suspend fun refreshAccessToken(refreshToken: String): Tokens {
-        val requestBody = FormBody.Builder()
-            .add("grant_type", "refresh_token")
-            .add("refresh_token", refreshToken)
-            .add("client_id", "9cde7198eaf54c06860b6d0257dcd893")
-            .add("client_secret", "d601127a963c4791a61e9145bedd7fe6")
-            .build()
-
-        val request = Request.Builder()
-            .url("https://accounts.spotify.com/api/token")
-            .post(requestBody)
-            .build()
-
+        val requestBody =
+            FormBody.Builder().add("grant_type", "refresh_token").add("refresh_token", refreshToken)
+                .add("client_id", "9cde7198eaf54c06860b6d0257dcd893")
+                .add("client_secret", "d601127a963c4791a61e9145bedd7fe6").build()
+        val request =
+            Request.Builder().url("https://accounts.spotify.com/api/token").post(requestBody)
+                .build()
         val response = withContext(Dispatchers.IO) {
             client.newCall(request).execute()
         }
-
         if (!response.isSuccessful) {
             throw IOException("Erro: ${response.code} - ${response.body?.string()}")
         }

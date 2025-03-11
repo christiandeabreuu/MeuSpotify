@@ -71,7 +71,6 @@ class LoginActivity : AppCompatActivity() {
     private fun handleRedirect(intent: Intent?) {
         val uri: Uri? = intent?.data
         Log.d("LoginActivity", "handleRedirect() chamado com URI: $uri")
-
         if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
             loginViewModel.handleRedirect(uri, Constants.REDIRECT_URI).observe(this) { result ->
                 result?.onSuccess { tokenState ->

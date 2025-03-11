@@ -4,7 +4,6 @@ import android.util.Log
 import com.example.spotify.data.repository.AuthRepository
 import com.example.spotify.data.model.Tokens
 
-
 class RefreshAccessTokenUseCase(private val repository: AuthRepository) {
     suspend fun execute(refreshToken: String): Tokens? {
         Log.d("RefreshAccessTokenUseCase", "execute chamado com refreshToken: $refreshToken")

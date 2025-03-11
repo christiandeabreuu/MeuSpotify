@@ -13,9 +13,7 @@ class AlbumsViewModel(private val getArtistAlbumsUseCase: GetArtistAlbumsUseCase
         try {
             Log.d("AlbumsViewModel", "getAlbums: ACCESS_TOKEN=$accessToken, ARTIST_ID=$artistId")
             val albums = getArtistAlbumsUseCase.execute(accessToken, artistId)
-
             emit(Result.success(albums))
-
         } catch (e: Exception) {
             emit(Result.failure(e))
         }

@@ -26,7 +26,6 @@ class ArtistViewModel(
     private val getAccessTokenUseCase: GetAccessTokenUseCase
 ) : ViewModel() {
 
-    // Carregar tokens
     fun loadTokens() = liveData(Dispatchers.IO) {
         try {
             val tokens = loadTokensUseCase.execute()
@@ -54,12 +53,10 @@ class ArtistViewModel(
         }
     }
 
-    // Salvar tokens
     fun saveAccessToken(accessToken: String, refreshToken: String) {
         saveTokensUseCase.execute(accessToken, refreshToken)
     }
 
-    // Obter perfil do usuário
     fun getUserProfile(accessToken: String) = liveData(Dispatchers.IO) {
         try {
             val userProfile = getUserProfileUseCase.execute(accessToken)
@@ -69,7 +66,6 @@ class ArtistViewModel(
         }
     }
 
-    // Renovar token
     fun refreshToken(refreshToken: String) = liveData(Dispatchers.IO) {
         try {
             val tokens = refreshAccessTokenUseCase.execute(refreshToken)
@@ -79,15 +75,14 @@ class ArtistViewModel(
         }
     }
 
-    // Buscar principais artistas
-    fun getTopArtist(accessToken: String) = liveData(Dispatchers.IO) {
-        try {
-            val topArtists = getTopArtistsUseCase.getFromApi(accessToken)
-            emit(Result.success(topArtists))
-        } catch (e: Exception) {
-            emit(Result.failure(e))
-        }
-    }
+//    fun getTopArtist(accessToken: String) = liveData(Dispatchers.IO) {
+//        try {
+//            val topArtists = getTopArtistsUseCase.getFromApi(accessToken)
+//            emit(Result.success(topArtists))
+//        } catch (e: Exception) {
+//            emit(Result.failure(e))
+//        }
+//    }
 
     fun getArtistsPagingData(accessToken: String): Flow<PagingData<Artist>> {
         Log.d("ArtistViewModel", "Inicializando PagingSource com token: $accessToken")
@@ -96,10 +91,7 @@ class ArtistViewModel(
                 pageSize = 20,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { ArtistPagingSource(getTopArtistsUseCase, accessToken) } // O token correto deve vir aqui
+            pagingSourceFactory = { ArtistPagingSource(getTopArtistsUseCase, accessToken) }
         ).flow.cachedIn(viewModelScope)
     }
-
-
-
 }
