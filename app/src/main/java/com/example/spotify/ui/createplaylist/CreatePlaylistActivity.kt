@@ -1,6 +1,6 @@
 package com.example.spotify.ui.createplaylist
 
-import PlaylistRepository
+import CreatePlaylistRepository
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -16,7 +16,7 @@ class CreatePlaylistActivity : AppCompatActivity() {
     private lateinit var accessToken: String
 
     private val viewModel: CreatePlaylistViewModel by viewModels {
-        CreatePlaylistViewModelFactory(PlaylistRepository(RetrofitInstance.api))
+        CreatePlaylistViewModelFactory(CreatePlaylistRepository(RetrofitInstance.api))
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,12 +26,10 @@ class CreatePlaylistActivity : AppCompatActivity() {
 
         accessToken = intent.getStringExtra("ACCESS_TOKEN") ?: ""
 
-        // Validação do token
         if (accessToken.isBlank()) {
             showError("Token de acesso não encontrado.")
             return
         }
-
         handleWindowInsets()
         setupCreateButton()
         setupCloseButton()
@@ -49,14 +47,10 @@ class CreatePlaylistActivity : AppCompatActivity() {
         binding.createButton.setOnClickListener {
             val playlistName = binding.playlistNameEditText.text.toString().trim()
 
-            // Valida o nome antes de chamar a ViewModel
             if (playlistName.isBlank()) {
                 showError("Por favor, insira um nome para a playlist.")
                 return@setOnClickListener
             }
-
-            // Logs para depuração
-            Log.d("CreatePlaylistActivity", "PlaylistName: $playlistName")
 
             viewModel.createPlaylist(accessToken, playlistName).observe(this) { result ->
                 result.onSuccess { message ->

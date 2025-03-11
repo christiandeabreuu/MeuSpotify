@@ -1,6 +1,7 @@
 package com.example.spotify.ui.albuns
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -36,26 +37,24 @@ class AlbumsAdapter(private var albums: List<Album>) : RecyclerView.Adapter<Albu
 
     fun formatDate(dateString: String): String {
         val formats = listOf(
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()), // Formato completo: ano/mês/dia
-            SimpleDateFormat("MM/yyyy", Locale.getDefault()),    // Formato mês/ano
-            SimpleDateFormat("yyyy", Locale.getDefault())        // Formato apenas ano
+            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()),
+            SimpleDateFormat("MM/yyyy", Locale.getDefault()),
+            SimpleDateFormat("yyyy", Locale.getDefault())
         )
 
-        val targetFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Formato final desejado
+        val targetFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
 
         for (format in formats) {
             try {
                 val parsedDate = format.parse(dateString)
                 if (parsedDate != null) {
-                    return targetFormat.format(parsedDate) // Retorna no formato dd/MM/yyyy
+                    return targetFormat.format(parsedDate)
                 }
             } catch (e: Exception) {
-                // Ignorar e tentar o próximo formato
+                Log.e("AlbumAdapter", "Erro ao formatar a data: ${e.message}")
             }
         }
-
-        // Caso nenhuma correspondência seja encontrada, retornar uma data padrão
-        return "01/01/1989" // Adicione aqui um valor padrão apropriado
+        return "01/01/2000"
     }
 
 }

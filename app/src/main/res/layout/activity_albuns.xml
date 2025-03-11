@@ -11,13 +11,13 @@
         android:id="@+id/backButton"
         android:layout_width="@dimen/margin_32"
         android:layout_height="@dimen/margin_32"
-        android:contentDescription="@string/back_button"
         android:layout_marginStart="@dimen/margin_24"
+        android:contentDescription="@string/back_button"
         android:src="@drawable/ic_back_button"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/albumPostImageView"
         app:layout_constraintEnd_toStartOf="@id/albumTitleTextView"
-        app:layout_constraintTop_toTopOf="@id/albumPostImageView"
-        app:layout_constraintBottom_toBottomOf="@id/albumPostImageView"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/albumPostImageView" />
 
     <TextView
         android:id="@+id/albumTitleTextView"
@@ -25,15 +25,15 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_8"
         android:layout_marginEnd="@dimen/margin_8"
+        android:fontFamily="@font/rubik_bold"
         android:text="@string/top_artists"
         android:textColor="@color/white"
-        android:fontFamily="@font/rubik_bold"
         android:textSize="@dimen/text_16"
         android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@id/backButton"
+        app:layout_constraintBottom_toBottomOf="@id/albumPostImageView"
         app:layout_constraintEnd_toStartOf="@id/albumPostImageView"
-        app:layout_constraintTop_toTopOf="@id/albumPostImageView"
-        app:layout_constraintBottom_toBottomOf="@id/albumPostImageView"/>
+        app:layout_constraintStart_toEndOf="@id/backButton"
+        app:layout_constraintTop_toTopOf="@id/albumPostImageView" />
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/albumPostImageView"
@@ -41,8 +41,8 @@
         android:layout_height="@dimen/margin_64"
         android:layout_marginTop="@dimen/margin_34"
         android:layout_marginEnd="@dimen/margin_24"
-        android:contentDescription="@string/image_profile_artist"
         android:background="@drawable/circle_background"
+        android:contentDescription="@string/image_profile_artist"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_spotify_full"
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,23 +52,23 @@
         android:id="@+id/albumsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="@dimen/margin_0"
-        app:layout_constraintTop_toBottomOf="@id/albumPostImageView"
         app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
+        app:layout_constraintTop_toBottomOf="@id/albumPostImageView" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="0dp"
         android:layout_height="104dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:background="@color/black"
         app:itemIconTint="@color/bottom_nav_item_color"
-        app:itemTextColor="@color/bottom_nav_item_color"
         app:itemTextAppearanceActive="@style/BottomNavigationViewText"
         app:itemTextAppearanceInactive="@style/BottomNavigationViewText"
+        app:itemTextColor="@color/bottom_nav_item_color"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_navigation_menu" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

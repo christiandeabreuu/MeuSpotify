@@ -1,12 +1,12 @@
 package com.example.spotify.domain.usecase
 
-import PlaylistRepository
+import CreatePlaylistRepository
 
-class CreatePlaylistUseCase(private val playlistRepository: PlaylistRepository) {
+class CreatePlaylistUseCase(private val createPlaylistRepository: CreatePlaylistRepository) {
     suspend fun execute(accessToken: String, playlistName: String): Result<String> {
         return try {
-            val response = playlistRepository.createPlaylist(accessToken, playlistName)
-            Result.success(response) // Retorna uma mensagem de sucesso
+            val response = createPlaylistRepository.createPlaylist(accessToken, playlistName)
+            Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
         }

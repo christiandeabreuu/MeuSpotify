@@ -50,8 +50,6 @@ class AlbumsActivity : AppCompatActivity() {
         return true
     }
 
-
-
     private fun handleError(message: String): Boolean {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         finish()
@@ -94,7 +92,6 @@ class AlbumsActivity : AppCompatActivity() {
         }
     }
 
-
     private fun setupBackButton() {
         binding.backButton.setOnClickListener {
             finish()
@@ -131,6 +128,5 @@ class AlbumsActivity : AppCompatActivity() {
         intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
-
 }
 

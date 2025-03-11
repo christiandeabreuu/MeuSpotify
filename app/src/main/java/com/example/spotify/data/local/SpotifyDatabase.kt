@@ -1,0 +1,47 @@
+package com.example.spotify.data.local
+
+import android.content.Context
+import androidx.room.Database
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+
+@Database(
+    entities = [
+        TopArtistsDB::class,
+        Artist::class,
+        ImageArtist::class,
+        UserProfileDB::class,
+        PlaylistDB::class
+    ],
+    version = 4
+)
+abstract class SpotifyDatabase : RoomDatabase() {
+
+    abstract fun spotifyDao(): SpotifyDAO
+
+    companion object {
+        @Volatile
+        private var INSTANCE: SpotifyDatabase? = null
+
+
+
+        fun getSpotifyDatabase(context: Context): SpotifyDatabase {
+            val tempInstance = INSTANCE
+            if (tempInstance != null) {
+                return tempInstance
+            }
+            synchronized(this) {
+                val instance = Room.databaseBuilder(
+                    context.applicationContext,
+                    SpotifyDatabase::class.java,
+                    "spotify_db"
+                ).fallbackToDestructiveMigration()
+                    .build()
+                INSTANCE = instance
+                return instance
+            }
+        }
+    }
+}

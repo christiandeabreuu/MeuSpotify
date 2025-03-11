@@ -10,9 +10,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_spotify_full"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/ic_spotify_full"
         android:supportsRtl="true"
         android:theme="@style/Theme.Spotify"
         tools:targetApi="31">
@@ -39,24 +39,17 @@
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data
                     android:host="callback"
                     android:scheme="meuapp" />
             </intent-filter>
-
         </activity>
-
         <activity
             android:name=".ui.artist.ArtistActivity"
-            android:exported="true">
-
-
+            android:exported="true"
+            android:launchMode="singleTask">
         </activity>
-
     </application>
-
 </manifest>

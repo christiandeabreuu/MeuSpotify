@@ -1,7 +1,7 @@
 [versions]
 agp = "8.8.1"
-kotlin = "2.1.0"
-coreKtx = "1.15.0"
+kotlin = "1.9.21"
+coreKtx = "1.13.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -19,14 +19,13 @@ koin = "3.5.0"
 testng = "6.9.6"
 mockk = "1.13.8"
 androidx-arch-core = "2.2.0"
-kotlinx-coroutines-test = "1.6.0"  # Substitua pela versão correta
-androidx-arch-core-testing = "2.1.0"  # Substitua pela versão correta
-retrofit-converter-gson = "2.9.0"
 okhttp = "4.12.0"
 spotify-auth = "1.2.3"
 browser = "1.4.0"
 pagingCommonAndroid = "3.3.6"
 pagingRuntimeKtx = "3.3.6"
+roomCompiler = "2.6.1"
+roomRuntime = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,16 +51,17 @@ koin-androidx-workmanager = { group = "io.insert-koin", name = "koin-androidx-wo
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 mockk-android = { group = "io.mockk", name = "mockk-android", version.ref = "mockk" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
-testng = { group = "org.testng", name = "testng", version.ref = "testng" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 spotify-auth = { module = "com.spotify.android:auth", version.ref = "spotify-auth" }
 browser = { module = "androidx.browser:browser", version.ref = "browser" }
 androidx-paging-common-android = { group = "androidx.paging", name = "paging-common-android", version.ref = "pagingCommonAndroid" }
 androidx-paging-runtime-ktx = { group = "androidx.paging", name = "paging-runtime-ktx", version.ref = "pagingRuntimeKtx" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomCompiler" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin"}
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 

@@ -3,7 +3,6 @@ package com.example.spotify.ui
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.spotify.data.repository.AuthRepository
 import com.example.spotify.data.repository.AuthRepositoryImpl
 import com.example.spotify.domain.usecase.GetAccessTokenUseCase
 import com.example.spotify.ui.login.LoginViewModel
@@ -13,13 +12,11 @@ class LoginViewModelFactory(
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-            // Criação do GetAccessTokenUseCase com sua implementação de AuthRepository
             val getAccessTokenUseCase = GetAccessTokenUseCase(
                 repository = AuthRepositoryImpl(context)
             )
             return LoginViewModel(
-                context = context,
-                getAccessTokenUseCase = getAccessTokenUseCase
+                context = context, getAccessTokenUseCase = getAccessTokenUseCase
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

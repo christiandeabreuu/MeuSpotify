@@ -31,7 +31,7 @@ interface SpotifyApiService {
     fun getArtistAlbums(@Header("Authorization") authorization: String, @Path("id") artistId: String): Call<AlbumsResponse>
 
     @GET("me/playlists")
-    suspend fun getUserPlaylists(@Header("Authorization") authorization: String): PlaylistsResponse
+    suspend fun getPlaylists(@Header("Authorization") authorization: String): PlaylistsResponse
 
     @POST("me/playlists") // Removido o "v1/"
     suspend fun createPlaylist(
