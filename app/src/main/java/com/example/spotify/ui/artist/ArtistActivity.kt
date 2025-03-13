@@ -68,13 +68,18 @@ class ArtistActivity : AppCompatActivity() {
     }
 
     private fun observeArtistsPagingData() {
-        lifecycleScope.launch {
-            Log.d("ArtistActivity", "Token passado ao ViewModel: $accessToken")
-            viewModel.getArtistsPagingData(accessToken).collectLatest { pagingData ->
-                artistAdapter.submitData(pagingData)
+        if (accessToken.isNotEmpty()) {
+            lifecycleScope.launch {
+                Log.d("ArtistActivity", "Token passado ao ViewModel para PagingData: $accessToken")
+                viewModel.getArtistsPagingData(accessToken).collectLatest { pagingData ->
+                    artistAdapter.submitData(pagingData)
+                }
             }
+        } else {
+            Log.e("ArtistActivity", "Token não disponível para carregar artistas.")
         }
     }
+
 
     private fun setupRecyclerView() {
         Log.d("ArtistActivity", "Token enviado para o Adapter: $accessToken")
@@ -89,12 +94,14 @@ class ArtistActivity : AppCompatActivity() {
                 this.accessToken = accessToken
                 Log.d("ArtistActivity", "Token carregado: $accessToken")
                 loadProfileData(accessToken, refreshToken)
-                observeArtistsPagingData() // Chame após carregar o token
+                // Só inicialize a observação após garantir que o token está carregado.
+                observeArtistsPagingData()
             }.onFailure {
                 navigateToLogin()
             }
         }
     }
+
 
     private fun loadProfileData(accessToken: String, refreshToken: String) {
         viewModel.getUserProfile(accessToken).observe(this) { result ->

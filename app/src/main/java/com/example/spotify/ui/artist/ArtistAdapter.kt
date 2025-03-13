@@ -26,6 +26,7 @@ class ArtistAdapter(
         Log.d("ArtistAdapter", "Artist at position $position: $artist")
         artist?.let {
             holder.binding.tvArtist.text = it.name
+            Log.d("ArtistAdapter", "Image URL: ${artist.images.firstOrNull()?.url}")
             holder.binding.imageArtist.load(it.images.firstOrNull()?.url) {
                 transformations(coil.transform.CircleCropTransformation())
                 placeholder(R.drawable.ic_spotify_full)
