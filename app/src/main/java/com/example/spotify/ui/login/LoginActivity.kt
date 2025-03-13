@@ -19,9 +19,7 @@ import com.example.spotify.utils.Constants
 class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     private val loginViewModel: LoginViewModel by lazy {
-        val factory = LoginViewModelFactory(
-            applicationContext
-        )
+        val factory = LoginViewModelFactory(applicationContext)
         ViewModelProvider(this, factory)[LoginViewModel::class.java]
     }
 
@@ -74,27 +72,29 @@ class LoginActivity : AppCompatActivity() {
         if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
             Log.d("LoginActivity", "URI inicia com REDIRECT_URI, processando redirecionamento...")
             loginViewModel.handleRedirect(uri, Constants.REDIRECT_URI).observe(this) { result ->
-                    result?.onSuccess { tokenState ->
-                        tokenState.token?.let { tokens ->
+                result?.onSuccess { tokenState ->
+                    tokenState.token?.let { tokens ->
+                        Log.d(
+                            "LoginActivity",
+                            "Tokens recebidos com sucesso: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}"
+                        )
 
-                            Log.d(
-                                "LoginActivity",
-                                "Tokens recebidos com sucesso: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}"
-                            )
-                            loginViewModel.saveTokens(tokens.accessToken, tokens.refreshToken)
+                        // Salvando os tokens de forma síncrona
+                        val success = loginViewModel.saveTokensSync(tokens.accessToken, tokens.refreshToken)
+                        if (success) {
+                            Log.d("LoginActivity", "Tokens salvos com sucesso. Navegando para ArtistActivity.")
+                            navigateToMainActivity()
+                        } else {
+                            Log.e("LoginActivity", "Falha ao salvar os tokens!")
                         }
-                        showLoading(tokenState.event == TokenStateEvent.Loading)
-
-                        navigateToMainActivity()
-                    }?.onFailure { e ->
-                        Log.e("LoginActivity", "Erro ao obter token: ${e.message}")
                     }
+                    showLoading(tokenState.event == TokenStateEvent.Loading)
+                }?.onFailure { e ->
+                    Log.e("LoginActivity", "Erro ao obter token: ${e.message}")
                 }
+            }
         } else {
-            Log.e(
-                "LoginActivity",
-                "Redirecionamento inválido ou URI não corresponde ao REDIRECT_URI esperado"
-            )
+            Log.e("LoginActivity", "Redirecionamento inválido ou URI não corresponde ao REDIRECT_URI esperado")
         }
     }
 
