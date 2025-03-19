@@ -37,18 +37,10 @@ class ArtistViewModel(
 
     fun exchangeCodeForTokens(authorizationCode: String, redirectUri: String) = liveData(Dispatchers.IO) {
         try {
-            Log.d(
-                "ArtistViewModel",
-                "Chamando getAccessToken com authorizationCode: $authorizationCode e redirectUri: $redirectUri"
-            )
+
             val tokens: Tokens = getAccessTokenUseCase.execute(authorizationCode, redirectUri)
-            Log.d(
-                "ArtistViewModel",
-                "Tokens obtidos: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}"
-            )
             emit(Result.success(tokens))
         } catch (e: Exception) {
-            Log.e("ArtistViewModel", "Erro ao trocar código pelos tokens: ${e.message}")
             emit(Result.failure<Tokens>(e))
         }
     }
@@ -85,7 +77,6 @@ class ArtistViewModel(
     }
 
     fun getArtistsPagingData(accessToken: String): Flow<PagingData<Artist>> {
-        Log.d("ArtistViewModel", "Inicializando PagingSource com token: $accessToken")
         return Pager(
             config = PagingConfig(
                 pageSize = 20,

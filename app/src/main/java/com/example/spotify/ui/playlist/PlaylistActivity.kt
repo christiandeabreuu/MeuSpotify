@@ -63,6 +63,8 @@ class PlaylistActivity : AppCompatActivity() {
 
 
     private fun setupUI() {
+        binding.bottomNavigationView.selectedItemId = R.id.navigation_playlists
+
         setupBottomNavigationView()
         setupRecyclerView()
     }
@@ -104,17 +106,18 @@ class PlaylistActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.navigation_artistas -> {
                     navigateToActivity(ArtistActivity::class.java)
+
                     true
                 }
                 R.id.navigation_playlists -> true
                 R.id.navigation_profile -> {
                     navigateToActivity(ProfileActivity::class.java)
+
                     true
                 }
                 else -> false
             }
         }
-        binding.bottomNavigationView.selectedItemId = R.id.navigation_playlists
     }
 
     private fun setupCreatePlaylistButton() {
@@ -145,7 +148,6 @@ class PlaylistActivity : AppCompatActivity() {
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)
         intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
-        intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 

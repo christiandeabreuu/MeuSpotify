@@ -7,42 +7,52 @@ import com.example.spotify.data.model.Image
 import com.example.spotify.data.model.UserProfile
 import com.example.spotify.data.network.SpotifyApiService
 import com.example.spotify.data.repository.UserProfileRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 
 class GetProfileUserUseCase(
     private val spotifyDAO: SpotifyDAO,
     private val apiService: SpotifyApiService,
     private val repository: UserProfileRepository = UserProfileRepository(apiService, spotifyDAO),
 ) {
+    private var cachedProfile: UserProfile? = null
+
     suspend fun getUserProfileFromApi(accessToken: String): UserProfile? {
+        if (cachedProfile != null) return cachedProfile
+
         return try {
             val responseApi = repository.getUserProfileFromApi(accessToken)
             if (responseApi != null) {
                 mapToUserProfileDB(responseApi)
-                responseApi
-            } else {
-                throw Exception("Resposta da API nula")
+                cachedProfile = responseApi
             }
+            responseApi
         } catch (e: Exception) {
-            val userProfileDB = repository.getUserProfileFromDB()
-            userProfileDB?.let { mapToUserProfile(it) }
+            cachedProfile ?: repository.getUserProfileFromDB()?.let { mapToUserProfile(it) }
         }
     }
 
+
     private suspend fun mapToUserProfileDB(response: UserProfile) {
-        val userProfileDB = UserProfileDB(
-            id = response.id,
-            name = response.displayName,
-            imageUrl = response.images?.firstOrNull()?.url
-        )
-        Log.d("GetUserProfileUseCase", "Salvando perfil no banco local: $userProfileDB")
-        repository.insertUserProfile(userProfileDB)
+        val existingProfile = repository.getUserProfileFromDB()
+        if (existingProfile == null || existingProfile.id != response.id) {
+            val userProfileDB = UserProfileDB(
+                id = response.id,
+                name = response.displayName,
+                imageUrl = response.images?.firstOrNull()?.url
+            )
+            Log.d("GetProfileUserUseCase", "Salvando perfil no banco local: $userProfileDB")
+            repository.insertUserProfile(userProfileDB)
+        }
     }
 
-    private fun mapToUserProfile(userProfileDB: UserProfileDB): UserProfile {
-        return UserProfile(
+    private suspend fun mapToUserProfile(userProfileDB: UserProfileDB): UserProfile = withContext(Dispatchers.IO) {
+        UserProfile(
             id = userProfileDB.id,
             displayName = userProfileDB.name,
-            images = listOf(Image(url = userProfileDB.imageUrl ?: "")) // Garante que a lista de imagens é criada
+            images = listOf(Image(url = userProfileDB.imageUrl ?: ""))
         )
     }
 }

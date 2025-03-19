@@ -8,38 +8,35 @@ import androidx.lifecycle.viewModelScope
 import com.example.spotify.data.model.UserProfile
 import com.example.spotify.domain.usecase.GetProfileUserUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ProfileViewModel(
-    private val getProfileUserUseCase: GetProfileUserUseCase,
-    private val accessToken: String
+    private val getProfileUserUseCase: GetProfileUserUseCase
 ) : ViewModel() {
 
-    private val _userProfile = MutableLiveData<Result<UserProfile>>()
-    val userProfile: LiveData<Result<UserProfile>> get() = _userProfile
+    private val _userProfile = MutableStateFlow<Result<UserProfile>?>(null)
+    val userProfile: StateFlow<Result<UserProfile>?> get() = _userProfile
 
-    init {
-        fetchUserProfile()
-    }
-
-    private fun fetchUserProfile() {
+    fun loadUserProfile(accessToken: String) {
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                Log.d("ProfileViewModel", "Iniciando busca do perfil do usuário")
-                val userProfile = getProfileUserUseCase.getUserProfileFromApi(accessToken) // Use Case decide API ou Banco
-                if (userProfile != null) {
-                    Log.d("ProfileViewModel", "Perfil do usuário recebido: $userProfile")
-                    _userProfile.postValue(Result.success(userProfile))
+                val profile = getProfileUserUseCase.getUserProfileFromApi(accessToken)
+                if (profile != null) {
+                    _userProfile.emit(Result.success(profile))
                 } else {
-                    Log.e("ProfileViewModel", "Perfil retornado como nulo")
-                    _userProfile.postValue(Result.failure(Exception("Nenhum dado encontrado")))
+                    _userProfile.emit(Result.failure(Exception("Perfil do usuário está nulo")))
                 }
             } catch (e: Exception) {
-                Log.e("ProfileViewModel", "Erro ao buscar perfil: ${e.message}")
-                _userProfile.postValue(Result.failure(e))
+                _userProfile.emit(Result.failure(e))
             }
         }
     }
+
+
 }
+
+
 

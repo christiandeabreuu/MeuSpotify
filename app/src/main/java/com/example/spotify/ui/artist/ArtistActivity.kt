@@ -34,24 +34,24 @@ class ArtistActivity : AppCompatActivity() {
         binding = ActivityArtistBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.bottomNavigationView.selectedItemId = R.id.navigation_artistas
         observeArtistsPagingData()
         setupRecyclerView()
+
         setupBottomNavigationView()
         loadUserData()
     }
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        binding.bottomNavigationView.selectedItemId = R.id.navigation_artistas
+
         val uri: Uri? = intent.data
-        Log.d("ArtistActivity", "onNewIntent chamado com URI: $uri")
 
         if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
             val code = uri.getQueryParameter("code")
-            Log.d("ArtistActivity", "Código de autorização recebido: $code")
             if (code != null) {
                 viewModel.exchangeCodeForTokens(code, Constants.REDIRECT_URI)
-            } else {
-                Log.e("ArtistActivity", "Código de autorização ausente no URI")
             }
         }
     }
@@ -70,19 +70,15 @@ class ArtistActivity : AppCompatActivity() {
     private fun observeArtistsPagingData() {
         if (accessToken.isNotEmpty()) {
             lifecycleScope.launch {
-                Log.d("ArtistActivity", "Token passado ao ViewModel para PagingData: $accessToken")
                 viewModel.getArtistsPagingData(accessToken).collectLatest { pagingData ->
                     artistAdapter.submitData(pagingData)
                 }
             }
-        } else {
-            Log.e("ArtistActivity", "Token não disponível para carregar artistas.")
         }
     }
 
 
     private fun setupRecyclerView() {
-        Log.d("ArtistActivity", "Token enviado para o Adapter: $accessToken")
         binding.artistasRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.artistasRecyclerView.adapter = artistAdapter
     }
@@ -92,7 +88,6 @@ class ArtistActivity : AppCompatActivity() {
             result.onSuccess { tokens ->
                 val (accessToken, refreshToken) = tokens
                 this.accessToken = accessToken
-                Log.d("ArtistActivity", "Token carregado: $accessToken")
                 loadProfileData(accessToken, refreshToken)
                 // Só inicialize a observação após garantir que o token está carregado.
                 observeArtistsPagingData()
@@ -139,27 +134,30 @@ class ArtistActivity : AppCompatActivity() {
     private fun setupBottomNavigationView() {
         binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_artistas -> true
+                R.id.navigation_artistas ->
+                    true
                 R.id.navigation_playlists -> {
                     navigateToActivity(PlaylistActivity::class.java)
+
                     true
                 }
 
                 R.id.navigation_profile -> {
                     navigateToActivity(ProfileActivity::class.java)
+
                     true
                 }
 
                 else -> false
             }
         }
+
     }
 
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)
         intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
-        intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 
@@ -173,8 +171,6 @@ class ArtistActivity : AppCompatActivity() {
         imageUrl?.let {
             binding.profileImageView.load(it) {
                 transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_spotify_full)
-                error(R.drawable.ic_spotify_full_black)
             }
         }
     }

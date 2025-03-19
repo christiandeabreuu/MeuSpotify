@@ -46,7 +46,6 @@ class AlbumsActivity : AppCompatActivity() {
         Log.d("AlbumsActivity", "Extras do Intent: ${intent.extras?.keySet()}") // Confirma se os extras existem
         accessToken = intent.getStringExtra("ACCESS_TOKEN") ?: return handleError("Token de acesso não encontrado.")
         artistId = intent.getStringExtra("ARTIST_ID") ?: return handleError("ID do artista não encontrado.")
-        Log.d("AlbumsActivity", "getIntentData: ACCESS_TOKEN=$accessToken, ARTIST_ID=$artistId")
         return true
     }
 
@@ -78,7 +77,6 @@ class AlbumsActivity : AppCompatActivity() {
         viewModel.getAlbums(accessToken, artistId).observe(this) { result ->
             result.onSuccess { albums ->
                 if (albums != null) {
-                    Log.d("AlbumsActivity", "Álbuns carregados: ${albums.size} encontrados.")
                     if (albums.isNotEmpty()) {
                         albumsAdapter.updateData(albums)
                     } else {
@@ -88,7 +86,6 @@ class AlbumsActivity : AppCompatActivity() {
                     Log.e("AlbumsActivity", "Resposta da API retornou nula.")
                 }
             }.onFailure { e ->
-                Log.e("AlbumsActivity", "Erro ao carregar álbuns: ${e.message}", e)
                 Toast.makeText(this, "Erro ao carregar álbuns.", Toast.LENGTH_SHORT).show()
             }
         }
@@ -124,11 +121,9 @@ class AlbumsActivity : AppCompatActivity() {
     }
 
     private fun navigateToActivity(activityClass: Class<*>) {
-        Log.d("AlbumsActivity", "Navegando para ${activityClass.simpleName} com ACCESS_TOKEN=$accessToken")
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)
         intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
-        intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 
