@@ -6,6 +6,7 @@ import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -32,8 +33,11 @@ class ArtistActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityArtistBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
+
         setContentView(binding.root)
 
+        window.navigationBarColor = getColor(R.color.black)
         binding.bottomNavigationView.selectedItemId = R.id.navigation_artistas
         observeArtistsPagingData()
         setupRecyclerView()

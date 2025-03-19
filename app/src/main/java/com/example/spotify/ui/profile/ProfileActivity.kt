@@ -34,6 +34,8 @@ class ProfileActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        window.navigationBarColor = getColor(R.color.black)
         getAccessToken()
 
         if (accessToken.isNullOrEmpty()) {

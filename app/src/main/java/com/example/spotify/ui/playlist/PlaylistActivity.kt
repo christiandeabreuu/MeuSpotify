@@ -33,8 +33,8 @@ class PlaylistActivity : AppCompatActivity() {
         binding = ActivityPlaylistBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        window.navigationBarColor = getColor(R.color.black)
         initializeAccessToken()
-
         if (accessToken.isBlank()) {
             showErrorAndNavigateToLogin("Token de acesso não encontrado.")
             return

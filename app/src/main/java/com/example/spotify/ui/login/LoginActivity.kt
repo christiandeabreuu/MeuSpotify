@@ -8,9 +8,11 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import com.example.spotify.R
 import com.example.spotify.databinding.ActivityLoginBinding
 import com.example.spotify.ui.LoginViewModelFactory
 import com.example.spotify.ui.artist.ArtistActivity
@@ -26,7 +28,11 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
         setContentView(binding.root)
+
+        window.navigationBarColor = getColor(R.color.black)
+
         Log.d("LoginActivity", "onCreate chamado. Intent data: ${intent?.data}")
         setupButtonListeners()
         handleRedirect(intent)
