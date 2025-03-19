@@ -1,5 +1,6 @@
 package com.example.spotify.ui.artist
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -23,7 +24,8 @@ class ArtistViewModel(
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
     private val getTopArtistsUseCase: GetTopArtistsUseCase,
-    private val getAccessTokenUseCase: GetAccessTokenUseCase
+    private val getAccessTokenUseCase: GetAccessTokenUseCase,
+    private val context: Context
 ) : ViewModel() {
 
     fun loadTokens() = liveData(Dispatchers.IO) {
@@ -82,7 +84,7 @@ class ArtistViewModel(
                 pageSize = 20,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { ArtistPagingSource(getTopArtistsUseCase, accessToken) } // O token correto deve vir aqui
+            pagingSourceFactory = { ArtistPagingSource(getTopArtistsUseCase, accessToken, context) } // O token correto deve vir aqui
         ).flow.cachedIn(viewModelScope)
     }
 }

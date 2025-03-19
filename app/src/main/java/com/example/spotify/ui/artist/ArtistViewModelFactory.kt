@@ -36,7 +36,8 @@ class ArtistViewModelFactory(private val context: Context) : ViewModelProvider.F
                 getUserProfileUseCase,
                 refreshAccessTokenUseCase,
                 getTopArtistsUseCase,
-                getAccessTokenUseCase
+                getAccessTokenUseCase,
+                context
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
