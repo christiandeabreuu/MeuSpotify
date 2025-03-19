@@ -10,13 +10,14 @@ import com.example.spotify.domain.usecase.GetProfileUserUseCase
 class ProfileViewModelFactory(
     private val apiService: SpotifyApiService,
     private val spotifyDAO: SpotifyDAO,
-    private val repository: UserProfileRepository
+    private val repository: UserProfileRepository,
+    private val accessToken: String
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
-            return ProfileViewModel(GetProfileUserUseCase(spotifyDAO, apiService, repository)) as T
+            val getProfileUserUseCase = GetProfileUserUseCase(spotifyDAO, apiService, repository )
+            return ProfileViewModel(getProfileUserUseCase, accessToken) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
-
