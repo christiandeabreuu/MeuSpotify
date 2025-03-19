@@ -34,6 +34,8 @@ class AlbumsActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(binding.root)
 
+        window.navigationBarColor = getColor(R.color.black)
+
         artistName = intent.getStringExtra("ARTIST") ?: ""
         imageUrl = intent.getStringExtra("IMAGE_URL") ?: ""
 
