@@ -24,17 +24,32 @@ class ArtistAdapter(
         val artist = getItem(position)
 
         artist?.let {
-            holder.binding.tvArtist.text = it.name
-            holder.binding.imageArtist.load(it.images.firstOrNull()?.url) {
-                transformations(coil.transform.CircleCropTransformation())
-                placeholder(R.drawable.ic_spotify_full)
-                error(R.drawable.ic_spotify_full)
+            Log.d("DebugAdapter", "Artista recebido: ${it.name} | ID: ${it.id} | Imagens: ${it.images.size}")
+            it.images.forEach { image ->
+                Log.d("DebugAdapter", "URL da Imagem: ${image.url}")
             }
+
+            // Verificar se há URL válida para carregar
+            val imageUrl = it.images.firstOrNull()?.url
+            if (imageUrl.isNullOrEmpty()) {
+                Log.e("DebugAdapter", "Nenhuma URL válida para o artista: ${it.name}")
+                holder.binding.imageArtist.setImageResource(R.drawable.ic_spotify_full)
+            } else {
+                holder.binding.imageArtist.load(imageUrl) {
+                    transformations(coil.transform.CircleCropTransformation())
+                    placeholder(R.drawable.ic_spotify_full)
+                    error(R.drawable.ic_spotify_full)
+                }
+            }
+
             holder.binding.root.setOnClickListener {
                 onClick(artist)
             }
         }
     }
+
+
+
 
     class ArtistViewHolder(val binding: ItemArtistaBinding) : RecyclerView.ViewHolder(binding.root)
 

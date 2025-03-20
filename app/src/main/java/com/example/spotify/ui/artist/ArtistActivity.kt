@@ -44,6 +44,7 @@ class ArtistActivity : AppCompatActivity() {
 
         setupBottomNavigationView()
         loadUserData()
+        viewModel.getTopArtist(accessToken)
     }
 
     override fun onNewIntent(intent: Intent) {

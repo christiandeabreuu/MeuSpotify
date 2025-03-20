@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.spotify.data.model.Artist
+import com.example.spotify.data.model.ImageArtist
 import com.example.spotify.domain.usecase.GetTopArtistsUseCase
 
 class ArtistPagingSource(
@@ -16,44 +17,43 @@ class ArtistPagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Artist> {
         return try {
-            val nextPageNumber = params.key ?: 0 // Página inicial é 0
-            Log.d("ArtistPagingSource", "Carregando artistas com offset: $nextPageNumber")
+            val nextPageNumber = params.key ?: 0
+            Log.d("PagingSource", "Carregando artistas com offset: $nextPageNumber")
 
-            val isOnline = checkInternetConnection(context) // Verifica conectividade
-            val response: List<Artist> = if (isOnline) {
-                // Busca da API e salva no banco
-                val apiResponse = useCaseTopArtists.getFromApi(accessToken, nextPageNumber)
-                apiResponse.items ?: emptyList()
+            // Verificar o modo de operação (online/offline)
+            val response: List<Artist> = if (checkInternetConnection(context)) {
+                // Dados da API
+                useCaseTopArtists.getFromApi(accessToken, nextPageNumber).items ?: emptyList()
             } else {
-                // Busca do banco (offline)
-                val dbResponse = useCaseTopArtists.getFromDBWithOffsetAndLimit(20, nextPageNumber)
-                val response = dbResponse.artists.map { artistWithImages ->
+                // Dados do banco de dados
+                useCaseTopArtists.getFromDBWithOffsetAndLimit(params.loadSize, nextPageNumber).artists.map { artistWithImages ->
+                    Log.d("PagingSource", "Artista offline: ${artistWithImages.artist.name} | Imagens: ${artistWithImages.images.size}")
                     Artist(
                         id = artistWithImages.artist.id,
                         name = artistWithImages.artist.name,
                         popularity = artistWithImages.artist.popularity,
                         images = artistWithImages.images.map { image ->
-                            com.example.spotify.data.model.ImageArtist(
-                                url = image.url
-                            )
+                            ImageArtist(url = image.url)
                         }
                     )
                 }
-
-                response
             }
 
+            Log.d("PagingSource", "Artistas carregados: ${response.size}")
 
-            LoadResult.Page(
+            // Retornar a página de dados
+            return LoadResult.Page(
                 data = response,
-                prevKey = if (nextPageNumber == 0) null else nextPageNumber - 20,
-                nextKey = if (response.isEmpty()) null else nextPageNumber + 20
+                prevKey = if (nextPageNumber == 0) null else nextPageNumber - params.loadSize,
+                nextKey = if (response.isEmpty()) null else nextPageNumber + params.loadSize
             )
         } catch (e: Exception) {
-            Log.e("ArtistPagingSource", "Erro ao carregar artistas: ${e.message}")
+            Log.e("PagingSource", "Erro ao carregar artistas: ${e.message}")
             LoadResult.Error(e)
         }
     }
+
+
 
     override fun getRefreshKey(state: PagingState<Int, Artist>): Int? {
         return state.anchorPosition?.let { anchorPosition ->

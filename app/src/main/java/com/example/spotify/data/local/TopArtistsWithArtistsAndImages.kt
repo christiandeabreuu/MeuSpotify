@@ -13,11 +13,19 @@ data class TopArtistsWithArtistsAndImages(
     val artists: List<ArtistWithImages>
 )
 
+
 data class ArtistWithImages(
     @Embedded val artist: Artist,
-    @Relation(parentColumn = "id", entityColumn = "artistId")
-    val images: List<ImageArtist> // Corrigido para usar o modelo de banco
+    @Relation(
+        parentColumn = "databaseId",
+        entityColumn = "artistId"
+    )
+    val images: List<ImageArtist>
 )
+
+
+
+
 
 
 
