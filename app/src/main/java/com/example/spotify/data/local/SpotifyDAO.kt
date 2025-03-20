@@ -26,6 +26,11 @@ interface SpotifyDAO {
         timeRange: String
     ): TopArtistsWithArtistsAndImages
 
+    @Transaction
+    @Query("SELECT * FROM artist WHERE topArtistsId = :topArtistsId LIMIT :limit OFFSET :offset")
+    fun getTopArtistsWithImages(topArtistsId: Int, limit: Int, offset: Int): List<ArtistWithImages>
+
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUserProfile(userProfile: UserProfileDB): Long
 
