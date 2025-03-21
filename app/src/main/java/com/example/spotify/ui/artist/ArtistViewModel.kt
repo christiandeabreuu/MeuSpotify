@@ -10,6 +10,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.spotify.data.local.ArtistWithImages
+import com.example.spotify.data.local.SpotifyDAO
 import com.example.spotify.data.model.Artist
 import com.example.spotify.data.model.Tokens
 import com.example.spotify.data.model.TopArtistsResponse
@@ -25,6 +26,7 @@ class ArtistViewModel(
     private val refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
     private val getTopArtistsUseCase: GetTopArtistsUseCase,
     private val getAccessTokenUseCase: GetAccessTokenUseCase,
+    private val spotifyDAO: SpotifyDAO,
     private val context: Context
 ) : ViewModel() {
 
@@ -59,6 +61,13 @@ class ArtistViewModel(
             emit(Result.failure(e))
         }
     }
+
+    fun getUserProfileImage() = liveData(Dispatchers.IO) {
+        val profileImage = spotifyDAO.getUserProfile()?.imageUrl
+
+        emit(profileImage)
+    }
+
 
     fun refreshToken(refreshToken: String) = liveData(Dispatchers.IO) {
         try {

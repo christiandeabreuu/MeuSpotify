@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.example.spotify.R
+import com.example.spotify.data.local.SpotifyDAO
 import com.example.spotify.data.model.Artist
 import com.example.spotify.databinding.ActivityArtistBinding
 import com.example.spotify.ui.albuns.AlbumsActivity
@@ -29,6 +30,7 @@ class ArtistActivity : AppCompatActivity() {
     private val viewModel: ArtistViewModel by viewModels { ArtistViewModelFactory(this) }
     private val artistAdapter: ArtistAdapter by lazy { ArtistAdapter(accessToken) { goToAlbum(it) } }
     private var accessToken: String = ""
+    private lateinit var spotifyDAO : SpotifyDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,10 +43,27 @@ class ArtistActivity : AppCompatActivity() {
         binding.bottomNavigationView.selectedItemId = R.id.navigation_artistas
         observeArtistsPagingData()
         setupRecyclerView()
-
+        observerProfile()
         setupBottomNavigationView()
         loadUserData()
+
     }
+
+
+
+    private fun observerProfile() {
+        viewModel.getUserProfileImage().observe(this) { imageUrl ->
+            Log.d("ObserverProfile", "URL da imagem carregada: $imageUrl")
+            binding.profileImageView.load(imageUrl) {
+                crossfade(true)
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_spotify_full)
+                error(R.drawable.ic_spotify_full_black)
+            }
+
+        }
+    }
+
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
