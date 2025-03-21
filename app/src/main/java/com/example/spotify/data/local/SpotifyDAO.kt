@@ -21,9 +21,7 @@ interface SpotifyDAO {
     @Transaction
     @Query("SELECT * FROM top_artists WHERE timeRange = :timeRange LIMIT :limit OFFSET :offset")
     suspend fun getTopArtistsWithOffsetAndLimit(
-        limit: Int,
-        offset: Int,
-        timeRange: String
+        limit: Int, offset: Int, timeRange: String
     ): TopArtistsWithArtistsAndImages
 
     @Transaction
@@ -41,6 +39,17 @@ interface SpotifyDAO {
     suspend fun insertPlaylists(playlists: List<PlaylistDB>)
 
     @Query("SELECT * FROM playlist")
-    suspend fun getPlaylists():List<PlaylistDB>
+    suspend fun getPlaylists(): List<PlaylistDB>
+
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAlbums(albums: List<AlbumDB>)
+
+    @Query("SELECT * FROM albums")
+    suspend fun getAlbums(): List<AlbumDB>
+
+    @Query("SELECT * FROM albums WHERE databaseId = :albumId LIMIT 1")
+    suspend fun getAlbumById(albumId: String): AlbumDB?
+
 
 }

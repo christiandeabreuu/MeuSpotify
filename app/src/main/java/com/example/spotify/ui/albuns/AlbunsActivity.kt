@@ -2,7 +2,6 @@ package com.example.spotify.ui.albuns
 
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NO_ANIMATION
-import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -12,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import com.example.spotify.R
+import com.example.spotify.data.local.SpotifyDatabase
 import com.example.spotify.data.network.RetrofitInstance
 import com.example.spotify.databinding.ActivityAlbunsBinding
 import com.example.spotify.ui.artist.ArtistActivity
@@ -24,7 +24,10 @@ class AlbumsActivity : AppCompatActivity() {
     private lateinit var artistName: String
     private lateinit var imageUrl: String
     private val viewModel: AlbumsViewModel by viewModels {
-        AlbumsViewModelFactory(RetrofitInstance.api)
+        AlbumsViewModelFactory(
+            RetrofitInstance.api,
+            SpotifyDatabase.getSpotifyDatabase(applicationContext).spotifyDao()
+        )
     }
     private lateinit var albumsAdapter: AlbumsAdapter
 
@@ -53,8 +56,6 @@ class AlbumsActivity : AppCompatActivity() {
         return true
     }
 
-
-
     private fun handleError(message: String): Boolean {
         Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         finish()
@@ -78,7 +79,7 @@ class AlbumsActivity : AppCompatActivity() {
     }
 
     private fun observeViewModel() {
-        viewModel.getAlbums(accessToken, artistId).observe(this) { result ->
+        viewModel.fetchAlbums(accessToken, artistId).observe(this) { result ->
             result.onSuccess { albums ->
                 if (albums != null) {
                     if (albums.isNotEmpty()) {
@@ -94,7 +95,6 @@ class AlbumsActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun setupBackButton() {
         binding.backButton.setOnClickListener {
@@ -130,6 +130,6 @@ class AlbumsActivity : AppCompatActivity() {
         intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
         startActivity(intent)
     }
-
 }
+
 
