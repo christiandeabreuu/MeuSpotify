@@ -19,6 +19,7 @@ class PlaylistViewModelFactory(
             return PlaylistViewModel(
                 getUserProfilePlaylistUseCase = GetUserProfilePlaylistUseCase(apiService),
                 getPlaylistsUseCase = GetPlaylistsUseCase(dao,apiService,repository),
+                spotifyDAO = dao,
                 accessToken = accessToken
             ) as T
         }
