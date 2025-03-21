@@ -34,6 +34,8 @@ class ProfileActivity : AppCompatActivity() {
         enableEdgeToEdge()
         binding = ActivityProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        window.navigationBarColor = getColor(R.color.black)
         getAccessToken()
 
         if (accessToken.isNullOrEmpty()) {
@@ -73,6 +75,7 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun setupUI() {
+        binding.bottomNavigationView.selectedItemId = R.id.navigation_profile
         setupCloseButton()
         setupBottomNavigationView()
     }
@@ -88,6 +91,7 @@ class ProfileActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.navigation_artistas -> {
                     navigateToActivity(ArtistActivity::class.java)
+
                     true
                 }
                 R.id.navigation_playlists -> {
@@ -97,15 +101,15 @@ class ProfileActivity : AppCompatActivity() {
                 R.id.navigation_profile -> true
                 else -> false
             }
+
         }
-        binding.bottomNavigationView.selectedItemId = R.id.navigation_profile
     }
 
     private fun navigateToActivity(activityClass: Class<*>) {
-        val intent = Intent(this, activityClass)
-        intent.putExtra("ACCESS_TOKEN", accessToken)
-        intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
-        intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
+        val intent = Intent(this, activityClass).apply {
+            putExtra("ACCESS_TOKEN", accessToken)
+            addFlags(FLAG_ACTIVITY_NO_ANIMATION)
+        }
         startActivity(intent)
     }
 

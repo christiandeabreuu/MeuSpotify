@@ -25,7 +25,8 @@ class ArtistViewModelFactory(private val context: Context) : ViewModelProvider.F
 
             val loadTokensUseCase = LoadTokensUseCase(authRepository)
             val saveTokensUseCase = SaveTokensUseCase(authRepository)
-            val getUserProfileUseCase = GetUserProfileUseCase(spotifyApiService)
+            val getUserProfileUseCase = GetUserProfileUseCase(spotifyApiService, spotifyDAO)
+
             val refreshAccessTokenUseCase = RefreshAccessTokenUseCase(authRepository)
             val getTopArtistsUseCase = GetTopArtistsUseCase(spotifyDAO, spotifyApiService)
             val getAccessTokenUseCase = GetAccessTokenUseCase(authRepository)
@@ -36,7 +37,10 @@ class ArtistViewModelFactory(private val context: Context) : ViewModelProvider.F
                 getUserProfileUseCase,
                 refreshAccessTokenUseCase,
                 getTopArtistsUseCase,
-                getAccessTokenUseCase
+                getAccessTokenUseCase,
+                spotifyDAO,
+                context
+
             ) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")

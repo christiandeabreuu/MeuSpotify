@@ -23,7 +23,6 @@ class ArtistAdapter(
     override fun onBindViewHolder(holder: ArtistViewHolder, position: Int) {
         val artist = getItem(position)
 
-        Log.d("ArtistAdapter", "Artist at position $position: $artist")
         artist?.let {
             holder.binding.tvArtist.text = it.name
             holder.binding.imageArtist.load(it.images.firstOrNull()?.url) {
@@ -31,7 +30,6 @@ class ArtistAdapter(
                 placeholder(R.drawable.ic_spotify_full)
                 error(R.drawable.ic_spotify_full)
             }
-            Log.d("ArtistAdapter", "Token ao criar o Intent: $accessToken")
             holder.binding.root.setOnClickListener {
                 onClick(artist)
             }

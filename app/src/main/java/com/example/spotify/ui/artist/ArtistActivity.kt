@@ -6,6 +6,7 @@ import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.example.spotify.R
+import com.example.spotify.data.local.SpotifyDAO
 import com.example.spotify.data.model.Artist
 import com.example.spotify.databinding.ActivityArtistBinding
 import com.example.spotify.ui.albuns.AlbumsActivity
@@ -28,30 +30,51 @@ class ArtistActivity : AppCompatActivity() {
     private val viewModel: ArtistViewModel by viewModels { ArtistViewModelFactory(this) }
     private val artistAdapter: ArtistAdapter by lazy { ArtistAdapter(accessToken) { goToAlbum(it) } }
     private var accessToken: String = ""
+    private lateinit var spotifyDAO : SpotifyDAO
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityArtistBinding.inflate(layoutInflater)
+        enableEdgeToEdge()
+
         setContentView(binding.root)
 
+        window.navigationBarColor = getColor(R.color.black)
+        binding.bottomNavigationView.selectedItemId = R.id.navigation_artistas
         observeArtistsPagingData()
         setupRecyclerView()
+        observerProfile()
         setupBottomNavigationView()
         loadUserData()
+
     }
+
+
+
+    private fun observerProfile() {
+        viewModel.getUserProfileImage().observe(this) { imageUrl ->
+            Log.d("ObserverProfile", "URL da imagem carregada: $imageUrl")
+            binding.profileImageView.load(imageUrl) {
+                crossfade(true)
+                transformations(CircleCropTransformation())
+                placeholder(R.drawable.ic_spotify_full)
+                error(R.drawable.ic_spotify_full_black)
+            }
+
+        }
+    }
+
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        binding.bottomNavigationView.selectedItemId = R.id.navigation_artistas
+
         val uri: Uri? = intent.data
-        Log.d("ArtistActivity", "onNewIntent chamado com URI: $uri")
 
         if (uri != null && uri.toString().startsWith(Constants.REDIRECT_URI)) {
             val code = uri.getQueryParameter("code")
-            Log.d("ArtistActivity", "Código de autorização recebido: $code")
             if (code != null) {
                 viewModel.exchangeCodeForTokens(code, Constants.REDIRECT_URI)
-            } else {
-                Log.e("ArtistActivity", "Código de autorização ausente no URI")
             }
         }
     }
@@ -68,16 +91,17 @@ class ArtistActivity : AppCompatActivity() {
     }
 
     private fun observeArtistsPagingData() {
-        lifecycleScope.launch {
-            Log.d("ArtistActivity", "Token passado ao ViewModel: $accessToken")
-            viewModel.getArtistsPagingData(accessToken).collectLatest { pagingData ->
-                artistAdapter.submitData(pagingData)
+        if (accessToken.isNotEmpty()) {
+            lifecycleScope.launch {
+                viewModel.getArtistsPagingData(accessToken).collectLatest { pagingData ->
+                    artistAdapter.submitData(pagingData)
+                }
             }
         }
     }
 
+
     private fun setupRecyclerView() {
-        Log.d("ArtistActivity", "Token enviado para o Adapter: $accessToken")
         binding.artistasRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.artistasRecyclerView.adapter = artistAdapter
     }
@@ -87,14 +111,15 @@ class ArtistActivity : AppCompatActivity() {
             result.onSuccess { tokens ->
                 val (accessToken, refreshToken) = tokens
                 this.accessToken = accessToken
-                Log.d("ArtistActivity", "Token carregado: $accessToken")
                 loadProfileData(accessToken, refreshToken)
-                observeArtistsPagingData() // Chame após carregar o token
+                // Só inicialize a observação após garantir que o token está carregado.
+                observeArtistsPagingData()
             }.onFailure {
                 navigateToLogin()
             }
         }
     }
+
 
     private fun loadProfileData(accessToken: String, refreshToken: String) {
         viewModel.getUserProfile(accessToken).observe(this) { result ->
@@ -132,27 +157,30 @@ class ArtistActivity : AppCompatActivity() {
     private fun setupBottomNavigationView() {
         binding.bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.navigation_artistas -> true
+                R.id.navigation_artistas ->
+                    true
                 R.id.navigation_playlists -> {
                     navigateToActivity(PlaylistActivity::class.java)
+
                     true
                 }
 
                 R.id.navigation_profile -> {
                     navigateToActivity(ProfileActivity::class.java)
+
                     true
                 }
 
                 else -> false
             }
         }
+
     }
 
     private fun navigateToActivity(activityClass: Class<*>) {
         val intent = Intent(this, activityClass)
         intent.putExtra("ACCESS_TOKEN", accessToken)
         intent.addFlags(FLAG_ACTIVITY_NO_ANIMATION)
-        intent.addFlags(FLAG_ACTIVITY_SINGLE_TOP)
         startActivity(intent)
     }
 
@@ -166,8 +194,6 @@ class ArtistActivity : AppCompatActivity() {
         imageUrl?.let {
             binding.profileImageView.load(it) {
                 transformations(CircleCropTransformation())
-                placeholder(R.drawable.ic_spotify_full)
-                error(R.drawable.ic_spotify_full_black)
             }
         }
     }

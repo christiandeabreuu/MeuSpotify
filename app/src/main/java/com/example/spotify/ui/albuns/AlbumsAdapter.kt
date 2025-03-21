@@ -5,12 +5,15 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
+import com.example.spotify.R
+import com.example.spotify.data.local.AlbumDB
 import com.example.spotify.data.model.Album
 import com.example.spotify.databinding.ItemAlbumBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class AlbumsAdapter(private var albums: List<Album>) : RecyclerView.Adapter<AlbumsAdapter.AlbumViewHolder>() {
+class AlbumsAdapter(private var albums: List<AlbumDB>) :
+    RecyclerView.Adapter<AlbumsAdapter.AlbumViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlbumViewHolder {
         val binding = ItemAlbumBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -19,41 +22,24 @@ class AlbumsAdapter(private var albums: List<Album>) : RecyclerView.Adapter<Albu
 
     override fun onBindViewHolder(holder: AlbumViewHolder, position: Int) {
         val album = albums[position]
-        holder.binding.albumName.text = album.name
-        holder.binding.albumReleaseDate.text = formatDate(album.releaseDate)
-        holder.binding.albumCover.load(album.images.firstOrNull()?.url)
+        holder.bind(album)
     }
 
-    override fun getItemCount(): Int = albums.size
+    override fun getItemCount() = albums.size
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun updateData(newAlbums: List<Album>) {
+    fun updateData(newAlbums: List<AlbumDB>) {
         albums = newAlbums
         notifyDataSetChanged()
     }
 
-    class AlbumViewHolder(val binding: ItemAlbumBinding) : RecyclerView.ViewHolder(binding.root)
-
-    fun formatDate(dateString: String): String {
-        val formats = listOf(
-            SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()), // Formato completo: ano/mês/dia
-            SimpleDateFormat("MM/yyyy", Locale.getDefault()),    // Formato mês/ano
-            SimpleDateFormat("yyyy", Locale.getDefault())        // Formato apenas ano
-        )
-
-        val targetFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()) // Formato final desejado
-
-        for (format in formats) {
-            try {
-                val parsedDate = format.parse(dateString)
-                if (parsedDate != null) {
-                    return targetFormat.format(parsedDate) // Retorna no formato dd/MM/yyyy
-                }
-            } catch (e: Exception) {
-
+    class AlbumViewHolder(private val binding: ItemAlbumBinding) : RecyclerView.ViewHolder(binding.root) {
+        fun bind(album: AlbumDB) {
+            binding.albumName.text = album.name
+            binding.albumReleaseDate.text = album.artist
+            binding.albumCover.load(album.imageUrl) {
+                error(R.drawable.ic_spotify_full_black)
             }
         }
-        return "01/01/1989" // Adicione aqui um valor padrão apropriado
     }
-
 }
+

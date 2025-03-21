@@ -1,5 +1,6 @@
 package com.example.spotify.ui.artist
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
@@ -9,6 +10,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.spotify.data.local.ArtistWithImages
+import com.example.spotify.data.local.SpotifyDAO
 import com.example.spotify.data.model.Artist
 import com.example.spotify.data.model.Tokens
 import com.example.spotify.data.model.TopArtistsResponse
@@ -23,7 +25,9 @@ class ArtistViewModel(
     private val getUserProfileUseCase: GetUserProfileUseCase,
     private val refreshAccessTokenUseCase: RefreshAccessTokenUseCase,
     private val getTopArtistsUseCase: GetTopArtistsUseCase,
-    private val getAccessTokenUseCase: GetAccessTokenUseCase
+    private val getAccessTokenUseCase: GetAccessTokenUseCase,
+    private val spotifyDAO: SpotifyDAO,
+    private val context: Context
 ) : ViewModel() {
 
     fun loadTokens() = liveData(Dispatchers.IO) {
@@ -37,18 +41,10 @@ class ArtistViewModel(
 
     fun exchangeCodeForTokens(authorizationCode: String, redirectUri: String) = liveData(Dispatchers.IO) {
         try {
-            Log.d(
-                "ArtistViewModel",
-                "Chamando getAccessToken com authorizationCode: $authorizationCode e redirectUri: $redirectUri"
-            )
+
             val tokens: Tokens = getAccessTokenUseCase.execute(authorizationCode, redirectUri)
-            Log.d(
-                "ArtistViewModel",
-                "Tokens obtidos: accessToken=${tokens.accessToken}, refreshToken=${tokens.refreshToken}"
-            )
             emit(Result.success(tokens))
         } catch (e: Exception) {
-            Log.e("ArtistViewModel", "Erro ao trocar código pelos tokens: ${e.message}")
             emit(Result.failure<Tokens>(e))
         }
     }
@@ -65,6 +61,13 @@ class ArtistViewModel(
             emit(Result.failure(e))
         }
     }
+
+    fun getUserProfileImage() = liveData(Dispatchers.IO) {
+        val profileImage = spotifyDAO.getUserProfile()?.imageUrl
+
+        emit(profileImage)
+    }
+
 
     fun refreshToken(refreshToken: String) = liveData(Dispatchers.IO) {
         try {
@@ -85,13 +88,12 @@ class ArtistViewModel(
     }
 
     fun getArtistsPagingData(accessToken: String): Flow<PagingData<Artist>> {
-        Log.d("ArtistViewModel", "Inicializando PagingSource com token: $accessToken")
         return Pager(
             config = PagingConfig(
                 pageSize = 20,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { ArtistPagingSource(getTopArtistsUseCase, accessToken) } // O token correto deve vir aqui
+            pagingSourceFactory = { ArtistPagingSource(getTopArtistsUseCase, accessToken, context) } // O token correto deve vir aqui
         ).flow.cachedIn(viewModelScope)
     }
 }

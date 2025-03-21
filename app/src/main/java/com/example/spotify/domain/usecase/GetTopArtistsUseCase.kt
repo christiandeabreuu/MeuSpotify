@@ -56,7 +56,9 @@ class GetTopArtistsUseCase(
     }
 
     suspend fun getFromDBWithOffsetAndLimit(limit: Int, offset: Int, timeRange: String = "medium_term"): TopArtistsWithArtistsAndImages {
-        Log.d("GetTopArtistsUseCase", "getFromDBWithOffsetAndLimit() chamado com limit: $limit, offset: $offset, timeRange: $timeRange")
-        return repository.getTopArtistsDBWithOffsetAndLimit(limit, offset, timeRange)
+        val dbResponse = spotifyDAO.getTopArtistsWithOffsetAndLimit(limit, offset, timeRange)
+        Log.d("GetTopArtistsUseCase", "Artista: ${dbResponse.artists.map { it.artist.name }}, Imagens: ${dbResponse.artists.map { it.images.size }}")
+        return dbResponse
+
     }
 }

@@ -11,9 +11,10 @@ import androidx.room.RoomDatabase
         Artist::class,
         ImageArtist::class,
         UserProfileDB::class,
-        PlaylistDB::class
+        PlaylistDB::class,
+        AlbumDB::class
     ],
-    version = 4
+    version = 5
 )
 abstract class SpotifyDatabase : RoomDatabase() {
 

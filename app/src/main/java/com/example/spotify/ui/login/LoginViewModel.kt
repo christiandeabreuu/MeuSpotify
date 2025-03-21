@@ -39,12 +39,14 @@ class LoginViewModel(
         }
     }
 
-    fun saveTokens(accessToken: String, refreshToken: String) {
+    fun saveTokensSync(accessToken: String, refreshToken: String): Boolean {
         val sharedPreferences = context.getSharedPreferences("SpotifyPrefs", Context.MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("ACCESS_TOKEN", accessToken)
         editor.putString("REFRESH_TOKEN", refreshToken)
-        editor.apply()
-        Log.d("LoginViewModel", "Tokens salvos localmente: accessToken=$accessToken, refreshToken=$refreshToken")
+        val success = editor.commit() // Salvamento síncrono
+        Log.d("LoginViewModel", "Tokens salvos localmente de forma síncrona: success=$success")
+        return success
     }
+
 }

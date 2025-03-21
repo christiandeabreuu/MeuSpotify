@@ -32,6 +32,7 @@
         android:contentDescription="@string/foto_profile"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_spotify_full"
+        app:shapeAppearanceOverlay="@style/CircleImageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
